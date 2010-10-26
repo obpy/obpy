@@ -1,0 +1,18 @@
+Metadata-Version: 1.0
+Name: OpenBlox-Game-Engine
+Version: 0.1
+Summary: UNKNOWN
+Home-page: http://openblox.sourceforge.net
+Author: The OpenBlox Team
+Author-email: openblocks@users.sourceforge.net
+License: GNU GPL v3
+Description: 
+          OpenBlox is an extremely powerful 3D game development framework, sporting such features as:
+        
+          * Scripting, via Lua
+          * Plugin development, with Python
+          * A complete RAD environment
+          * A simple game distribution system
+          * Networking, so multiple people can play your game at a time
+          
+Platform: UNKNOWN
