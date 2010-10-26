@@ -29,6 +29,10 @@ from obengine.element import ElementFactory
 class PlayerController(object): pass
 
 class PlayerView(object):
+    """
+    If you're directly using OpenBlox from Python, use this class instead of obengine.player.Player.
+    Experimental!
+    """
 
     def __init__(self, name):
 
@@ -78,7 +82,7 @@ class PlayerView(object):
 
         joint1.setAxis1(0, 0, 0)
         joint1.setAxis2(0, 0, 0)
-
+        
         joint2.setAxis1(0, 0, 0)
         joint2.setAxis2(0, 0, 0)
 
