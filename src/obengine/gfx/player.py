@@ -18,16 +18,49 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Oct 25, 2010 9:57:22 PM$"
 
+from direct.gui.DirectGui import *
+
+from obengine.gfx import get_rootwin
+from obengine.player import Player
+from obengine.utils import *
+from obengine.element import ElementFactory
+
 class PlayerController(object): pass
 
 class PlayerView(object):
 
-    def __init__(self, player):
+    def __init__(self, name):
 
-        self.player = player
+        self.player = Player(name, self)
 
-        self.construct_gui()
+    def join_world(self, world):
 
-    def construct_gui(self):
+        self.player.join_world(world)
+
+    def leave_world(self):
+
+        self.player.leave_world()
+
+    def on_joined(self, **kwargs):
+
+        self.joined = True
+        self.world = kwargs['world']
+
+        self._construct_avatar()
+        self._construct_gui()
+
+    def on_full(self, **kwargs): error('World full')
+
+    def on_leave(self, **kwargs):
+
+        del self.world
+
+
+    def _construct_avatar(self, pos = [0, 0, 0]):
+
+        factory = ElementFactory()
+        self.world.add_element(factory.make(self.name + '_head', ))
+
+    def _construct_gui(self):
 
         pass
