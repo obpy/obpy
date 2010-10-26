@@ -47,13 +47,13 @@ class Player(object):
 
     def on_joined(self, world):
 
-        self.event_handler.on_joined(self, { 'world' :  world })
+        self.event_handler.on_joined(self, world=world )
         self.world = world
         self.playing = True
 
     def on_leave(self):
 
-        self.event_handler.on_leave(self, { 'world' : self.world })
+        self.event_handler.on_leave(self, world=self.world)
         self.playing = False
 
     def on_full(self, world):
@@ -63,4 +63,4 @@ class Player(object):
             # Just in case we weren't playing before
             self.playing = False
 
-        self.event_handler.on_full(self, { 'world' : world })
+        self.event_handler.on_full(self, world=world)

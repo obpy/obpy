@@ -2,6 +2,7 @@
 
 import obengine
 import obengine.gfx.worldsource as worldsource
+from obengine.gfx.player import PlayerView
 
 import Tkinter, tkFileDialog
 import os
@@ -34,6 +35,9 @@ def load_world():
         
         world = obengine.World(os.path.basename(fe_text.get()).strip('.zip'), 1)
         world.load_world(source)
+
+        p = PlayerView('Test')
+        p.join_world(world, [-10, -10, -5])
         
         def clean_up():
             
