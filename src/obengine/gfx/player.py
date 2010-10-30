@@ -69,31 +69,28 @@ class PlayerView(object):
 
         self.world.add_element(factory.make('brick', self.name + '_torso', pos, [0, 0, 128, 255], [2, 4, 2]))
         self.world.add_element(factory.make('brick', self.name + '_head', [pos[0], pos[1], pos[2] + 3], [238, 238, 0, 255], [2, 2, 1]))
-        self.world.add_element(factory.make('brick', self.name + '_lleg', [pos[0], pos[1] - 1, pos[2] - 4], [0, 0, 128, 255], [2, 2, 2]))
-        self.world.add_element(factory.make('brick', self.name + '_rleg', [pos[0], pos[1] + 1, pos[2] - 4], [0, 0, 128, 255], [2, 2, 2]))
+        self.world.add_element(factory.make('brick', self.name + '_lleg', [pos[0], pos[1] - 1, pos[2] - 4], [238, 238, 0, 255], [2, 2, 2]))
+        self.world.add_element(factory.make('brick', self.name + '_rleg', [pos[0], pos[1] + 1, pos[2] - 4], [238, 238, 0, 255], [2, 2, 2]))
         self.world.add_element(factory.make('brick', self.name + '_larm', [pos[0], pos[1] - 3, pos[2]], [238, 238, 0, 255], [2, 2, 2]))
         self.world.add_element(factory.make('brick', self.name + '_rarm', [pos[0], pos[1] + 3, pos[2]], [238, 238, 0, 255], [2, 2, 2]))
 
-        joint1 = OdeUniversalJoint(get_phys_world())
-        joint2 = OdeUniversalJoint(get_phys_world())
-        joint3 = OdeUniversalJoint(get_phys_world())
-        joint4 = OdeUniversalJoint(get_phys_world())
-        joint5 = OdeUniversalJoint(get_phys_world())
+        larm_joint_pos = []
+        lleg_joint_pos = []
+        rarm_joint_pos = []
+        rleg_joint_pos = []
 
-        joint1.setAxis1(0, 0, 0)
-        joint1.setAxis2(0, 0, 0)
-        
-        joint2.setAxis1(0, 0, 0)
-        joint2.setAxis2(0, 0, 0)
+        for index, val in enumerate(self.world.element[self.name + '_torso'].brick.coords):
 
-        joint3.setAxis1(0, 0, 0)
-        joint3.setAxis2(0, 0, 0)
+            larm_joint_pos.append(self.world.element[self.name + '_larm'].brick.coords[index])
+            lleg_joint_pos.append(self.world.element[self.name + '_lleg'].brick.coords[index])
+            rarm_joint_pos.append(self.world.element[self.name + '_rarm'].brick.coords[index])
+            rleg_joint_pos.append(self.world.element[self.name + '_rleg'].brick.coords[index])
 
-        joint4.setAxis1(0, 0, 0)
-        joint4.setAxis2(0, 0, 0)
-
-        joint5.setAxis1(0, 0, 0)
-        joint5.setAxis2(0, 0, 0)
+        joint1 = OdeHingeJoint(get_phys_world())
+        joint2 = OdeHingeJoint(get_phys_world())
+        joint3 = OdeHingeJoint(get_phys_world())
+        joint4 = OdeHingeJoint(get_phys_world())
+        joint5 = OdeHingeJoint(get_phys_world())
 
         joint1.attach(self.world.element[self.name + '_torso'].phys_obj.body, self.world.element[self.name + '_larm'].phys_obj.body)
         joint2.attach(self.world.element[self.name + '_torso'].phys_obj.body, self.world.element[self.name + '_rarm'].phys_obj.body)
@@ -101,8 +98,22 @@ class PlayerView(object):
         joint4.attach(self.world.element[self.name + '_torso'].phys_obj.body, self.world.element[self.name + '_rleg'].phys_obj.body)
         joint5.attach(self.world.element[self.name + '_torso'].phys_obj.body, self.world.element[self.name + '_head'].phys_obj.body)
 
-        
+        joint1.setAxis(0, 1, 0)
+        joint1.setAnchor(larm_joint_pos[0], larm_joint_pos[1], larm_joint_pos[2])
 
+        joint2.setAxis(0, 1, 0)
+        joint2.setAnchor(rarm_joint_pos[0], rarm_joint_pos[1], rarm_joint_pos[2])
+
+        joint3.setAxis(0, 1, 0)
+        joint3.setAnchor(lleg_joint_pos[0], lleg_joint_pos[1], lleg_joint_pos[2])
+
+        joint4.setAxis(0, 1, 0)
+        joint4.setAnchor(rleg_joint_pos[0], rleg_joint_pos[1], rleg_joint_pos[2])
+
+        joint5.setAxis(0, 0, 1)
+        joint5.setAnchor(*self.world.element[self.name + '_torso'].brick.coords)
+        
+        
     def _construct_gui(self):
 
         pass
