@@ -15,7 +15,7 @@ This file is part of The OpenBlox Game Engine.
     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-__author__="alexander"
+__author__="openblocks"
 __date__ ="$Aug 5, 2010 1:37:16 PM$"
 
 import obengine.cfg
@@ -129,7 +129,7 @@ def setup_physics():
 
     phys_world.initSurfaceTable(1)
     phys_world.setSurfaceEntry(0, 0, 150, 0.0, 9.1, 0.9, 0.00001, 0.0, 0.002)
-
+    
     rootwin.taskMgr.add(update_physics, 'update_physics')
 
 def get_rootwin():
@@ -162,7 +162,7 @@ def update_physics(task):
 
     get_phys_space().autoCollide()
 
-    phys_world.quickStep(1.0 / float(40))
+    phys_world.quickStep(1.0 / float(45))
 
     for obj in phys_objs:
 
