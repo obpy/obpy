@@ -1,0 +1,95 @@
+OpenBlox Coding Standard
+------------------------
+
+Indentation
+-----------
+
+Indentation is done with tabs.
+Each tab is 4 spaces long.
+
+Methods
+-------
+
+Methods are named like_this.
+
+Private methods begin with _.
+
+Methods are fully documented,
+which means basic behavior, and each parameter is explained, as well as the expected type.
+Documentation is written as a multi-line string, began and terminated with """.
+
+There is a space after every parameter's terminating , character.
+
+Example:
+
+def method do_x(a, b, c):
+    """
+    Prints a, the first element of b, and the second element of c,
+    all on a single line.
+    """
+
+    print a, b[0], c[1]
+
+Classes
+-------
+
+Classes are titled LikeThis.
+If the class does not inherit from anything in partictular, it needs to inherit from object(to ensure compatability with Python 2.6/2.5).
+
+Dc
+
+The first method defined is __init__.
+Every method that is not private is given documentation.
+Private methods can have doocumentation, but it's not required.
+
+There is also a blank line between the last line of a method, and the def line of the next one.
+
+Every class also has documentation, itself.
+Documentation, like methods, is written as a multi-line string, began and terminated with """.
+
+Examples:
+
+class ClassA(object):
+    """
+    ClassA is for XYZ.
+    Volatile - ClassA's interface might change in the future!
+    """
+
+    def __init__(self):
+
+        object.__init__(self)
+
+    def foo(self, a):
+        """
+        Prints a.
+        """
+
+        self._bar(a)
+
+    def _bar(self, a):
+
+        print a
+
+
+Modules
+-------
+
+Modules have this header, at their beginning:
+
+"""
+This file is part of The OpenBlox Game Engine.
+
+    The OpenBlox Game Engine is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    The OpenBlox Game Engine is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
+
+"""
