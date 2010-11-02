@@ -93,3 +93,5 @@ This file is part of The OpenBlox Game Engine.
     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 
 """
+
+Modules are named likethis.
