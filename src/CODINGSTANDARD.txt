@@ -5,7 +5,35 @@ Indentation
 -----------
 
 Indentation is done with tabs.
-Each tab is 4 spaces long.
+Each tab is the equivalent of 4 spaces, therefore, each tab is 4 spaces long.
+
+Variables
+---------
+
+Variables are named like_this.
+Variables are declared at the start of their owning module or class.
+There is a blank line between the last variable declaration, and the first coding construct, or method declaration(if the variable is global).
+
+Examples:
+
+foo_bar = 0
+eggs_n_spam = [ 0, 1, 2, 3, 4, 5]
+
+#method declaration here
+
+Coding Constructs
+-----------------
+
+All conditional and loop constructs are followed by a blank line, unless the following code is only one logical line.
+Examples:
+
+for x in range(2, 11):
+    #do something with x
+
+for x in range(1, 11):
+
+    #two lines,
+    # so there is a blank line below the for loop declaration
 
 Methods
 -------
@@ -19,6 +47,7 @@ which means basic behavior, and each parameter is explained, as well as the expe
 Documentation is written as a multi-line string, began and terminated with """.
 
 There is a space after every parameter's terminating , character.
+This also applies to method calls.
 
 Example:
 
@@ -35,8 +64,6 @@ Classes
 
 Classes are titled LikeThis.
 If the class does not inherit from anything in partictular, it needs to inherit from object(to ensure compatability with Python 2.6/2.5).
-
-Dc
 
 The first method defined is __init__.
 Every method that is not private is given documentation.
@@ -95,3 +122,4 @@ This file is part of The OpenBlox Game Engine.
 """
 
 Modules are named likethis.
+There is a blank line between the terminating """ of the header, and the first variable declaration.
