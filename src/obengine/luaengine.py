@@ -1,4 +1,6 @@
 """
+Copyright (C) 2010 The OpenBlox Project
+
 This file is part of The OpenBlox Game Engine.
 
     The OpenBlox Game Engine is free software: you can redistribute it and/or modify
@@ -22,14 +24,82 @@ import lupa
 import luautils
 
 from obengine.utils import error
+from obengine.attrdict import AttrDict
+
+# Default globals that lupa creates its lua runtime is created.
+# We don't want to expose these, so we make a list here
+
+default_globals = [
+
+'string',
+'xpcall',
+'package',
+'tostring',
+'gcinfo',
+'os',
+'unpack',
+'require',
+'getfenv',
+'setmetatable',
+'next',
+'assert',
+'tonumber',
+'io',
+'rawequal',
+'collectgarbage',
+'jit',
+'getmetatable',
+'module',
+'_G',
+'python',
+'bit',
+'math',
+'debug',
+'pcall',
+'table',
+'coroutine',
+'type',
+'_VERSION',
+'print',
+'select',
+'newproxy',
+'dofile',
+'rawget',
+'loadstring',
+'load',
+'rawset',
+'setfenv',
+'pairs',
+'ipairs',
+'error',
+'loadfile',
+
+]
 
 class ScriptEngine(object):
     """
-    OpenBlox's script engine class. Use this to run Lua scripts, by calling execute.
+    OpenBlox's powerful script engine class. Use this to run Lua scripts, by calling execute.
     You can also expose Python objects, by calling expose.
+
+    Also, this class has attributes(namely, method and var) that exposes all Lua methods and variables:
+    Example:
+
+    lua = ScriptEngine()
+
+    lua.execute('''
+    function hello()
+    print("Hello Python world!")
+    end
+    '''
+
+    lua.method.hello()
+
+    This should output:
+
+    Hello Python world!
     """
     
-    def __init__(self, filename, error_cb = None):
+    def __init__(self, filename = '<stdin>', error_cb = None):
         """
         If error_cb is None(i.e, not given), error messages are printed on stdout.
         """
@@ -45,6 +115,9 @@ class ScriptEngine(object):
         self.lua = lupa.LuaRuntime()
         self.filename = filename
 
+        self.var = AttrDict()
+        self.method = AttrDict()
+
     def eval(self, string):
         """
         Return the result of a Lua script.
@@ -54,6 +127,18 @@ class ScriptEngine(object):
         try:
 
             return self.lua.eval(string)
+
+            for key in self.lua.globals():
+
+                if key not in default_globals:
+
+                    if str(self.lua.globals()['type'](self.globals()[key])) != u'function':
+
+                        self.var[key] = self.globals()[key]
+
+                    elif str(self.lua.globals()['type'](self.globals()[key])) == u'function':
+
+                        self.method[key] = self.globals()[key]
 
         except Execption as exc:
 
@@ -68,6 +153,18 @@ class ScriptEngine(object):
         try:
 
             self.lua.execute(string)
+
+            for key in self.lua.globals():
+
+                if key not in default_globals:
+
+                    if str(self.lua.globals()['type'](self.globals()[key])) != u'function':
+
+                        self.var[key] = self.globals()[key]
+
+                    elif str(self.lua.globals()['type'](self.globals()[key])) == u'function':
+
+                        self.method[key] = self.globals()[key]
 
         except Exception as exc:
             
@@ -93,5 +190,5 @@ class ScriptEngine(object):
         error('Script error: Script ' + self.filename + ', error: ' + msg)
         
     def globals(self):
-
-        return lua.globals()
+        
+        return self.lua.globals()
