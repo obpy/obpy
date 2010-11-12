@@ -1,7 +1,19 @@
 __author__="alexander"
 __date__ ="$Aug 4, 2010 2:56:12 PM$"
 
+import os
+import glob
+
 from setuptools import setup, find_packages
+
+hdp = {'nt' : '~', 'posix' : '.'}
+home = os.environ['HOME']
+
+ob_dir = os.path.join(home, hdp[os.name] + 'openblox')
+data_dir = os.path.join(ob_dir, 'data')
+lua_dir = os.path.join(ob_dir, 'lualibs')
+
+data_files = glob.glob(os.path.join('data', '*'))
 
 setup (
   name = 'OpenBlox Game Engine',
@@ -9,7 +21,9 @@ setup (
 
   packages = find_packages(),
 
-  install_requires=[],
+  install_requires = ['pyttk', 'lupa'],
+
+  data_files = [(data_dir, data_files), (lua_dir, '')],
 
   author = 'The OpenBlox Team',
   author_email = 'openblocks@users.sourceforge.net',
@@ -22,8 +36,6 @@ setup (
 
   * Scripting, via Lua
   * Plugin development, with Python
-  * A complete RAD environment
   * A simple game distribution system
-  * Networking, so multiple people can play your game at a time
   """,
 )
