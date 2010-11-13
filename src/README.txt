@@ -1,6 +1,8 @@
 OpenBlox Game Engine Readme
 ---------------------------
 
+Version 0.5 stable
+
 Installing on Windows
 ---------------------
 
@@ -21,9 +23,8 @@ Installing on Linux
 System Requirements
 -------------------
 
+Panda3D(available from http://panda3d.org/download.php)
 Python 2.6
-Panda3D(available from http://panda3d.org)
-(If you want to use the Lua utilities, download Lunatic Python from http://labix.org/download/lunatic-python/lunatic-python-1.0.tar.bz2)
 
 Python 2.6 should be installable from your package manager; consult its manual on how to install it.
 You must install your distribution's respective package from http://panda3d.org/download.php .
@@ -44,9 +45,7 @@ System Requirements
 Python 2.6
 Panda3D(available from http://panda3d.org)
 
-(If you want to use the Lua utilities, download Lunatic Python from http://labix.org/download/lunatic-python/lunatic-python-1.0.tar.bz2)
-
-A DMG installer is for Panda3D is available from http://www.panda3d.org/download.php?platform=macosx&version=1.7.0&sdk .
+A DMG image is for Panda3D is available from http://www.panda3d.org/download.php?platform=macosx&version=1.7.0&sdk .
 Note that the OSX version of Panda3D requires the NVIDIA Cg Toolkit, which you can download at:
 
 http://developer.download.nvidia.com/cg/Cg_3.0/Cg-3.0_July2010.dmg
@@ -58,40 +57,41 @@ Now you can proceed to the 'Inital Setup' section...
 Inital Setup
 -----------------
 
-Create your OpenBlox configuration directory, by doing one of the following:
+Merely run installer.py as root(or Administrator). The installer will guide you step by step through the installation process.
 
-*   On Windows, run 'mkdir C:\Users\<your username>\~openblox'
-*   On Linux and OSX, run 'mkdir /home/<your username>/.openblox'
-
-Copy the 'data' directory (which is located where you extracted OpenBlox) to inside the OpenBlox configuration directory.
-
-The OpenBlox configuration directory should now have a folder called 'data' inside it.
-
-Now, proceed to the 'Testing' section...
+If the installer says the installation finished sucessfully, you can proceed to 'Testing'...
 
 Testing
 -----------------
 
-In the directory where you extracted OpenBlox, there should be a file called test.py; start it by either:
+Start the world launcher by running launchworldgui.py. A window should appear.
+Click 'Browse...'
+Select 'World.zip' from the file dialog.
 
-*   Double-clicking it
-*   Starting it from the terminal/command-line by typing 'python test.py'
+Press 'Open'.
+Press 'Load world'.
 
-A window should appear, showing a demo of OpenBlox's character avatar. You can control the camera with the following controls:
+The OpenBlox Game Engine should start up, and the camera should be pointing at your avatar.
+You can move with the following keys:
 
-*   Middle mouse button - rotating the camera
-*   Right mouse button  - moves the camera backwards and forwards; in conjunction with moving the mouse itself
-*   Left mouse button   - Pans the camera, in conjunction with moving the mouse
+Up arrow key: Move forward
+Down arrow key: Move forward
+Left arrow key: Rotate left
+Right arrow key: Rotate right
+Space: Jump
 
 FAQ
 -----------------
 
-Help! I cannot find the OpenBlox configuration directory, although I created it!
+The installer finished with an error!
 
-    You must be able to view hidden files and folders; to turn this on, press Cntrl+H on Linux.
+    The most likely reason is you didn't have an internet connection.
+    OpenBlox depends upon a few third-party libraries to run.
 
-    On Windows, perform the following:
+The world launcher opens, and I can select a game, but the actual game never shows up!
 
-       * Select 'Tools' -> 'Folder Options'
-       * Press the 'View' tab
-       * Under 'Hidden Files and Folders', press 'Show hidden files and folders'
+    You do not have Panda3D installed. See one of the above sections on how to install it.
+
+Nothing runs!
+
+    Python isn't installed. Again, see one if the above sections on how to install it.
