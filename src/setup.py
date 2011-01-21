@@ -25,7 +25,7 @@ except:
         retval = os.system('sh tpapps/setuptools-0.6c11-py2.6.egg')
 
     else:
-        retval = os.system('tpapps/setuptools-0.6c11.win32-py2.6.exe')
+        retval = os.system('tpapps\setuptools-0.6c11.win32-py2.6.exe')
 
     if retval == 0:
 
@@ -37,7 +37,7 @@ except:
             sys.exit(os.system('python setup.py install'))
 
         else:
-            sys.exit(os.system('python.exe setup.py install'))
+            sys.exit(os.system('C:\Python26\python.exe setup.py install'))
 
     else:
         tkMessageBox.showinfo('setuptools Installer', '''
@@ -74,7 +74,8 @@ setup(
 
   packages = find_packages(),
 
-  install_requires = ['pyttk', 'lupa'],
+  install_requires = ['pyttk'],
+  scripts = glob.glob('tools/*.py'),
 
   data_files = [(data_dir, data_files), (lua_dir, '')],
 
@@ -94,5 +95,4 @@ setup(
 )
 
 if 'install' in sys.argv:
-
     postinstall()
