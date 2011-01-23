@@ -21,9 +21,8 @@ __author__="openblocks"
 __date__ ="$Jul 14, 2010 12:19:08 AM$"
 
 import lupa
-import luautils
 
-from obengine.utils import error
+from obengine.utils import error, wrap_callable
 from obengine.attrdict import AttrDict
 
 # Default globals that lupa creates its lua runtime is created.
@@ -97,6 +96,23 @@ class ScriptEngine(object):
     This should output:
 
     Hello Python world!
+
+    NEW IN 0.5:
+    You can set Lua variables and methods outside of the runtime, like this:
+
+    lua = ScriptEngine()
+
+    lua.execute('a = 1')
+    lua.execute('print(a)')
+
+    lua.var.a = 10
+
+    lua.execute('print(a)')
+
+    This should output:
+
+    1
+    10
     """
     
     def __init__(self, filename = '<stdin>', error_cb = None):
@@ -105,18 +121,24 @@ class ScriptEngine(object):
         """
 
         if error_cb:
-
             self.error_cb = error_cb
 
         else:
-
             self.error_cb = self.default_error_cb
 
+        # Create the Lua runtime
         self.lua = lupa.LuaRuntime()
+
+        # Save our filename
         self.filename = filename
 
+        # Create the AttrDicts that will keep track of our variables and methods
         self.var = AttrDict()
         self.method = AttrDict()
+
+        # We have to bypass AttrDict's custom __setattr__ and __getattr__
+        object.__setattr__(self.var, '__setitem__', wrap_callable(getattr(self.var,'__setitem__'), self._before_globals_update, self._after_globals_update))
+        object.__setattr__(self.method, '__setitem__', wrap_callable(getattr(self.method,'__setitem__'), self._before_globals_update, self._after_globals_update))
 
     def eval(self, string):
         """
@@ -126,22 +148,25 @@ class ScriptEngine(object):
 
         try:
 
+            # Evaluate the given string
             return self.lua.eval(string)
 
+            # Update our var and method dicts
             for key in self.lua.globals():
 
+                # Do we not have this key?
                 if key not in default_globals:
 
+                    # Is this a variable?
                     if str(self.lua.globals()['type'](self.globals()[key])) != u'function':
-
                         self.var[key] = self.globals()[key]
 
+                    # No, so I guess it's a function
                     elif str(self.lua.globals()['type'](self.globals()[key])) == u'function':
-
                         self.method[key] = self.globals()[key]
 
-        except Execption as exc:
-
+        # Houston, we have a problem...
+        except Exception as exc:
             self.error_cb(exc.message)
 
     def execute(self, string):
@@ -159,15 +184,12 @@ class ScriptEngine(object):
                 if key not in default_globals:
 
                     if str(self.lua.globals()['type'](self.globals()[key])) != u'function':
-
                         self.var[key] = self.globals()[key]
 
                     elif str(self.lua.globals()['type'](self.globals()[key])) == u'function':
-
                         self.method[key] = self.globals()[key]
 
         except Exception as exc:
-            
             self.error_cb(exc.message)
 
     def expose(self, obj):
@@ -186,9 +208,12 @@ class ScriptEngine(object):
             self.lua.globals()[obj.__class__.__name__] = obj
 
     def default_error_cb(self, msg):
-
         error('Script error: Script ' + self.filename + ', error: ' + msg)
-        
+
     def globals(self):
-        
         return self.lua.globals()
+
+    def _before_globals_update(self, *args, **kwargs): pass
+
+    def _after_globals_update(self, item, value):
+        self.globals()[item] = value

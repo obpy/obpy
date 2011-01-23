@@ -17,18 +17,6 @@ This file is part of The OpenBlox Game Engine.
     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 
 """
+
 __author__="openblocks"
-__date__ ="$Aug 5, 2010 3:26:05 PM$"
-
-from direct.showbase.ShowBase import ShowBase
-
-class Window3D(object, ShowBase):
-
-    def __init__(self):
-
-        ShowBase.__init__(self)
-
-    def connect_on_update(self, func):
-
-        self.taskMgr.add(func, func.__name__)
-
+__date__ ="$Jan 23, 2011 8:08:45 AM$"

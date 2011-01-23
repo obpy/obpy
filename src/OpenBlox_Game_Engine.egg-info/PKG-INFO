@@ -1,7 +1,7 @@
 Metadata-Version: 1.0
 Name: OpenBlox-Game-Engine
 Version: 0.1
-Summary: UNKNOWN
+Summary: Powerful yet simple 3D development framework
 Home-page: http://openblox.sourceforge.net
 Author: The OpenBlox Team
 Author-email: openblocks@users.sourceforge.net
@@ -11,8 +11,6 @@ Description:
         
           * Scripting, via Lua
           * Plugin development, with Python
-          * A complete RAD environment
           * A simple game distribution system
-          * Networking, so multiple people can play your game at a time
           
 Platform: UNKNOWN

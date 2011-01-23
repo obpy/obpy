@@ -17,13 +17,10 @@ This file is part of The OpenBlox Game Engine.
     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-import obengine.cfg
-import obengine
 __author__="openblocks"
 __date__ ="$Oct 25, 2010 9:57:22 PM$"
 
 import copy
-import time
 
 from direct.gui.DirectGui import *
 from pandac.PandaModules import *
@@ -31,7 +28,7 @@ from pandac.PandaModules import *
 import obengine.gfx
 import obengine.player
 import obengine.utils
-import obengine.element
+import obengine.elementfactory
 
 class PlayerController(object):
 
@@ -106,7 +103,7 @@ class PlayerView(object):
 
     def _construct_avatar(self, pos = [0, 0, 0]):
 
-        factory = obengine.element.ElementFactory()
+        factory = obengine.elementfactory.ElementFactory()
 
         self.world.add_element(factory.make('brick', self.name + '_torso', pos, [0, 0, 128, 255], [2, 4, 2]))
         self.world.add_element(factory.make('brick', self.name + '_head', [pos[0], pos[1], pos[2] + 3], [238, 238, 0, 255], [2, 2, 1]))
@@ -127,11 +124,11 @@ class PlayerView(object):
             rarm_joint_pos.append(self.world.element[self.name + '_torso'].brick.coords[index])
             rleg_joint_pos.append(self.world.element[self.name + '_torso'].brick.coords[index])
 
-        joint1 = OdeHingeJoint(obengine.gfx.get_phys_world())
-        joint2 = OdeHingeJoint(obengine.gfx.get_phys_world())
-        joint3 = OdeHingeJoint(obengine.gfx.get_phys_world())
-        joint4 = OdeHingeJoint(obengine.gfx.get_phys_world())
-        joint5 = OdeHingeJoint(obengine.gfx.get_phys_world())
+        joint1 = OdeHingeJoint(obengine.phys.get_phys_world())
+        joint2 = OdeHingeJoint(obengine.phys.get_phys_world())
+        joint3 = OdeHingeJoint(obengine.phys.get_phys_world())
+        joint4 = OdeHingeJoint(obengine.phys.get_phys_world())
+        joint5 = OdeHingeJoint(obengine.phys.get_phys_world())
 
         joint1.attach(self.world.element[self.name + '_torso'].phys_obj.body, self.world.element[self.name + '_larm'].phys_obj.body)
         joint2.attach(self.world.element[self.name + '_torso'].phys_obj.body, self.world.element[self.name + '_rarm'].phys_obj.body)

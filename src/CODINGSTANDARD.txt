@@ -7,6 +7,29 @@ Indentation
 Indentation is done with tabs.
 Each tab is the equivalent of 4 spaces, therefore, each tab is 4 spaces long.
 
+Comments
+--------
+
+Regular comments(beginning with #) have a space after the hash, # like this.
+
+If the comment is for a conditional construct, the comment is placed immediately proceeding the construct.
+If the comment is for an assignment or a regular line of code(method call, class creation, etc...), the comment is placed immediately proceeding the code.
+If the comment needs to span more than one line, triple double quotes are used instead,
+"""
+like this.
+"""
+
+Examples:
+
+# Set a
+a = 1
+
+"""
+complicated_method is complex,
+so we need several lines
+"""
+complicated_method(f, o, o, b, a, r, s, p, a, m, e, g, g, s)
+
 Variables
 ---------
 
@@ -25,6 +48,7 @@ Coding Constructs
 -----------------
 
 All conditional and loop constructs are followed by a blank line, unless the following code is only one logical line.
+If the following logical line is a construct as well, the construct is followed by a blank line.
 Examples:
 
 for x in range(2, 11):

@@ -1,4 +1,6 @@
 """
+Copyright (C) 2010 The OpenBlox Project
+
 This file is part of The OpenBlox Game Engine.
 
     The OpenBlox Game Engine is free software: you can redistribute it and/or modify
@@ -33,43 +35,6 @@ class Element(object):
     def on_add(self, world): pass
 
     def on_remove(self): pass
-
-class ElementFactory(object):
-
-    elements = [ 'brick', 'skybox', 'script' ]
-
-    def make(self, name, *args):
-        
-        if name in self.elements:
-            
-            return getattr(self, 'make_' + name)(*args)
-
-    def make_brick(self, name, coords, rgb, size = [2, 4, 1], hpr = [0, 0, 0], hidden = False, anchored = False):
-        
-        from obengine.gfx import get_rootwin
-        from obengine.gfx.element3d import BrickPresenter
-        from obengine.cfg import cfgdir
-
-        model = BrickElement(name, coords, rgb, size, hpr)
-        view = get_rootwin().loader.loadModel(cfgdir + '/data/brick.egg')
-        presenter = BrickPresenter(model, view, hidden, anchored)
-        
-        return presenter
-    
-    def make_skybox(self, texture = None):
-
-        from obengine.gfx.element3d import SkyboxElement
-        
-        element = SkyboxElement(texture)
-        
-        return element
-
-    def make_script(self, name, code, filename = None):
-        
-        element = ScriptElement(name, filename, code)
-
-        return element
-
 
 class BrickElement(Element):
     
@@ -106,40 +71,3 @@ class BrickElement(Element):
         self.rgb[1] = g
         self.rgb[2] = b
         self.rgb[3] = a
-
-class ScriptElement(Element):
-
-    def __init__(self, name, filename = None, code = None):
-
-        Element.__init__(self, name)
-
-        if filename != None:
-
-            self.code = open(filename, 'r').read()
-
-        else:
-
-            self.code = code
-
-    def on_add(self, world):
-
-        from thread import start_new_thread
-
-        self.world = world
-
-        start_new_thread(self.run, ())
-
-
-    def run(self):
-
-        import obengine.luaengine as luaeng
-
-        self.script_engine = luaeng.ScriptEngine(self.name)
-
-        self.script_engine.expose(self.world)
-        self.script_engine.expose(self)
-        self.script_engine.execute(self.code)
-
-    def __tolua__(self):
-
-        return 'Script'

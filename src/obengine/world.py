@@ -1,4 +1,6 @@
 """
+Copyright (C) 2010 The OpenBlox Project
+
 This file is part of The OpenBlox Game Engine.
 
     The OpenBlox Game Engine is free software: you can redistribute it and/or modify

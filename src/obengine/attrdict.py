@@ -1,4 +1,6 @@
 """
+Copyright (C) 2010 The OpenBlox Project
+
 This file is part of The OpenBlox Game Engine.
 
     The OpenBlox Game Engine is free software: you can redistribute it and/or modify
@@ -35,30 +37,34 @@ class AttrDict(dict):
     Test1
     Test2
     Test2
+
+    NEW IN 0.5:
+
+    You can also initalize AttrDict like a regular dict:
+
+    a = AttrDict(a = 1, b = 2, c = 3)
+    print a.a, a.b, a.c
+
+    This should output:
+
+    1 2 3
     """
 
-    def __init__(self):
-
-        indict = {}
-
-        dict.__init__(self, indict)
+    def __init__(self, **kwargs):
+        dict.__init__(self, **kwargs)
 
     def __getattr__(self, item):
 
         try:
-
             return self.__getitem__(item)
 
         except:
-
             raise AttributeError(item)
 
     def __setattr__(self, item, value):
 
         if self.__dict__.has_key(item):
-
             dict.__setattr__(self, item, value)
 
         else:
-
             self.__setitem__(item, value)

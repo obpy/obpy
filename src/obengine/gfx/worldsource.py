@@ -1,4 +1,6 @@
 """
+Copyright (C) 2010 The OpenBlox Project
+
 This file is part of The OpenBlox Game Engine.
 
     The OpenBlox Game Engine is free software: you can redistribute it and/or modify
@@ -18,14 +20,8 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Aug 9, 2010 10:43:40 PM$"
 
-from obengine.element import ElementFactory
-from obengine.cfg import cfgdir
-from obengine.gfx import get_rootwin
-
+from obengine.elementfactory import ElementFactory
 import xml.etree.ElementTree as xmlparser
-from os.path import exists
-
-from pandac.PandaModules import PandaNode, NodePath, CompassEffect
 
 class WorldSource(list):
 
@@ -114,7 +110,6 @@ class WorldSource(list):
         for child in rootnode:
 
             if child.tag in supported_tags:
-
                 getattr(self, supported_tags[child.tag])(child)
 
 class FileWorldSource(WorldSource):

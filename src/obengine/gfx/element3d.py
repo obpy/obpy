@@ -18,14 +18,12 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Aug 9, 2010 11:04:13 PM$"
 
-from obengine.element import *
-from obengine.cfg import cfgdir
-from obengine.gfx import get_rootwin
+import obengine.element
+import obengine.cfg
+import obengine.gfx
+import obengine.phys
 
-from obengine.phys import PhysicalObject
-
-from pandac.PandaModules import CompassEffect, TransparencyAttrib
-from direct.task import Task
+from pandac.PandaModules import CompassEffect, TransparencyAttrib, Filename
 
 class BrickPresenter(object):
     
@@ -48,7 +46,7 @@ class BrickPresenter(object):
         self.set_size(self.brick.size[0], self.brick.size[1], self.brick.size[2])
         self.set_hpr(self.brick.hpr[0], self.brick.hpr[1], self.brick.hpr[2])
 
-        self.phys_obj = PhysicalObject(self.view, self.brick.size, anchored)
+        self.phys_obj = obengine.phys.PhysicalObject(self, self.brick.size, anchored)
         self.view.setTransparency(TransparencyAttrib.MAlpha)
 
     def hide(self):
@@ -59,14 +57,14 @@ class BrickPresenter(object):
     def show(self):
 
         self.hidden = False
-        self.view.reparentTo(get_rootwin().render)
+        self.view.reparentTo(obengine.gfx.get_rootwin().render)
 
     def set_size(self, x, y, z):
 
         self.brick.set_size(x, y, z)
         self.view.setScale(float(x) / 2, float(y) / 4, float(z))
 
-    def set_hpr(self, h, p, r):
+    def set_hpr(self, h, p, r, update_phys = True):
 
         self.brick.set_hpr(h, p, r)
         self.view.setHpr(h, p, r)
@@ -99,19 +97,19 @@ class BrickPresenter(object):
 
         self.hide()
         
-class SkyboxElement(Element):
+class SkyboxElement(obengine.element.Element):
 
     def __init__(self, texture = None):
 
-        Element.__init__(self, 'Skybox')
+        obengine.element.Element.__init__(self, 'Skybox')
 
-        self.sky = get_rootwin().loader.loadModel(cfgdir + '/data/sky.egg.pz')
-        self.sky.reparentTo(get_rootwin().camera)
-        self.sky.setEffect(CompassEffect.make(get_rootwin().render))
+        self.sky = obengine.gfx.get_rootwin().loader.loadModel(Filename.fromOsSpecific(obengine.cfg.get_config_var('cfgdir') + '/data/sky.egg.pz'))
+        self.sky.reparentTo(obengine.gfx.get_rootwin().camera)
+        self.sky.setEffect(CompassEffect.make(obengine.gfx.get_rootwin().render))
         self.sky.setScale(5000)
         self.sky.setShaderOff()
         self.sky.setLightOff()
 
         if texture:
 
-            self.sky.setTexture(get_rootwin().loader.loadTexture(texture))
+            self.sky.setTexture(obengine.gfx.get_rootwin().loader.loadTexture(texture))
