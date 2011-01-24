@@ -77,7 +77,16 @@ and post on the forums, under "Troubleshooting".
 Testing
 -----------------
 
-Start the world launcher by running oblaunch.py(it's found in the "tools" subdirectory. Also, you can launch it by typing "oblaunch.py", without quotes, from the command line).
+Windows
+-------
+
+Double-click the file startlauncher.bat.
+
+Other
+-------
+
+Double-click the file startlauncher.sh
+
 A window should appear.
 Click 'Browse...'
 Select 'World.zip' from the file dialog.
