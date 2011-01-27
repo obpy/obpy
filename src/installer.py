@@ -85,7 +85,7 @@ def run_install():
             elif os.name == 'nt':
 
                 # Again, create and set
-                p = subprocess.Popen(shlex.split('C:\Python26\python.exe setup.py install'), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, posix=False)
+                p = subprocess.Popen(shlex.split('C:\\Python26\\python.exe setup.py install'), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
                 set_pipe(p)
 
