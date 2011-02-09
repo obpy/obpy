@@ -41,19 +41,15 @@ def init():
     logging.basicConfig(level = loglevels.get(level, logging.NOTSET), filename = os.path.join(obengine.cfg.get_config_var('cfgdir'), logfile))
 
 def info(string):
-
     logging.info(time.ctime() + ': ' + string)
 
 def warn(string):
-
     logging.warn(time.ctime() + ': ' + string)
 
 def error(string):
-
     logging.error(time.ctime() + ': ' + string)
 
 def critical(string):
-
     logging.critical(time.ctime() + ': ' + string)
 
 def wrap_callable(method, before, after):

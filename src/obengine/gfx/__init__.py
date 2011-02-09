@@ -31,8 +31,9 @@ from direct.gui.OnscreenImage import OnscreenImage
 from direct.gui.OnscreenText import OnscreenText
 from direct.stdpy.thread import start_new_thread
 from direct.task import Task
+from direct.interval.IntervalGlobal import *
 
-from pandac.PandaModules import TransparencyAttrib, Vec4, CompassEffect, ClockObject
+from pandac.PandaModules import TransparencyAttrib, Vec4, Vec3, CompassEffect, ClockObject
 from panda3d.core import AmbientLight, DirectionalLight
 from panda3d.core import loadPrcFileData
 
@@ -58,7 +59,6 @@ def progress_update(task):
     # Are we still loading?
 
     if not loaded:
-
          return Task.again
 
     else:
@@ -83,20 +83,32 @@ def setup_lights():
 
     # Create some lights
 
-    ambient_light = AmbientLight("ambientLight")
-    ambient_light.setColor(Vec4(.3, .3, .3, 1))
+    ambient_light = AmbientLight("Ambientlight")
+    ambient_light.setColor(Vec4(0.2, 0.2, 0.2, 1))
 
-    directional_light = DirectionalLight("directionalLight")
-    directional_light.setColor(Vec4(1, 1, 1, 1))
-    directional_light.setSpecularColor(Vec4(1, 1, 1, 1))
+    # Add a sun
 
-    dlnode = rootwin.render.attachNewNode(directional_light)
-    dlnode.lookAt(0,0,0)
+    sunlight = DirectionalLight("Sunlight")
+    sunlight.setColor(Vec4(0.8, 0.8, 0.8, 1))
+
+    sunnode = rootwin.render.attachNewNode(sunlight)
+    sunnode.setHpr(0, 0, 0)
+
+    # Make 1 "day" last 15 minutes :)
+
+    suninterval = sunnode.hprInterval(60.0 * 15.0, Vec3(0, 360, 0))
+    sunseq = Sequence(suninterval)
+
+    # Turn on the lights
 
     rootwin.render.setLight(rootwin.render.attachNewNode(ambient_light))
-    rootwin.render.setLight(dlnode)
+    rootwin.render.setLight(sunnode)
 
     rootwin.render.setShaderAuto()
+
+    sunseq.loop()
+
+    rootwin.setBackgroundColor(1, 1, 1, 1)
 
 def setup_load():
 
@@ -105,7 +117,7 @@ def setup_load():
 
     load_text = OnscreenText(text = 'Loading..', pos = (0.7, -0.7))
     
-    logo = OnscreenImage(obengine.cfg.get_config_var('cfgdir') + os.sep + 'data' + os.sep +'oblogo.png', pos = (0, 0, 0))
+    logo = OnscreenImage(os.path.join(obengine.cfg.get_config_var('cfgdir'), 'data', 'oblogo.png'), pos = (0, 0, 0))
     logo.setTransparency(TransparencyAttrib.MAlpha)
 
 def get_rootwin():
@@ -136,7 +148,7 @@ def run(main_method):
     global_clock.setFrameRate(obengine.cfg.get_config_var('fps'))
     
     rootwin = window3d.Window3D()
-    
+
     setup_load()
     setup_lights()
 

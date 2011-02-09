@@ -19,7 +19,3 @@ This file is part of The OpenBlox Game Engine.
 """
 __author__="openblocks"
 __date__ ="$Jul 12, 2010 7:59:47 PM$"
-
-import sys
-import os
-import modulefinder

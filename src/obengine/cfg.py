@@ -26,9 +26,6 @@ import sys
 
 import ConfigParser
 
-import tkMessageBox
-
-import obengine.utils
 
 config_vars = {}
 
@@ -36,95 +33,31 @@ def init():
 
     global config_vars
 
-    obengine.utils.info('Initializing configuration subsystem')
+    defaults = {'loglevel' : 'debug', 'logfile' : 'oblog.txt', 'viewmode' : 'third-person', 'fps' : 50.0, 'physxfps' : 45.0}
 
-    basedir = os.getenv('OPENBLOX_DIR')
+    basedir = os.getcwd()
 
-    if basedir == None:
-
-        obengine.utils.info('Couldn\'t find environment variable, looking inside %s' % os.getenv('HOME'))
-
-        if os.name == 'nt':
-
-            obengine.utils.info('On a Windows system, hidden directory character is ~')
-
-            if os.getenv('HOME') != None:
-                basedir = os.getenv('HOME') + '\\~openblox\\'
-
-            else:
-                basedir = os.getenv('HOMEPATH') + '\\~openblox\\'
-
-            if basedir == None:
-
-                obengine.utils.critical('Couldn\'nt find configuration directory!')
-
-                tkMessageBox.showerror('OGE Configuration', """
-                Could not find OpenBlox Game Engine configuration directory!
-                """)
-                sys.exit(1)
-
-        elif os.name == 'posix':
-
-            obengine.utils.info('On a POSIX system, hidden directory character is .')
-
-            basedir = os.getenv('HOME') + '/.openblox/'
-
-            if basedir == None:
-
-                obengine.utils.critical('Couldn\'nt find configuration directory!')
-
-                tkMessageBox.showerror('OGE Configuration', """
-                Could not find OpenBlox Game Engine configuration directory!
-                """)
-
-                sys.exit(1)
-
-    if not os.path.exists(basedir):
-
-        obengine.utils.critical('The configuration directory doesn\'t exist!')
-
-        tkMessageBox.showerror('OGE Configuration', """
-                Could not find OpenBlox Game Engine configuration directory!
-                This could be because of an improper OpenBlox installation.
-                Try installing OpenBlox again. If you have further problems, go to:
-
-                http://openblox.sf.net
-
-                and register for an account, and then post in the forums, under "Game Engine Troubleshooting."
-                """)
-
-        sys.exit(1)
-
-    cfgparser = ConfigParser.SafeConfigParser(
-    {
-    'loglevel' : 'debug',
-    'logfile' : 'oblog.txt',
-    'viewmode' : 'third-person'
-    }
-    )
+    cfgparser = ConfigParser.ConfigParser()
 
     lualibdir = os.path.join(basedir, 'lualibs')
     datadir = os.path.join(basedir, 'data')
-
-    obengine.utils.info('Reading configuration variables...')
 
     cfgparser.read(os.path.join(basedir, 'obconf.cfg'))
 
     add_config_var('cfgdir', basedir)
     add_config_var('lualibdir', lualibdir)
     add_config_var('datadir', datadir)
-    add_config_var('loglevel', cfgparser.get('required', 'loglevel'))
-    add_config_var('logfile', cfgparser.get('required', 'logfile'))
-    add_config_var('fps', cfgparser.getint('required', 'fps'))
+    add_config_var('loglevel', cfgparser.has_section('optional') and cfgparser.get('optional', 'loglevel') or defaults['loglevel'])
+    add_config_var('logfile', cfgparser.has_section('optional') and cfgparser.get('optional', 'logfile') or defaults['logfile'])
+    add_config_var('viewmode', cfgparser.has_section('optional') and cfgparser.get('optional', 'viewmode') or defaults['viewmode'])
 
-    add_config_var('viewmode', cfgparser.get('optional', 'viewmode'))
+    add_config_var('fps', cfgparser.has_section('required') and cfgparser.getfloat('required', 'fps') or (defaults['fps']))
+    add_config_var('physxfps', cfgparser.has_section('required') and cfgparser.getfloat('required', 'physxfps') or defaults['physxfps'])
 
     if cfgparser.has_section('optional'):
 
         for key, value in cfgparser.items('optional'):
             add_config_var(key, value)
-
-    obengine.utils.info('Configuration subsystem initialization finished!')
 
 def add_config_var(key, value):
 
@@ -137,18 +70,3 @@ def get_config_var(key):
     global config_vars
 
     return config_vars[key]
-
-def __getattr__(key):
-
-    global config_vars
-
-    if key in config_vars:
-
-        raise DeprecationWarning, 'Attribute configuration variables is slated for removal\na later OpenBlox version'
-        return key
-
-    elif key in globals():
-
-        return globals()[key]
-
-    raise AttributeError, key

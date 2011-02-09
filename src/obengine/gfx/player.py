@@ -24,6 +24,7 @@ import copy
 
 from direct.gui.DirectGui import *
 from pandac.PandaModules import *
+from direct.gui.OnscreenText import OnscreenText
 
 import obengine.gfx
 import obengine.player
@@ -165,7 +166,9 @@ class PlayerView(object):
         self.rleg_joint = joint4
 
     def _construct_gui(self):
-        
+
+        name_text = OnscreenText(text = 'you are ' + self.name, scale = (0.06, 0.06), pos = (0, 0.95, 1), bg = (0, 0, 0, 0.5), fg = (1, 1, 1, 0.9))
+
         obengine.gfx.get_rootwin().disableMouse()
         obengine.gfx.get_rootwin().taskMgr.add(self._update_camera, self.name + '_update', priority = 1)
 

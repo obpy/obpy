@@ -37,6 +37,7 @@ class ElementFactory(object):
         from pandac.PandaModules import Filename
 
         model = BrickElement(name, coords, rgb, size, hpr)
+
         view = obengine.gfx.get_rootwin().loader.loadModel(Filename.fromOsSpecific(get_config_var('cfgdir') + '/data/brick.egg'))
         presenter = obengine.gfx.element3d.BrickPresenter(model, view, hidden, anchored)
 

@@ -18,7 +18,7 @@ This file is part of The OpenBlox Game Engine.
 
 """
 
-__author__="alexander"
+__author__="openblocks"
 __date__ ="$Sep 9, 2010 4:12:59 PM$"
 
 import obengine.gfx
@@ -127,7 +127,7 @@ def update_physics(task):
 
     get_phys_space().autoCollide()
 
-    phys_world.quickStep(1.0 / (obengine.cfg.get_config_var('fps')))
+    phys_world.quickStep(1.0 / (obengine.cfg.get_config_var('physxfps')))
 
     for obj in phys_objs:
 

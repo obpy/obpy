@@ -1,24 +1,15 @@
 OpenBlox Game Engine Readme
 ---------------------------
 
-Version 0.5 stable, revision 2
-
-ALWAYS refer to this readme, instead of the your OpenBlox download archive's readme, as this is more up to date!
+Version 0.6 (bugfix release)
 
 Installing on Windows
 ---------------------
 
-System Requirements
--------------------
-
-* Panda3D(Available from http://panda3d.org/download.php)
-* Python 2.6(http://python.org)
-* Lua 5.0 or 5.1 (http://code.google.com/p/luaforwindows/downloads/detail?name=LuaForWindows_v5.1.4-40.exe&can=2&q=)
-
-First download and install Python 2.6.
-You must then download and install Panda3D from the given link.
-
-Now, proceed to the 'Inital Setup' section...
+(You'll need an Internet connection to run the Windows installer.
+Note that it may take around 10 minutes to for the installer to download the required libraries.)
+Merely run the given Windows installer; you may be using it to view this README!
+If that's the case, proceed to the "Testing" section.
 
 Installing on Linux
 -------------------
@@ -26,22 +17,13 @@ Installing on Linux
 System Requirements
 -------------------
 
-* Panda3D(available from http://panda3d.org/download.php)
+* Panda3D(available from http://panda3d.org/download.php, currently, you must download the SDK ("Panda3D SDK for Developers"), not "Panda3D Runtime for End-Users").
 * Python 2.6
-* Lua 5.0 or 5.1
-* GCC (this may already be installed on your system)
+* wxPython (optional; install only if you want the GUI)
 
 Python 2.6 should be installable from your package manager; consult its manual on how to install it.
-Lua should also be installable from your package manager.
-You must install your distribution's respective Panda3D package from http://panda3d.org/download.php .
 
-Continue to the 'Inital Setup' section...
-
-Compiling Requirements
-----------------------
-
-OpenBlox is written in Python, and therefore does not need to be compiled.
-Just in case you didn't know...
+If you're viewing this from the installer, install the above software; otherwise, install the above software and then run the installer.
 
 Installing on Mac OSX
 ---------------------
@@ -49,30 +31,39 @@ Installing on Mac OSX
 System Requirements
 -------------------
 
-Python 2.6
-Panda3D(available from http://panda3d.org)
-Lua 5.0 or 5.1
+* Python 2.6
+* Panda3D
+* wxPython (optional; install only if you want the GUI)
+* LuaJIT 2 beta 4
+* Lupa 0.18
 
-A DMG image is for Panda3D is available from http://www.panda3d.org/download.php?platform=macosx&version=1.7.0&sdk .
+A DMG image for Panda3D is available from http://www.panda3d.org/download.php?platform=macosx&version=1.7.0&sdk .
 Note that the OSX version of Panda3D requires the NVIDIA Cg Toolkit, which you can download at:
 
-http://developer.download.nvidia.com/cg/Cg_3.0/Cg-3.0_July2010.dmg
+    http://developer.download.nvidia.com/cg/Cg_3.0/Cg-3.0_July2010.dmg
 
-Python may already be installed on your system, if not, go to http://python.org.
-Get the Lua DMG from http://www.frykholm.se/files/luaframework_502.dmg and put it in your Library folder to install Lua.
+A wxPython DMG is downloadable at:
 
-Now you can proceed to the 'Inital Setup' section...
+    http://downloads.sourceforge.net/wxpython/wxPython2.8-osx-unicode-2.8.11.0-universal-py2.6.dmg
 
-Inital Setup
------------------
+Just run the wxPython installer inside the DMG image.
 
-Merely run installer.py as root(or Administrator), or with administrator permissions. The installer will guide you step by step through the installation process.
+Lupa is downloadable from http://pypi.python.org/packages/source/l/lupa/lupa-0.18.tar.gz#md5=331237744561d41a1a659e514893d938 .
 
-If the installer says the installation finished sucessfully, you can proceed to 'Testing'... Otherwise, make an account at:
+(Note: Lupa/Lua is a C application, and thus needs to be compiled. No pre-compiled binaries are yet availiable, otherwise this step would be unnecessary.
+If you like, email the OpenBlox administrator at openblocks@users.sourceforge.net with the attached OSX binaries of Lupa, so others won't have to go through this step.)
+To compile Lupa:
 
-http://openblox.sourceforge.net
+* Download LuaJIT (at http://luajit.org/download/LuaJIT-2.0.0-beta4.tar.gz)
+* Untar the LuaJIT folder inside the Lupa directory
+* Open a Terminal, and change directories to the LuaJIT folder
+* Type "make" (without quotes)
+* Type "cd .." (again, without quotes)
+* Type "make" again
+* Copy the build/lib.xxxxx-xxxx-2.6/lupa directory to the obengine/scripting/lupa directory inside your OpenBlox download archive.
 
-and post on the forums, under "Troubleshooting".
+
+Now you can proceed to the 'Testing' section...
 
 Testing
 -----------------
@@ -80,21 +71,56 @@ Testing
 Windows
 -------
 
-Double-click the file startlauncher.bat.
+Open OpenBlox from your Start Menu (All Programs > The OpenBlox Game Engine > OpenBloxGE).
+Select the test world (World).
+Press "Play game."
 
-Other
+See the "Playing" section for more information.
+
+Linux
 -------
 
-Double-click the file startlauncher.sh
+GUI
+-------
 
-A window should appear.
-Click 'Browse...'
-Select 'World.zip' from the file dialog.
+Open OpenBlox from your desktop, or applications menu (the location varies across distributions).
+Select the test world (World).
+Press "Play game."
 
-Press 'Open'.
-Press 'Load world'.
+See the "Playing" section for more information.
 
-The OpenBlox Game Engine should start up, and the camera should be pointing at your avatar.
+Command-line UI (if you didn't install wxPython)
+------------------------------------------------
+
+Open up a terminal, and type "cd ~/The OpenBlox Game Engine" (without quotes).
+Next, type "python oblaunch.py World" (again, without quotes).
+
+See the "Playing" section for more information.
+
+Mac OSX
+--------
+
+GUI
+--------
+
+Open the directory where you extracted OpenBlox.
+Double-click oblaunchgui.py (If this step doesn't work, open up a terminal, change directories, and type "python oblaunchgui.py", without quotes ).
+Select the test world (World).
+Press "Play game."
+
+See the "Playing" section for more information.
+
+Command-line UI (if you didn't install wxPython)
+------------------------------------------------
+
+Open up a terminal, and change directories to where you extracted OpenBlox
+Next, type "python oblaunch.py World" (again, without quotes).
+
+See the "Playing" section for more information.
+
+Playing
+--------
+
 You can move with the following keys:
 
 Up arrow key: Move forward
@@ -108,11 +134,6 @@ Space: Jump
 FAQ
 -----------------
 
-The installer finished with an error!
-
-    The most likely reason is you didn't have an internet connection.
-    OpenBlox depends upon a few third-party libraries to run, besides Panda3D.
-
 The world launcher opens, and I can select a game, but the actual game never shows up!
 
     You do not have Panda3D installed. See one of the above sections on how to install it.
@@ -122,3 +143,14 @@ Nothing runs!
 
     Python isn't installed. Again, see one if the above sections on how to install it.
     In a future release, Python will(hopefully) no longer be a dependency, so you don't have to worry about this for long.
+
+Further support
+-----------------
+
+The OpenBlox Wiki:
+
+    http://openblox.sf.net/?q=wiki/main-page
+
+The OpenBlox Forums (always search for a solution before asking for help):
+
+    http://openblox.sourceforge.net/?q=forum

@@ -1,1 +1,1 @@
-C:\Panda3D-1.7.0\python\ppython.exe tools\oblauncher.py
+ppython.exe oblaunchgui.py
