@@ -7,7 +7,10 @@ Installing on Windows
 ---------------------
 
 (You'll need an Internet connection to run the Windows installer.
-Note that it may take around 10 minutes to for the installer to download the required libraries.)
+Note that it may take around 2-5 minutes to for the installer to download the required libraries.)
+
+Be sure to keep the default installation location (C:\Program Files\OpenBlox); otherwise, OpenBlox won't work.
+
 Merely run the given Windows installer; you may be using it to view this README!
 If that's the case, proceed to the "Testing" section.
 
@@ -71,7 +74,7 @@ Testing
 Windows
 -------
 
-Open OpenBlox from your Start Menu (All Programs > The OpenBlox Game Engine > OpenBloxGE).
+Open OpenBlox from your Start Menu (All Programs > OpenBlox > OpenBlox).
 Select the test world (World).
 Press "Play game."
 
@@ -92,7 +95,7 @@ See the "Playing" section for more information.
 Command-line UI (if you didn't install wxPython)
 ------------------------------------------------
 
-Open up a terminal, and type "cd ~/The OpenBlox Game Engine" (without quotes).
+Open up a terminal, and type "cd ~/OpenBlox" (without quotes).
 Next, type "python oblaunch.py World" (again, without quotes).
 
 See the "Playing" section for more information.
@@ -130,6 +133,16 @@ Right arrow key: Rotate right
 Space: Jump
 
 (Note that the character can fall down at times, so either restart OpenBlox, or set your avatar upright by carefully pressing Jump)
+
+Creating your own games
+-----------------------
+
+The OpenBlox wiki has all the info you need to make your very own OpenBlox games.
+Go to:
+
+    http://openblox.sf.net/?q=wiki
+
+for more information, and a tutorial.
 
 FAQ
 -----------------

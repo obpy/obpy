@@ -22,6 +22,12 @@ __date__ ="$Jul 14, 2010 12:19:08 AM$"
 
 import lupa
 
+# Panda3D hack for errant Windows sys.path
+if sys.platform == 'win32':
+    
+    sys.path.insert(0, 'C:\\Program Files\\OpenBlox')
+    sys.path.insert(1, 'C:\\Program Files\\OpenBlox\\obengine\\scripting')
+
 from obengine.utils import error, wrap_callable
 from obengine.attrdict import AttrDict
 

@@ -3,6 +3,10 @@
 # support binary module loading in Lua.  If we can enable it here, we
 # do it temporarily.
 
+# Panda3D hack for errant Windows sys.path
+if sys.platform == 'win32':
+    sys.path.insert(0, 'C:\\Program Files\\OpenBlox\\obengine\\scripting')
+
 def _try_import_with_global_library_symbols():
     import DLFCN
     import sys
