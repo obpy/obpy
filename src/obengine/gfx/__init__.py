@@ -25,57 +25,17 @@ import obengine.cfg
 import obengine.gfx.window3d
 import obengine.utils
 
-import os
-
 from direct.gui.OnscreenImage import OnscreenImage
 from direct.gui.OnscreenText import OnscreenText
 from direct.stdpy.thread import start_new_thread
 from direct.task import Task
 from direct.interval.IntervalGlobal import *
 
-from pandac.PandaModules import TransparencyAttrib, Vec4, Vec3, CompassEffect, ClockObject
+from pandac.PandaModules import Vec4, Vec3, CompassEffect, ClockObject
 from panda3d.core import AmbientLight, DirectionalLight
 from panda3d.core import loadPrcFileData
 
-load_text = None
-logo = None
-loaded = False
-
 rootwin = None
-
-def progress_update(task):
-
-    # A very clever function, if I do say so myself...
-    # Basically, what this does is change the loading text;
-    # if we have one period(.), add another one, if we have 3, just show one period.
-
-    text_dict = { 'Loading.' : 'Loading..', 'Loading..' : 'Loading...', 'Loading...' : 'Loading.' }
-
-    global load_text
-    global loaded
-
-    load_text.setText(text_dict[load_text.getText()])
-
-    # Are we still loading?
-
-    if not loaded:
-         return Task.again
-
-    else:
-
-        # If a Panda3D task does not return Task.again, it is terminated
-        load_text.setText('Loaded!')
-
-def stop_load():
-
-    global loaded
-    global logo
-    global load_text
-
-    loaded = True
-    logo.removeNode()
-    load_text.removeNode()
-
 
 def setup_lights():
 
@@ -110,16 +70,6 @@ def setup_lights():
 
     rootwin.setBackgroundColor(1, 1, 1, 1)
 
-def setup_load():
-
-    global logo
-    global load_text
-
-    load_text = OnscreenText(text = 'Loading..', pos = (0.7, -0.7))
-    
-    logo = OnscreenImage(os.path.join(obengine.cfg.get_config_var('cfgdir'), 'data', 'oblogo.png'), pos = (0, 0, 0))
-    logo.setTransparency(TransparencyAttrib.MAlpha)
-
 def get_rootwin():
     """
     Returns the root Panda3D window.
@@ -148,19 +98,12 @@ def run(main_method):
     global_clock.setFrameRate(obengine.cfg.get_config_var('fps'))
     
     rootwin = window3d.Window3D()
-
-    setup_load()
+    
     setup_lights()
-
-    # Repeat the progress updating method once every 0.7 seconds
-
-    rootwin.taskMgr.doMethodLater(0.7, progress_update, 'load_update')
 
     obengine.utils.info('Graphics subsystem initialized! Loading...')
 
     main_method(rootwin)
-
-    stop_load()
 
     obengine.utils.info('Loading completed! Entering Panda3D update loop...')
 

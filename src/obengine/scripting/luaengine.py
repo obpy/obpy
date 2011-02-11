@@ -22,6 +22,8 @@ __date__ ="$Jul 14, 2010 12:19:08 AM$"
 
 import lupa
 
+import sys
+
 # Panda3D hack for errant Windows sys.path
 if sys.platform == 'win32':
     
