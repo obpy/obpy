@@ -33,8 +33,8 @@ if sys.platform == 'win32':
 from obengine.utils import error, wrap_callable
 from obengine.attrdict import AttrDict
 
-# Default globals that lupa creates its lua runtime is created.
-# We don't want to expose these, so we make a list here
+# Default globals that lupa creates when its lua runtime is created.
+# We don't want to expose these, so we make a list of them here
 
 default_globals = [
 
@@ -137,7 +137,6 @@ class ScriptEngine(object):
         # Create the Lua runtime
         self.lua = lupa.LuaRuntime()
 
-        # Save our filename
         self.filename = filename
 
         # Create the AttrDicts that will keep track of our variables and methods
@@ -156,13 +155,11 @@ class ScriptEngine(object):
 
         try:
 
-            # Evaluate the given string
-            return self.lua.eval(string)
+            val = self.lua.eval(string)
 
             # Update our var and method dicts
             for key in self.lua.globals():
 
-                # Do we not have this key?
                 if key not in default_globals:
 
                     # Is this a variable?
@@ -172,6 +169,8 @@ class ScriptEngine(object):
                     # No, so I guess it's a function
                     elif str(self.lua.globals()['type'](self.globals()[key])) == u'function':
                         self.method[key] = self.globals()[key]
+
+            return val
 
         # Houston, we have a problem...
         except Exception as exc:
