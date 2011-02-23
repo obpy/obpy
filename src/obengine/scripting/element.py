@@ -29,14 +29,14 @@ class ScriptElement(Element):
         Element.__init__(self, name)
 
         if filename != None:
-
             self.code = open(filename, 'r').read()
 
         else:
-
             self.code = code
 
-    def on_add(self, world):
+        self.on_add += self.script_on_add
+
+    def script_on_add(self, world):
 
         from thread import start_new_thread
 
@@ -48,13 +48,14 @@ class ScriptElement(Element):
     def run(self):
         
         import obengine.scripting.luaengine as luaeng
+        import obengine.elementfactory
 
         self.script_engine = luaeng.ScriptEngine(self.name)
 
         self.script_engine.expose(self.world)
         self.script_engine.expose(self)
+        self.script_engine.expose(obengine.elementfactory.ElementFactory())
         self.script_engine.execute(self.code)
 
     def __tolua__(self):
-
         return 'Script'

@@ -52,7 +52,6 @@ class World(object):
         """
 
         for element in world_source:
-
             self.add_element(element)
 
     def add_element(self, element):

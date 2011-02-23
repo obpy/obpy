@@ -76,8 +76,12 @@ class PlayerView(object):
     def __init__(self, name):
 
         self.name = name
-        self.player = obengine.player.Player(name, self)
+        self.player = obengine.player.Player(name)
         self.camera = obengine.gfx.get_rootwin().camera
+
+        self.player.on_joined += self.model_on_joined
+        self.player.on_leave += self.model_on_leave
+        self.player.on_full += self.model_on_full
 
     def join_world(self, world, pos = [0, 0, 0]):
 
@@ -85,21 +89,19 @@ class PlayerView(object):
         self.player.join_world(world)
 
     def leave_world(self):
-
         self.player.leave_world()
 
-    def on_joined(self, player, **kwargs):
+    def model_on_joined(self, world):
 
         self.joined = True
-        self.world = kwargs['world']
+        self.world = world
 
         self._construct_avatar(self.pos)
         self._construct_gui()
-        
-    def on_full(self, player, **kwargs): error('World full')
 
-    def on_leave(self, player, **kwargs):
+    def model_on_full(self, **kwargs): error('World full')
 
+    def model_on_leave(self, **kwargs):
         del self.world
 
     def _construct_avatar(self, pos = [0, 0, 0]):

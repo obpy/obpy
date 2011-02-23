@@ -41,29 +41,46 @@ class PhysicalObject(object):
 
         self.anchored = anchored
 
+        self.initalized = False
+
+    def initalize(self):
+
+        self.initalized = True
+
+        # We have to give ourselves mass and other stuff if we're not anchored
+
         if self.anchored == False:
+
+            # Create mass and geometry, and group them together under our OdeBody
 
             self.mass = OdeMass()
             self.geom = OdeBoxGeom(get_phys_space(), self.size[0], self.size[1], self.size[2] * 2) # Don't ask me why 1.99
             self.body = OdeBody(get_phys_world())
 
+            # Set the collide bits, so ODE knows to make this brick collide with other bricks
+
             self.geom.setCollideBits(BitMask32(0x0001))
             self.geom.setCategoryBits(BitMask32(0x0001))
+
+            # Set the mass to behave as a box
 
             self.mass.setBox(self.size[0] * self.size[1] * self.size[2], self.size[0], self.size[1], self.size[2])
 
             self.body.setMass(self.mass)
             self.body.setPosition(*self.model.brick.coords)
+
+            # Add our rotation
+
             q = Quat()
             q.setHpr(Vec3(*self.model.brick.hpr))
-            self.body.setQuaternion(q)
 
+            self.body.setQuaternion(q)
 
             self.geom.setBody(self.body)
 
-            register_phys_obj(self)
-
         else:
+
+            # Anchored objects just have shape, position, and rotation; no mass
 
             self.geom = OdeBoxGeom(get_phys_space(), self.size[0], self.size[1], self.size[2] * 2)
 
@@ -81,11 +98,9 @@ class PhysicalObject(object):
     def set_pos(self, x, y, z):
 
         if self.anchored == False:
-
             self.body.setPosition(Vec3(x, y, z))
 
         else:
-
             self.geom.setPosition(Vec3(x, y, z))
 
     def set_hpr(self, h, p, r):
@@ -100,6 +115,29 @@ class PhysicalObject(object):
         self.model.set_pos(*self.body.getPosition())
         self.model.set_hpr(*Quat(self.body.getQuaternion()).getHpr())
 
+    def phys_on_add(self, world):
+
+        if self.initalized == True:
+            
+            self.geom.enable()
+            self.body.enable()
+            
+        else:
+            self.initalize()
+
+        if self.anchored == False:
+            register_phys_obj(self)
+
+    def phys_on_remove(self):
+
+        self.geom.disable()
+
+        if self.anchored == False:
+            
+            self.body.disable()
+            phys_objs.remove(self)
+        
+
 def init():
 
     obengine.utils.info('Initializing physics subsystem...')
@@ -110,9 +148,10 @@ def init():
 
 def get_phys_world():
     """
-    Returns the physical representation of our sandbox.
+    Returns the physical representation of our world.
     For internal API use only!
     """
+    
     return phys_world
 
 def get_phys_space():
@@ -130,7 +169,6 @@ def update_physics(task):
     phys_world.quickStep(1.0 / (obengine.cfg.get_config_var('physxfps')))
 
     for obj in phys_objs:
-
         obj.update()
 
     get_phys_cg().empty()

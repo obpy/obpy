@@ -25,6 +25,8 @@ import obengine.phys
 
 from pandac.PandaModules import CompassEffect, TransparencyAttrib, Filename
 
+import os
+
 class BrickPresenter(object):
     
     def __init__(self, brick, view, hidden = False, anchored = False):
@@ -34,8 +36,11 @@ class BrickPresenter(object):
 
         self.hidden = hidden
 
-        self.brick.on_add = self.on_add
-        self.brick.on_remove = self.on_remove
+        self.on_add = self.brick.on_add
+        self.on_remove = self.brick.on_remove
+
+        self.on_add += self.presenter_on_add
+        self.on_remove += self.presenter_on_remove
 
         self.name = self.brick.name
 
@@ -47,6 +52,9 @@ class BrickPresenter(object):
         self.set_hpr(self.brick.hpr[0], self.brick.hpr[1], self.brick.hpr[2])
 
         self.phys_obj = obengine.phys.PhysicalObject(self, self.brick.size, anchored)
+        self.on_add += self.phys_obj.phys_on_add
+        self.on_remove += self.phys_obj.phys_on_remove
+
         self.view.setTransparency(TransparencyAttrib.MAlpha)
 
     def hide(self):
@@ -87,14 +95,12 @@ class BrickPresenter(object):
         self.brick.set_rgb(r, g, b, a)
         self.view.setColor(float(r) / 255, float(g) / 255, float(b) / 255, float(a) / 255)
 
-    def on_add(self, world):
+    def presenter_on_add(self, world):
 
         self.world = world
-        
         self.show()
 
-    def on_remove(self):
-
+    def presenter_on_remove(self):
         self.hide()
         
 class SkyboxElement(obengine.element.Element):
@@ -103,13 +109,16 @@ class SkyboxElement(obengine.element.Element):
 
         obengine.element.Element.__init__(self, 'Skybox')
 
-        self.sky = obengine.gfx.get_rootwin().loader.loadModel(Filename.fromOsSpecific(obengine.cfg.get_config_var('cfgdir') + '/data/sky.egg.pz'))
+        # Create the skybox (although the actual model is currently a skysphere!)
+
+        self.sky = obengine.gfx.get_rootwin().loader.loadModel(Filename.fromOsSpecific(obengine.cfg.get_config_var('cfgdir') +  os.path.join(os.sep + 'data','sky.egg.pz')))
         self.sky.reparentTo(obengine.gfx.get_rootwin().camera)
         self.sky.setEffect(CompassEffect.make(obengine.gfx.get_rootwin().render))
         self.sky.setScale(5000)
         self.sky.setShaderOff()
         self.sky.setLightOff()
 
-        if texture:
+        # Did the user specifiy a texture to use instead?
 
+        if texture:
             self.sky.setTexture(obengine.gfx.get_rootwin().loader.loadTexture(texture))

@@ -20,6 +20,8 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Jul 13, 2010 6:13:05 PM$"
 
+import obengine.event
+
 class Element(object):
     """
     The base class for all elements(i.e, scripts, bricks, etc...).
@@ -29,12 +31,9 @@ class Element(object):
     def __init__(self, name):
 
         self.name = name
-
-    # Degenerate methods, for subclasses to override
-
-    def on_add(self, world): pass
-
-    def on_remove(self): pass
+        
+        self.on_add = obengine.event.Event()
+        self.on_remove = obengine.event.Event()
 
 class BrickElement(Element):
     

@@ -44,7 +44,7 @@ def load_world(game):
         obengine.phys.init()
 
         # Extract the file
-        world_file = zipfile.ZipFile(os.path.join('games', game + '.zip'))
+        world_file = zipfile.ZipFile(os.path.join(__file__[:len(__file__) - len('oblaunch.py')],os.path.join('games', game + '.zip')))
 
         # We can't run inside the zip file, now can we? :)
         tmpdir = tempfile.mkdtemp()
@@ -85,8 +85,6 @@ def load_world(game):
     obengine.gfx.run(run_world)
 
 if __name__ == '__main__':
-
-    print os.listdir(os.curdir)
 
     obengine.cfg.init()
     obengine.utils.init()

@@ -20,18 +20,27 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Jul 13, 2010 6:15:27 PM$"
 
+import obengine.event
+
 class Player(object):
     """
     This class handles the model for OpenBlox's players. Nothing's really here.
     """
 
-    def __init__(self, name, event_handler):
+    def __init__(self, name):
         """
         name is what you want to call this player instance.
         """
 
         self.name = name
-        self.event_handler = event_handler
+
+        self.on_joined = obengine.event.Event()
+        self.on_leave = obengine.event.Event()
+        self.on_full = obengine.event.Event()
+
+        self.on_joined += self.player_on_joined
+        self.on_leave += self.player_on_leave
+        self.on_full += self.player_on_full
 
     def join_world(self, world):
         """
@@ -47,22 +56,17 @@ class Player(object):
 
         self.world.remove_player(self)
 
-    def on_joined(self, world):
+    def player_on_joined(self, world):
 
-        self.event_handler.on_joined(self, world=world )
         self.world = world
         self.playing = True
 
-    def on_leave(self):
-
-        self.event_handler.on_leave(self, world=self.world)
+    def player_on_leave(self):
         self.playing = False
 
-    def on_full(self, world):
+    def player_on_full(self, world):
 
         if not hasattr(self, 'playing'):
 
             # Just in case we weren't playing before
             self.playing = False
-
-        self.event_handler.on_full(self, world=world)

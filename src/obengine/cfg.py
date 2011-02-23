@@ -35,7 +35,7 @@ def init():
 
     defaults = {'loglevel' : 'debug', 'logfile' : 'oblog.txt', 'viewmode' : 'third-person', 'fps' : 50.0, 'physxfps' : 45.0}
 
-    basedir = os.getcwd()
+    basedir = __file__[:len(__file__) - len(os.path.join('obengine', 'cfg.py')) - 1]
 
     cfgparser = ConfigParser.ConfigParser()
 

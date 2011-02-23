@@ -53,7 +53,7 @@ class GameBrowser(wx.Frame):
 
         self.game_panel.SetSizer(global_box)
 
-        gamedir = os.listdir(os.path.join(os.getcwd(), 'games'))
+        gamedir = os.listdir(os.path.join(__file__[:len(__file__) - len('oblaunchgui.py')], 'games'))
         self.gamecount = 0
 
         for game in gamedir:

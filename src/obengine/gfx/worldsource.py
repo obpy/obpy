@@ -27,7 +27,7 @@ class WorldSource(list):
 
     def __init__(self, source):
         """
-        source is a derivative of WorldSource(yes, kinda confusing...)
+        source is a derivative of WorldSource (yes, kinda confusing...)
         Do NOT create this class! Create one of its derivatives, instead.
         """
 
@@ -41,21 +41,22 @@ class WorldSource(list):
         size = []
         anchored = False
 
+        # Remove all empty space first, to make string to number conversion easy
+
         coordstr = child.attrib['coords'].replace(' ','')
         rgbstr = child.attrib['rgb'].replace(' ','')
         orient_str = child.attrib['orientation'].replace(' ','')
         size_str = child.attrib['size'].replace(' ','')
         name = child.attrib['name']
 
+        # Is the brick anchored?
+
         if child.attrib.has_key('anchored'):
 
             if child.attrib['anchored'] == 'yes':
-
                 anchored = True
 
-            else:
-
-                anchored = False
+        # Fill the coordinate, size, RGB, and HPR arrays
 
         coords.append(float(coordstr.split(',')[0]))
         coords.append(float(coordstr.split(',')[1]))
@@ -74,8 +75,9 @@ class WorldSource(list):
         size.append(int(size_str.split(',')[1]))
         size.append(int(size_str.split(',')[2]))
 
-        element = ElementFactory().make('brick', name, coords, rgb, size, orientation, False, anchored)
+        # Finally, create the brick!
 
+        element = ElementFactory().make('brick', name, coords, rgb, size, orientation, False, anchored)
 
         self.append(element)
 
@@ -87,12 +89,12 @@ class WorldSource(list):
 
     def handle_script(self, child):
 
-        if child.attrib.has_key('src'):
+        # Does this script tag refer to a file, or is the code included in the tag?
 
+        if child.attrib.has_key('src'):
             element = ElementFactory().make('script', child.attrib['name'], None, child.attrib['src'])
 
         else:
-
             element = ElementFactory().make('script', child.attrib['name'], child.text)
 
         self.append(element)
@@ -114,7 +116,7 @@ class WorldSource(list):
 
 class FileWorldSource(WorldSource):
     """
-    This class loads a world from a file. Supply this to an obengine.world.World's load_world method.
+    This class loads a world from a file. Supply this class to an obengine.world.World's load_world method, after calling FileWorldSource.retrieve.
     """
 
     def __init__(self, path):
@@ -126,5 +128,4 @@ class FileWorldSource(WorldSource):
         self.path = path
 
     def retrieve(self):
-
         return open(self.path,'r')

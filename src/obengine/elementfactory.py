@@ -31,14 +31,32 @@ class ElementFactory(object):
 
         import obengine.gfx
         import obengine.gfx.element3d
+        
         from obengine.cfg import get_config_var
         from obengine.element import BrickElement
+
+        import os
         
         from pandac.PandaModules import Filename
+        
+        # See if we're getting called from Lua
+
+        if hasattr(coords, 'values'):
+            coords = list(coords.values())
+
+        if hasattr(rgb, 'values'):
+            rgb = list(rgb.values())
+
+        if hasattr(size, 'values'):
+            size = list(size.values())
+
+        # Create the model (not the 3D model, model as in MVC/MVP)
 
         model = BrickElement(name, coords, rgb, size, hpr)
 
-        view = obengine.gfx.get_rootwin().loader.loadModel(Filename.fromOsSpecific(get_config_var('cfgdir') + '/data/brick.egg'))
+        # Create the view and presenter
+
+        view = obengine.gfx.get_rootwin().loader.loadModel(Filename.fromOsSpecific(get_config_var('cfgdir') + os.path.join(os.sep + 'data', 'brick.egg')))
         presenter = obengine.gfx.element3d.BrickPresenter(model, view, hidden, anchored)
 
         return presenter

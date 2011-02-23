@@ -215,6 +215,8 @@ class ScriptEngine(object):
             self.lua.globals()[obj.__class__.__name__] = obj
 
     def default_error_cb(self, msg):
+        
+        print 'Script error: Script ' + self.filename + ', error: ' + msg
         error('Script error: Script ' + self.filename + ', error: ' + msg)
 
     def globals(self):
