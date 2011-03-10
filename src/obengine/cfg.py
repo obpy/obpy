@@ -16,6 +16,8 @@ This file is part of The OpenBlox Game Engine.
     You should have received a copy of the GNU General Public License
     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 
+    This module provides configuration utilites for other modules.
+    Creation of configuration variables by calling add_config_var is non-persistent.
 """
 
 __author__="openblocks"
@@ -23,7 +25,6 @@ __date__ ="$Aug 3, 2010 2:36:03 PM$"
 
 import os
 import sys
-
 import ConfigParser
 
 
@@ -35,7 +36,16 @@ def init():
 
     defaults = {'loglevel' : 'debug', 'logfile' : 'oblog.txt', 'viewmode' : 'third-person', 'fps' : 50.0, 'physxfps' : 45.0}
 
-    basedir = __file__[:len(__file__) - len(os.path.join('obengine', 'cfg.py')) - 1]
+    if '.zip' not in __file__:
+        basedir = __file__[:len(__file__) - len(os.path.join('obengine', 'cfg.py')) - 1]
+
+    else:
+
+        if sys.platform == 'win32':
+            basedir = 'C:\\Program Files\\OpenBlox'
+
+        else:
+            basedir = os.path.join(os.getenv('HOME', '/home/' + os.getlogin()), 'OpenBlox')
 
     cfgparser = ConfigParser.ConfigParser()
 
@@ -60,12 +70,20 @@ def init():
             add_config_var(key, value)
 
 def add_config_var(key, value):
+    """
+    Adds a (non-persistent) configuration variable.
+    If you want to make a persistent configuration variable, modifiy obconf.cfg directly.
+    """
 
     global config_vars
     
     config_vars[key] = value
 
 def get_config_var(key):
+    """
+    Retrives key from the configuration variable list.
+    Raises KeyError if key isn't found.
+    """
 
     global config_vars
 

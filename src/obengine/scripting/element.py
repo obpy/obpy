@@ -55,7 +55,28 @@ class ScriptElement(Element):
         self.script_engine.expose(self.world)
         self.script_engine.expose(self)
         self.script_engine.expose(obengine.elementfactory.ElementFactory())
+        self.script_engine.expose(LuaFactory())
         self.script_engine.execute(self.code)
 
     def __tolua__(self):
         return 'Script'
+
+class LuaFactory(object):
+
+    def __init__(self):
+
+        import obengine.gfx.math
+
+        self.factory_items = {
+        'Vector'     : obengine.gfx.math.Vector,
+        'Color'      : obengine.gfx.math.Color,
+        'EulerAngle' : obengine.gfx.math.EulerAngle
+        }
+
+    def make(self, item, *args):
+
+        if item in self.factory_items.keys():
+            return self.factory_items[item](*args)
+
+    def __tolua__(self):
+        return 'LuaFactory'

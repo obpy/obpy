@@ -18,16 +18,31 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Jan 23, 2011 7:57:35 AM$"
 
+import obengine.gfx.math
+
 class ElementFactory(object):
 
     elements = [ 'brick', 'skybox', 'script' ]
 
     def make(self, name, *args):
+        """
+        Creates a new element, and returns it.
+
+        Creatable elements are:
+
+        * Brick
+        * Skybox
+        * Script
+
+        If an unknown element type is given, UnknownElementType is raised.
+        """
 
         if name in self.elements:
             return getattr(self, 'make_' + name)(*args)
 
-    def make_brick(self, name, coords, rgb, size = [2, 4, 1], hpr = [0, 0, 0], hidden = False, anchored = False):
+        raise UnknownElementType(name)
+
+    def make_brick(self, name, coords = obengine.gfx.math.Vector(0, 0, 0), rgb = obengine.gfx.math.Color(0, 0, 0, 255), size = obengine.gfx.math.Vector(2, 4, 1), hpr = obengine.gfx.math.EulerAngle(0, 0, 0), hidden = False, anchored = False):
 
         import obengine.gfx
         import obengine.gfx.element3d
@@ -37,18 +52,7 @@ class ElementFactory(object):
 
         import os
         
-        from pandac.PandaModules import Filename
-        
-        # See if we're getting called from Lua
-
-        if hasattr(coords, 'values'):
-            coords = list(coords.values())
-
-        if hasattr(rgb, 'values'):
-            rgb = list(rgb.values())
-
-        if hasattr(size, 'values'):
-            size = list(size.values())
+        from panda3d.core import Filename
 
         # Create the model (not the 3D model, model as in MVC/MVP)
 
@@ -56,7 +60,7 @@ class ElementFactory(object):
 
         # Create the view and presenter
 
-        view = obengine.gfx.get_rootwin().loader.loadModel(Filename.fromOsSpecific(get_config_var('cfgdir') + os.path.join(os.sep + 'data', 'brick.egg')))
+        view = obengine.gfx.element3d.BlockBrickView(size, hpr, rgb)
         presenter = obengine.gfx.element3d.BrickPresenter(model, view, hidden, anchored)
 
         return presenter
@@ -76,3 +80,11 @@ class ElementFactory(object):
         element = ScriptElement(name, filename, code)
 
         return element
+
+class UnknownElementTypeException(Exception):
+    """
+    Raised when an unknown element type is passed to ElementFactory.make.
+    """
+
+    def __init__(self, message):
+        Exception.__init__(self, message)

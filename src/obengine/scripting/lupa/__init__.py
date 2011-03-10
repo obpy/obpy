@@ -1,4 +1,3 @@
-
 # We need to enable global symbol visibility for lupa in order to
 # support binary module loading in Lua.  If we can enable it here, we
 # do it temporarily.

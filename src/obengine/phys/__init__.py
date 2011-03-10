@@ -22,10 +22,11 @@ __author__="openblocks"
 __date__ ="$Sep 9, 2010 4:12:59 PM$"
 
 import obengine.gfx
+import obengine.gfx.math
 import obengine.utils
 
-from pandac.PandaModules import OdeBody, OdeMass, OdeBoxGeom, OdeWorld, OdeSimpleSpace, OdeJointGroup
-from pandac.PandaModules import BitMask32, Vec3, Quat
+from panda3d.ode import OdeBody, OdeMass, OdeBoxGeom, OdeWorld, OdeSimpleSpace, OdeJointGroup
+from panda3d.core import BitMask32, Vec3, Quat
 
 phys_world = None
 phys_space = None
@@ -34,7 +35,7 @@ phys_objs = []
 
 class PhysicalObject(object):
 
-    def __init__(self, model, size = [1, 1, 1], anchored = False):
+    def __init__(self, model, size = obengine.gfx.math.Vector(1, 1, 1), anchored = False):
 
         self.model = model
         self.size = size
@@ -64,7 +65,7 @@ class PhysicalObject(object):
 
             # Set the mass to behave as a box
 
-            self.mass.setBox(self.size[0] * self.size[1] * self.size[2], self.size[0], self.size[1], self.size[2])
+            self.mass.setBox(self.size.x * self.size.y * self.size.z, self.size.x, self.size.y, self.size.z)
 
             self.body.setMass(self.mass)
             self.body.setPosition(*self.model.brick.coords)
@@ -82,7 +83,7 @@ class PhysicalObject(object):
 
             # Anchored objects just have shape, position, and rotation; no mass
 
-            self.geom = OdeBoxGeom(get_phys_space(), self.size[0], self.size[1], self.size[2] * 2)
+            self.geom = OdeBoxGeom(get_phys_space(), self.size.x, self.size.y, self.size.z * 2)
 
             self.geom.setCollideBits(BitMask32(0x0001))
             self.geom.setCategoryBits(BitMask32(0x0001))
@@ -112,8 +113,8 @@ class PhysicalObject(object):
 
     def update(self):
 
-        self.model.set_pos(*self.body.getPosition())
-        self.model.set_hpr(*Quat(self.body.getQuaternion()).getHpr())
+        self.model.set_pos(obengine.gfx.math.Vector(*self.body.getPosition()))
+        self.model.set_hpr(obengine.gfx.math.EulerAngle(*Quat(self.body.getQuaternion()).getHpr()))
 
     def phys_on_add(self, world):
 
@@ -204,5 +205,7 @@ def setup_physics():
 
     phys_world.initSurfaceTable(1)
     phys_world.setSurfaceEntry(0, 0, 150, 0.0, 9.1, 0.9, 0.00001, 0.0, 0.002)
+
+    phys_space.setCollisionEvent('on_collision')
     
     obengine.gfx.get_rootwin().taskMgr.add(update_physics, 'update_physics')

@@ -75,17 +75,17 @@ class World(object):
     def add_player(self, player):
         """
         Adds a player to the game.
-        player must be an instance of class Player(in player.py)
+        player should be an instance or a substitute of class Player(in player.py)
         """
 
         if not self.is_full():
 
             self.player[player.name] = player
             player.on_joined(self)
+            
             self.num_players += 1
 
         else:
-
             player.on_full(self)
 
     def remove_player(self, name):
@@ -93,9 +93,15 @@ class World(object):
         Removes a player from the game; the players name is contained in name.
         """
 
-        self.player[name].on_leave()
-        del self.player[name]
-        self.num_players -= 1
+        if self.player.has_key(name):
+
+            self.player[name].on_leave()
+            del self.player[name]
+
+            self.num_players -= 1
+
+        else:
+            raise KeyError(name)
 
     # Thats most of the interesting functions. The rest are just helpers..
 

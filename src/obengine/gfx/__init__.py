@@ -16,6 +16,7 @@ This file is part of The OpenBlox Game Engine.
     You should have received a copy of the GNU General Public License
     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 
+    This is the gfx module. Except for run, don't use anything here!
 """
 
 __author__="openblocks"
@@ -31,9 +32,11 @@ from direct.stdpy.thread import start_new_thread
 from direct.task import Task
 from direct.interval.IntervalGlobal import *
 
-from pandac.PandaModules import Vec4, Vec3, CompassEffect, ClockObject
+from panda3d.core import Vec4, Vec3, CompassEffect, ClockObject
 from panda3d.core import AmbientLight, DirectionalLight
 from panda3d.core import loadPrcFileData
+
+import time
 
 rootwin = None
 
@@ -54,12 +57,13 @@ def setup_lights():
     sunnode = rootwin.render.attachNewNode(sunlight)
     sunnode.setHpr(0, 0, 0)
 
-    # Make 1 "day" last 15 minutes :)
 
-    suninterval = sunnode.hprInterval(60.0 * 15.0, Vec3(0, 360, 0))
+    # Make 1 "day" last 60 minutes :)
+
+    suninterval = sunnode.hprInterval(60.0 * 60.0, Vec3(0, 360, 0))
     sunseq = Sequence(suninterval)
 
-    # Turn on the lights
+    # Turn on the lights!
 
     rootwin.render.setLight(rootwin.render.attachNewNode(ambient_light))
     rootwin.render.setLight(sunnode)
@@ -103,8 +107,13 @@ def run(main_method):
 
     obengine.utils.info('Graphics subsystem initialized! Loading...')
 
+    t1 = time.time()
+
     main_method(rootwin)
 
+    t2 = time.time()
+
+    obengine.utils.info('Initialization took %f seconds' % (t2 - t1))
     obengine.utils.info('Loading completed! Entering Panda3D update loop...')
 
     rootwin.run()

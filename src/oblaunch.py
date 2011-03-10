@@ -24,7 +24,9 @@ import obengine.gfx.worldsource as worldsource
 
 from obengine.gfx.player import PlayerView
 from obengine.gfx.player import KeyboardPlayerController
+from obengine.gfx.math import Vector
 
+import shutil
 import os
 import sys
 
@@ -44,7 +46,7 @@ def load_world(game):
         obengine.phys.init()
 
         # Extract the file
-        world_file = zipfile.ZipFile(os.path.join(__file__[:len(__file__) - len('oblaunch.py')],os.path.join('games', game + '.zip')))
+        world_file = zipfile.ZipFile(os.path.join(__file__[:len(__file__) - len('oblaunch.py') - 1],os.path.join('games', game + '.zip')))
 
         # We can't run inside the zip file, now can we? :)
         tmpdir = tempfile.mkdtemp()
@@ -65,20 +67,16 @@ def load_world(game):
 
         # Initalize the player
         p = PlayerView('OBPlayer')
-        p.join_world(world, [-10, -10, -5])
-        k = KeyboardPlayerController(p)
+        p.join_world(world, Vector(-10, -10, -5))
+        KeyboardPlayerController(p)
 
         def clean_up():
             """
             Removes the temporary directory.
             """
 
-            # We can't remove a non empty directory, so we have to remove everything first...
-            for file in world_file.namelist():
-                os.remove(file)
-
             os.chdir(os.pardir)
-            os.rmdir(tmpdir)
+            shutil.rmtree(tmpdir)
 
         atexit.register(clean_up)
         

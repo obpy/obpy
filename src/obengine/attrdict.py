@@ -23,31 +23,45 @@ __date__ ="$Jul 12, 2010 8:02:01 PM$"
 class AttrDict(dict):
     """
     A decorated dict that links attributes to keys, so we can do this:
-    a = AttrDict()
-    a.Key1 = "Test1"
-    a.Key2 = "Test2"
-    print a.Key1
-    print a['Key1']
-    print a.Key2
-    print a['Key2']
+
+    .. testcode::
+
+        from obengine.attrdict import AttrDict
+
+        a = AttrDict()
+        a.Key1 = "Test1"
+        a.Key2 = "Test2"
+
+        print a.Key1
+        print a['Key1']
+        print a.Key2
+        print a['Key2']
 
     This should output:
 
-    Test1
-    Test1
-    Test2
-    Test2
+    .. testoutput::
+
+        Test1
+        Test1
+        Test2
+        Test2
 
     NEW IN 0.5:
 
     You can also initalize AttrDict like a regular dict:
 
-    a = AttrDict(a = 1, b = 2, c = 3)
-    print a.a, a.b, a.c
+    .. testcode::
+
+        from obengine.attrdict import AttrDict
+
+        a = AttrDict(a = 1, b = 2, c = 3)
+        print a.a, a.b, a.c
 
     This should output:
 
-    1 2 3
+    .. testoutput::
+        
+        1 2 3
     """
 
     def __init__(self, **kwargs):

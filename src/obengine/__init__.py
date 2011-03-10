@@ -16,6 +16,8 @@ This file is part of The OpenBlox Game Engine.
     You should have received a copy of the GNU General Public License
     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 
+
+This is the base OpenBlox Python package. Look at this package's subpackages for the actual code/documentation.
 """
 __author__="openblocks"
 __date__ ="$Jul 12, 2010 7:59:47 PM$"

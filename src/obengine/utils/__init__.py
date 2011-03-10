@@ -17,7 +17,8 @@ This file is part of The OpenBlox Game Engine.
     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-__author__="alexander"
+
+__author__="openblocks"
 __date__ ="$Sep 28, 2010 1:35:13 PM$"
 
 import logging
@@ -25,7 +26,10 @@ import os
 import sys
 import time
 
+
 import obengine.cfg
+import obengine.event
+
 
 loglevels = { 'debug' : logging.DEBUG,
                 'info' : logging.INFO,
@@ -37,8 +41,15 @@ def init():
 
     level = obengine.cfg.get_config_var('loglevel')
     logfile = obengine.cfg.get_config_var('logfile')
+
+    # Writing to C:\Program Files is deprecated
+    if sys.platform == 'win32':
+        fileloc = os.path.join(os.getenv('APPDATA'), 'OpenBlox', logfile)
+
+    else:
+        fileloc = os.path.join(obengine.cfg.get_config_var('cfgdir'), logfile)
     
-    logging.basicConfig(level = loglevels.get(level, logging.NOTSET), filename = os.path.join(obengine.cfg.get_config_var('cfgdir'), logfile))
+    logging.basicConfig(level = loglevels.get(level, logging.NOTSET), filename = fileloc)
 
 def info(string):
     logging.info(time.ctime() + ': ' + string)
@@ -59,11 +70,11 @@ def wrap_callable(method, before, after):
         before(*args, **kwargs)
 
         try:
-            method(*args, **kwargs)
+            return method(*args, **kwargs)
 
         finally:
             after(*args, **kwargs)
 
-    
+    wrapper.__name__ = method.__name__
 
     return wrapper

@@ -37,7 +37,7 @@ class Element(object):
 
 class BrickElement(Element):
     
-    def __init__(self, name, coords, rgb, size = [2, 4, 1], hpr = [0, 0, 0]):
+    def __init__(self, name, coords, rgb, size, hpr):
 
         Element.__init__(self, name)
 
@@ -46,27 +46,14 @@ class BrickElement(Element):
         self.hpr = hpr
         self.rgb = rgb
 
-    def set_size(self, x, y, z):
+    def set_size(self, newsize):
+        self.size = newsize
 
-        self.size[0] = x
-        self.size[1] = y
-        self.size[2] = z
+    def set_pos(self, newpos):
+        self.coords =  newpos
 
-    def set_pos(self, x, y, z):
+    def set_hpr(self, newhpr):
+        self.hpr = newhpr
 
-        self.coords[0] = x
-        self.coords[1] = y
-        self.coords[2] = z
-
-    def set_hpr(self, h, p, r):
-
-        self.hpr[0] = h
-        self.hpr[1] = p
-        self.hpr[2] = r
-
-    def set_rgb(self, r, g, b, a):
-
-        self.rgb[0] = r
-        self.rgb[1] = g
-        self.rgb[2] = b
-        self.rgb[3] = a
+    def set_rgb(self, newrgb):
+        self.rgb = newrgb

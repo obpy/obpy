@@ -30,6 +30,9 @@ import shutil
 import wx
 
 class GameBrowser(wx.Frame):
+    """
+    This is the game browser.
+    """
 
     def __init__(self):
 
@@ -43,9 +46,11 @@ class GameBrowser(wx.Frame):
         button_box = wx.BoxSizer(wx.HORIZONTAL)
 
         install_game_button = wx.Button(self.game_panel, wx.ID_NEW, 'Install new game')
-        play_game_button = wx.Button(self.game_panel, 25, 'Play game')
+        remove_game_button = wx.Button(self.game_panel, 24, 'Uninstall selected game')
+        play_game_button = wx.Button(self.game_panel, 25, 'Play selected game')
 
         button_box.Add(install_game_button, 1, wx.LEFT)
+        button_box.Add(remove_game_button, 1, wx.LEFT)
         button_box.Add(play_game_button, 1, wx.RIGHT)
 
         global_box.Add(self.games, 1, wx.EXPAND)
@@ -60,10 +65,11 @@ class GameBrowser(wx.Frame):
 
             if game.endswith('.zip'):
 
-                index = self.games.InsertStringItem(sys.maxint, game.strip('.zip'))
+                self.games.InsertStringItem(sys.maxint, game.strip('.zip'))
                 self.gamecount += 1
 
         self.Bind(wx.EVT_BUTTON, self.install_game, id=wx.ID_NEW)
+        self.Bind(wx.EVT_BUTTON, self.remove_game, id=24)
         self.Bind(wx.EVT_BUTTON, self.play_game, id=25)
 
         self.Show(True)
@@ -86,16 +92,23 @@ class GameBrowser(wx.Frame):
             index = self.games.InsertStringItem(sys.maxint, filename.strip('.zip'))
 
             self.games.SetItemData(index, self.gamecount)
-            self.games.itemDataMap[self.gamecount] = (filename.strip('.zip'),)
-
             self.gamecount += 1
 
         dialog.Destroy()
 
+    def remove_game(self, event):
+
+        if self.games.GetFocusedItem() != -1:
+
+            os.remove(os.path.join('games', self.games.GetItemText(self.games.GetFocusedItem()) + '.zip'))
+            self.games.DeleteItem(self.games.GetFocusedItem())
+
     def play_game(self, event):
-        
-        import oblaunch
-        oblaunch.load_world(self.games.GetItemText(self.games.GetFocusedItem()))
+
+        if self.games.GetFocusedItem() != -1:
+
+            import oblaunch
+            oblaunch.load_world(self.games.GetItemText(self.games.GetFocusedItem()))
 
 obengine.cfg.init()
 obengine.utils.init()

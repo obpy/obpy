@@ -21,6 +21,7 @@ __author__="openblocks"
 __date__ ="$Aug 9, 2010 10:43:40 PM$"
 
 from obengine.elementfactory import ElementFactory
+from obengine.gfx.math import *
 import xml.etree.ElementTree as xmlparser
 
 class WorldSource(list):
@@ -35,10 +36,10 @@ class WorldSource(list):
 
     def handle_brick(self, child):
 
-        rgb = []
-        coords = []
-        orientation = []
-        size = []
+        rgb = Color()
+        coords = Vector()
+        orientation = EulerAngle()
+        size = Vector()
         anchored = False
 
         # Remove all empty space first, to make string to number conversion easy
@@ -58,22 +59,23 @@ class WorldSource(list):
 
         # Fill the coordinate, size, RGB, and HPR arrays
 
-        coords.append(float(coordstr.split(',')[0]))
-        coords.append(float(coordstr.split(',')[1]))
-        coords.append(float(coordstr.split(',')[2]))
 
-        rgb.append(int(rgbstr.split(',')[0]))
-        rgb.append(int(rgbstr.split(',')[1]))
-        rgb.append(int(rgbstr.split(',')[2]))
-        rgb.append(int(rgbstr.split(',')[3]))
+        coords.x = float(coordstr.split(',')[0])
+        coords.y = float(coordstr.split(',')[1])
+        coords.z = float(coordstr.split(',')[2])
 
-        orientation.append(float(orient_str.split(',')[0]))
-        orientation.append(float(orient_str.split(',')[1]))
-        orientation.append(float(orient_str.split(',')[2]))
+        rgb.r = int(rgbstr.split(',')[0])
+        rgb.g = int(rgbstr.split(',')[1])
+        rgb.b = int(rgbstr.split(',')[2])
+        rgb.a = int(rgbstr.split(',')[3])
 
-        size.append(int(size_str.split(',')[0]))
-        size.append(int(size_str.split(',')[1]))
-        size.append(int(size_str.split(',')[2]))
+        orientation.h = float(orient_str.split(',')[0])
+        orientation.p = float(orient_str.split(',')[1])
+        orientation.r = float(orient_str.split(',')[2])
+
+        size.x = int(size_str.split(',')[0])
+        size.y = int(size_str.split(',')[1])
+        size.z = int(size_str.split(',')[2])
 
         # Finally, create the brick!
 
