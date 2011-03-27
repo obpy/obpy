@@ -30,7 +30,7 @@ class Vector(object):
 
     def __getitem__(self, index):
 
-        warnings.warn('Usage of lists for vectors will be removed in OpenBlox 0.8', DeprecationWarning)
+        warnings.warn('Usage of lists for vectors will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
 
         keys = {0 : self.x, 1 : self.y, 2 : self.z}
 
@@ -42,7 +42,7 @@ class Vector(object):
 
     def __setitem__(self, index, value):
 
-        warnings.warn('Usage of lists for vectors will be removed in OpenBlox 0.8', DeprecationWarning)
+        warnings.warn('Usage of lists for vectors will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
 
         if index == 0:
             self.x = value
@@ -65,7 +65,7 @@ class EulerAngle(object):
 
     def __getitem__(self, index):
 
-        warnings.warn('Usage of lists for Euler angles will be removed in OpenBlox 0.8', DeprecationWarning)
+        warnings.warn('Usage of lists for Euler angles will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
 
         keys = {0 : self.h, 1 : self.p, 2 : self.r}
 
@@ -77,7 +77,7 @@ class EulerAngle(object):
 
     def __setitem__(self, index, value):
 
-        warnings.warn('Usage of lists for Euler angles will be removed in OpenBlox 0.8', DeprecationWarning)
+        warnings.warn('Usage of lists for Euler angles will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
 
         if index == 0:
             self.h = value
@@ -99,7 +99,7 @@ class Color(object):
 
     def __getitem__(self, index):
 
-        warnings.warn('Usage of lists for RGBA colors will be removed in OpenBlox 0.8', DeprecationWarning)
+        warnings.warn('Usage of lists for RGBA colors will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
 
         keys = {0 : self.r, 1 : self.g, 2 : self.b, 3 : self.a}
 
@@ -111,7 +111,7 @@ class Color(object):
 
     def __setitem__(self, index, value):
 
-        warnings.warn('Usage of lists for RGBA colors will be removed in OpenBlox 0.8', DeprecationWarning)
+        warnings.warn('Usage of lists for RGBA colors will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
 
         if index == 0:
             self.r = value
