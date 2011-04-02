@@ -27,7 +27,7 @@ from panda3d.core import Filename, AudioSound
 
 class SoundElement(obengine.element.Element):
 
-    def __init__(self, name, soundfile, autoplay=False):
+    def __init__(self, name, soundfile, autoplay = False):
         """
         This is just like all other elements.
         soundfile

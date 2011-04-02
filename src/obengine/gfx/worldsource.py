@@ -22,6 +22,7 @@ __date__ ="$Aug 9, 2010 10:43:40 PM$"
 
 from obengine.elementfactory import ElementFactory
 from obengine.gfx.math import *
+
 import xml.etree.ElementTree as xmlparser
 
 class WorldSource(list):
@@ -101,14 +102,24 @@ class WorldSource(list):
 
         self.append(element)
 
+    def handle_sound(self, child):
+
+        element = ElementFactory().make('sound', child.attrib['name'], child.attrib['src'], child.attrib.get('autoplay', False))
+
+        self.append(element)
+
     def parse(self):
+        """
+        Parses a world.
+        Raises UnknownWorldTag when an unknown tag is encountered.
+        """
         
         file = self.source.retrieve()
 
         tree = xmlparser.parse(file)
         rootnode = tree.getroot()
 
-        supported_tags = { 'brick' : 'handle_brick', 'skybox' : 'handle_skybox', 'script' : 'handle_script' }
+        supported_tags = { 'brick' : 'handle_brick', 'skybox' : 'handle_skybox', 'script' : 'handle_script', 'sound' : 'handle_sound' }
 
 
         for child in rootnode:

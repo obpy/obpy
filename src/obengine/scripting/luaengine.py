@@ -173,8 +173,8 @@ class ScriptEngine(object):
             return val
 
         # Houston, we have a problem...
-        except Exception as exc:
-            self.error_cb(exc.message)
+        except Exception, message:
+            self.error_cb(message)
 
     def execute(self, string):
         """
@@ -196,7 +196,7 @@ class ScriptEngine(object):
                     elif str(self.lua.globals()['type'](self.globals()[key])) == u'function':
                         self.method[key] = self.globals()[key]
 
-        except Exception as exc:
+        except Exception, message:
             self.error_cb(exc.message)
 
     def expose(self, obj):
@@ -207,16 +207,12 @@ class ScriptEngine(object):
         """
 
         if hasattr(obj, '__tolua__'):
-
             self.lua.globals()[obj.__tolua__()] = obj
 
         else:
-            
             self.lua.globals()[obj.__class__.__name__] = obj
 
     def default_error_cb(self, msg):
-        
-        print 'Script error: Script ' + self.filename + ', error: ' + msg
         error('Script error: Script ' + self.filename + ', error: ' + msg)
 
     def globals(self):

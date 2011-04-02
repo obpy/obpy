@@ -22,7 +22,7 @@ import obengine.gfx.math
 
 class ElementFactory(object):
 
-    elements = [ 'brick', 'skybox', 'script' ]
+    elements = [ 'brick', 'skybox', 'script', 'sound' ]
 
     def make(self, name, *args):
         """
@@ -33,6 +33,7 @@ class ElementFactory(object):
         * Brick
         * Skybox
         * Script
+        * (NEW) Sound
 
         If an unknown element type is given, UnknownElementType is raised.
         """
@@ -81,7 +82,15 @@ class ElementFactory(object):
 
         return element
 
-class UnknownElementTypeException(Exception):
+    def make_sound(self, name, soundfile, autoplay = False):
+
+        from obengine.audio.element import SoundElement
+
+        element = SoundElement(name, soundfile, autoplay)
+
+        return element
+
+class UnknownElementType(Exception):
     """
     Raised when an unknown element type is passed to ElementFactory.make.
     """
