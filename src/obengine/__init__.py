@@ -19,5 +19,8 @@ This file is part of The OpenBlox Game Engine.
 
 This is the base OpenBlox Python package. Look at this package's subpackages for the actual code/documentation.
 """
+
 __author__="openblocks"
 __date__ ="$Jul 12, 2010 7:59:47 PM$"
+
+ENGINE_VERSION = (0, 7, 0)

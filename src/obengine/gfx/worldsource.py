@@ -17,6 +17,7 @@ This file is part of The OpenBlox Game Engine.
     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 
 """
+import obengine
 __author__="openblocks"
 __date__ ="$Aug 9, 2010 10:43:40 PM$"
 
@@ -111,13 +112,18 @@ class WorldSource(list):
     def parse(self):
         """
         Parses a world.
-        Raises UnknownWorldTag when an unknown tag is encountered.
+        Exceptions:
+        * UnknownWorldTag when an unknown tag is encountered.
+        * InsufficientVersion if the "version" attribute of the world tag is greater than this engine's version
         """
         
         file = self.source.retrieve()
 
         tree = xmlparser.parse(file)
         rootnode = tree.getroot()
+
+        if tuple(int(v) for v in rootnode.attrib.get('version', '0.0.0').split('.')) > obengine.ENGINE_VERSION:
+            raise InsufficientVersion, rootnode.attrib.get('version', '0.0.0')
 
         supported_tags = { 'brick' : 'handle_brick', 'skybox' : 'handle_skybox', 'script' : 'handle_script', 'sound' : 'handle_sound' }
 
@@ -127,9 +133,13 @@ class WorldSource(list):
             if child.tag in supported_tags:
                 getattr(self, supported_tags[child.tag])(child)
 
+            else:
+                raise UnknownWorldTag, child.tag
+
 class FileWorldSource(WorldSource):
     """
-    This class loads a world from a file. Supply this class to an obengine.world.World's load_world method, after calling FileWorldSource.retrieve.
+    This class loads a world from a file.
+    Supply this class to an obengine.world.World's load_world method, after calling FileWorldSource.retrieve.
     """
 
     def __init__(self, path):
@@ -142,3 +152,6 @@ class FileWorldSource(WorldSource):
 
     def retrieve(self):
         return open(self.path,'r')
+
+class UnknownWorldTag(Exception): pass
+class InsufficientVersion(Exception): pass

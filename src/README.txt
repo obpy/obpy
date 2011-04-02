@@ -1,7 +1,7 @@
 OpenBlox Game Engine Readme
 ---------------------------
 
-Version 0.6 (bugfix release)
+Version 0.7
 
 Installing on Windows
 ---------------------
@@ -40,7 +40,7 @@ System Requirements
 * Panda3D
 * wxPython (optional; install only if you want the GUI)
 * LuaJIT 2 beta 4
-* Lupa 0.18
+* Lupa 0.18 or greater (0.19 reccommended)
 
 A DMG image for Panda3D is available from http://www.panda3d.org/download.php?platform=macosx&version=1.7.0&sdk .
 Note that the OSX version of Panda3D requires the NVIDIA Cg Toolkit, which you can download at:
@@ -142,29 +142,21 @@ Creating your own games
 The OpenBlox wiki has all the info you need to make your very own OpenBlox games.
 Go to:
 
-    http://openblox.sf.net/?q=wiki
+    http://openblox.tuxfamily.org
 
 for more information, and a tutorial.
 
 FAQ
 -----------------
 
-The world launcher opens, and I can select a game, but the actual game never shows up!
-
-    You do not have Panda3D installed. See one of the above sections on how to install it.
-    Note that Panda3D will be integrated into OpenBlox in a future release.
-
-Nothing runs!
-
-    Python isn't installed. Again, see one if the above sections on how to install it.
-    In a future release, Python will(hopefully) no longer be a dependency, so you don't have to worry about this for long.
+H
 
 Further support
 -----------------
 
 The OpenBlox Wiki:
 
-    http://openblox.sf.net/?q=wiki/main-page
+    http://openblox.tuxfamily.org
 
 The OpenBlox Forums (always search for a solution before asking for help):
 

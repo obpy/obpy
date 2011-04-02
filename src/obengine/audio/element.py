@@ -26,21 +26,27 @@ import obengine.element
 from panda3d.core import Filename, AudioSound
 
 class SoundElement(obengine.element.Element):
-
-    def __init__(self, name, soundfile, autoplay = False):
+    """
+    Lets a sound be loaded and played inside an OpenBlox world.
+    """
+    def __init__(self, name, soundfile, looping = False, autoplay = False):
         """
-        This is just like all other elements.
-        soundfile
+         * name is just the name of this element
+         * soundfile is the filename of the sound to load
+         * looping specifies whether the sound should repeat, once it is finished
+         * autoplay specifies whether the sound should start immediately after it is added to a world
         """
 
         obengine.element.Element.__init__(self, name)
 
         self.sound = obengine.gfx.get_rootwin().loader.loadSfx(Filename.fromOsSpecific(os.path.join(os.abspath(os.curdir)), soundfile))
-
+        self.set_looping(looping)
+        
         if autoplay == True:
             self.on_add += self.autoplay
 
         self.on_remove += self.stop
+
 
     def autoplay(self, world):
         self.play()
@@ -73,3 +79,9 @@ class SoundElement(obengine.element.Element):
         Retrieves the volume, as a percentage between 0 and 100.
         """
         return self.sound.getVolume() * 100.0
+
+    def set_looping(self, looping):
+        self.sound.setLoop(looping)
+
+    def get_looping(self):
+        return self.sound.getLoop()
