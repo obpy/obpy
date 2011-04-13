@@ -16,6 +16,7 @@ This file is part of The OpenBlox Game Engine.
     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 
 """
+import os.path
 
 import obengine
 import obengine.world
@@ -46,7 +47,7 @@ def load_world(game):
         obengine.phys.init()
 
         # Extract the file
-        world_file = zipfile.ZipFile(os.path.join(__file__[:len(__file__) - len('oblaunch.py') - 1],os.path.join('games', game + '.zip')))
+        world_file = zipfile.ZipFile(os.path.join(os.path.abspath(__file__)[:-len(__file__)],os.path.join('games', game + '.zip')))
 
         # We can't run inside the zip file, now can we? :)
         tmpdir = tempfile.mkdtemp()

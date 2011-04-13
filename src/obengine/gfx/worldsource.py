@@ -17,9 +17,11 @@ This file is part of The OpenBlox Game Engine.
     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-import obengine
+
 __author__="openblocks"
 __date__ ="$Aug 9, 2010 10:43:40 PM$"
+
+import obengine
 
 from obengine.elementfactory import ElementFactory
 from obengine.gfx.math import *
@@ -28,13 +30,15 @@ import xml.etree.ElementTree as xmlparser
 
 class WorldSource(list):
 
-    def __init__(self, source):
+    def __init__(self):
         """
-        source is a derivative of WorldSource (yes, kinda confusing...)
         Do NOT create this class! Create one of its derivatives, instead.
         """
 
-        self.source = source
+        pass
+
+    def retrieve(self):
+        raise NotImplementedError
 
     def handle_brick(self, child):
 
@@ -117,7 +121,7 @@ class WorldSource(list):
         * InsufficientVersion if the "version" attribute of the world tag is greater than this engine's version
         """
         
-        file = self.source.retrieve()
+        file = self.retrieve()
 
         tree = xmlparser.parse(file)
         rootnode = tree.getroot()
@@ -139,7 +143,7 @@ class WorldSource(list):
 class FileWorldSource(WorldSource):
     """
     This class loads a world from a file.
-    Supply this class to an obengine.world.World's load_world method, after calling FileWorldSource.retrieve.
+    Supply this class to an obengine.world.World's load_world method, after calling FileWorldSource.parse.
     """
 
     def __init__(self, path):
@@ -147,7 +151,7 @@ class FileWorldSource(WorldSource):
         path is the file path of the world to load.
         """
 
-        WorldSource.__init__(self, self) # Yes, very wierd...
+        WorldSource.__init__(self)
         self.path = path
 
     def retrieve(self):

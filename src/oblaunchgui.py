@@ -19,15 +19,17 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Feb 4, 2011 10:29:57 PM$"
 
-import obengine
-import obengine.cfg
-import obengine.utils
-
 import os
 import sys
 import shutil
+import multiprocessing
+
 
 import wx
+
+import obengine
+import obengine.cfg
+import obengine.utils
 
 class GameBrowser(wx.Frame):
     """
@@ -107,8 +109,19 @@ class GameBrowser(wx.Frame):
 
         if self.games.GetFocusedItem() != -1:
 
-            import oblaunch
-            oblaunch.load_world(self.games.GetItemText(self.games.GetFocusedItem()))
+            game = self.games.GetItemText(self.games.GetFocusedItem())
+            target = os.system
+
+            if os.name == 'nt':
+                arg = 'ppython.exe oblaunch.py %s' % game
+
+            else:
+                arg = 'python oblaunch.py %s' % game
+
+            launcher = multiprocessing.Process(target = target, args = (arg, ), group = None)
+            launcher.daemon = True
+            launcher.start()
+
 
 obengine.cfg.init()
 obengine.utils.init()
