@@ -66,11 +66,15 @@ class LuaFactory(object):
     def __init__(self):
 
         import obengine.gfx.math
+        import obengine.hardware.event
 
         self.factory_items = {
-        'Vector'     : obengine.gfx.math.Vector,
-        'Color'      : obengine.gfx.math.Color,
-        'EulerAngle' : obengine.gfx.math.EulerAngle
+        'Vector' : obengine.gfx.math.Vector,
+        'Color' : obengine.gfx.math.Color,
+        'EulerAngle' : obengine.gfx.math.EulerAngle,
+
+        'KeyEvent' : obengine.hardware.event.KeyEvent,
+        'TimerEvent' : obengine.hardware.event.TimerEvent
         }
 
     def make(self, item, *args):
