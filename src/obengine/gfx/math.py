@@ -21,6 +21,10 @@ __date__ ="$Mar 3, 2011 3:30:17 PM$"
 import warnings
 
 class Vector(object):
+    """
+    Simple vector class; things like dot-product
+    and vector multiplication currently not implemented.
+    """
 
     def __init__(self, x = 0, y = 0, z = 0):
         
@@ -29,9 +33,15 @@ class Vector(object):
         self.z = z
 
     def __getitem__(self, index):
+        """
+        This is for backwards compatibility with OpenBlox < 0.6.2,
+        which used lists instead of this class.
+        """
 
+        # Warn our caller this is a deprecated facility
         warnings.warn('Usage of lists for vectors will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
 
+        # Try to convert the given index to one of our attributes
         keys = {0 : self.x, 1 : self.y, 2 : self.z}
 
         try:
@@ -41,7 +51,12 @@ class Vector(object):
             raise IndexError(index)
 
     def __setitem__(self, index, value):
+        """
+        This is for backwards compatibility with OpenBlox < 0.6.2,
+        which used lists instead of this class.
+        """
 
+        # Warn our caller that using lists is deprecated
         warnings.warn('Usage of lists for vectors will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
 
         if index == 0:
@@ -53,9 +68,11 @@ class Vector(object):
         elif index == 2:
             self.z = value
 
-
-
 class EulerAngle(object):
+    """
+    Minimalistic Euler angle class.
+    See http://en.wikipedia/Euler_Angle for more on Euler angles.
+    """
 
     def __init__(self, h = 0, p = 0, r = 0):
 
@@ -64,6 +81,10 @@ class EulerAngle(object):
         self.r = r
 
     def __getitem__(self, index):
+        """
+        This is for backwards compatibility with OpenBlox < 0.6.2,
+        which used lists instead of this class.
+        """
 
         warnings.warn('Usage of lists for Euler angles will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
 
@@ -76,6 +97,10 @@ class EulerAngle(object):
             raise IndexError(index)
 
     def __setitem__(self, index, value):
+        """
+        This is for backwards compatibility with OpenBlox < 0.6.2,
+        which used lists instead of this class.
+        """
 
         warnings.warn('Usage of lists for Euler angles will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
 
@@ -89,6 +114,9 @@ class EulerAngle(object):
             self.r = value
 
 class Color(object):
+    """
+    This class manages RGBA colors.
+    """
 
     def __init__(self, r = 0, g = 0, b = 0, a = 255):
 
@@ -98,6 +126,10 @@ class Color(object):
         self.a = a
 
     def __getitem__(self, index):
+        """
+        This is for backwards compatibility with OpenBlox < 0.6.2,
+        which used lists instead of this class.
+        """
 
         warnings.warn('Usage of lists for RGBA colors will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
 
@@ -110,6 +142,10 @@ class Color(object):
             raise IndexError(index)
 
     def __setitem__(self, index, value):
+        """
+        This is for backwards compatibility with OpenBlox < 0.6.2,
+        which used lists instead of this class.
+        """
 
         warnings.warn('Usage of lists for RGBA colors will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
 

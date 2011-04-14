@@ -41,10 +41,12 @@ class SoundElement(obengine.element.Element):
 
         self.sound = obengine.gfx.get_rootwin().loader.loadSfx(Filename.fromOsSpecific(os.path.join(os.abspath(os.curdir)), soundfile))
         self.set_looping(looping)
-        
+
+        # Autoplay is easily implemented by starting our sound when we're added to an obengine.world.World.
         if autoplay == True:
             self.on_add += self.autoplay
 
+        # We have to stop when we're removed!
         self.on_remove += self.stop
 
 
@@ -80,8 +82,10 @@ class SoundElement(obengine.element.Element):
         """
         return self.sound.getVolume() * 100.0
 
-    def set_looping(self, looping):
-        self.sound.setLoop(looping)
-
-    def get_looping(self):
+    @property
+    def looping(self):
         return self.sound.getLoop()
+
+    @looping.setter
+    def looping(self, looping):
+        self.sound.setLoop(looping)

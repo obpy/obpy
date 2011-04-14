@@ -24,7 +24,7 @@ import obengine.event
 
 class Player(object):
     """
-    This class handles the model for OpenBlox's players. Nothing's really here.
+    This class handles the model for OpenBlox's players. You probably want to use obengine.gfx.player.PlayerView, instead.
     """
 
     def __init__(self, name):

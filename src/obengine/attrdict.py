@@ -24,44 +24,36 @@ class AttrDict(dict):
     """
     A decorated dict that links attributes to keys, so we can do this:
 
-    .. testcode::
+    from obengine.attrdict import AttrDict
 
-        from obengine.attrdict import AttrDict
+    a = AttrDict()
+    a.Key1 = "Test1"
+    a.Key2 = "Test2"
 
-        a = AttrDict()
-        a.Key1 = "Test1"
-        a.Key2 = "Test2"
-
-        print a.Key1
-        print a['Key1']
-        print a.Key2
-        print a['Key2']
+    print a.Key1
+    print a['Key1']
+    print a.Key2
+    print a['Key2']
 
     This should output:
 
-    .. testoutput::
-
-        Test1
-        Test1
-        Test2
-        Test2
+    Test1
+    Test1
+    Test2
+    Test2
 
     NEW IN 0.5:
 
     You can also initalize AttrDict like a regular dict:
 
-    .. testcode::
+    from obengine.attrdict import AttrDict
 
-        from obengine.attrdict import AttrDict
-
-        a = AttrDict(a = 1, b = 2, c = 3)
-        print a.a, a.b, a.c
+    a = AttrDict(a = 1, b = 2, c = 3)
+    print a.a, a.b, a.c
 
     This should output:
-
-    .. testoutput::
-        
-        1 2 3
+    
+    1 2 3
     """
 
     def __init__(self, **kwargs):

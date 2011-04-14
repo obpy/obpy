@@ -34,11 +34,22 @@ def init():
 
     global config_vars
 
-    defaults = {'loglevel' : 'debug', 'logfile' : 'oblog.txt', 'viewmode' : 'third-person', 'fps' : 50.0, 'physxfps' : 45.0}
+    # These are our default variables.
+    # If no config file can be found, these are loaded instead
 
+    defaults = {
+    'loglevel' : 'debug',
+    'logfile' : 'oblog.txt',
+    'viewmode' : 'third-person',
+    'fps' : 50.0,
+    'physxfps' : 45.0
+    }
+
+    # If this is True, then we're running normally
     if '.zip' not in __file__:
         basedir = __file__[:len(__file__) - len(os.path.join('obengine', 'cfg.py')) - 1]
 
+    # We're running inside a .zip archive, probably for BloxWorks
     else:
 
         if sys.platform == 'win32':
@@ -47,12 +58,16 @@ def init():
         else:
             basedir = os.path.join(os.getenv('HOME', '/home/' + os.getlogin()), 'OpenBlox')
 
+    # Creae the configuration parser
+
     cfgparser = ConfigParser.ConfigParser()
 
     lualibdir = os.path.join(basedir, 'lualibs')
     datadir = os.path.join(basedir, 'data')
 
     cfgparser.read(os.path.join(basedir, 'obconf.cfg'))
+
+    # Add the required configuration variables
 
     add_config_var('cfgdir', basedir)
     add_config_var('lualibdir', lualibdir)

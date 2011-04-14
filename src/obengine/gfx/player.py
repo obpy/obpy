@@ -37,26 +37,33 @@ import time
 import copy
 
 class PlayerController(object):
+    """
+    This class is not meant to be used directly (save for a new input device);
+    instead, use one of its derivatives.
+
+    This class abstracts the control mechanisim from the actual rendering of the player.
+    """
 
     def __init__(self, view):
 
         self.view = view
 
-        self.init()
+        self._init()
 
-    def init(self): pass
+    def _init(self): pass
     """
     This method is meant to be overridden in a derivatave.
     It initalizes the controller, which could mean adding
     key bindings, or another means to control the player.
     """
 
-
 class KeyboardPlayerController(PlayerController):
 
     jump_interval = 2
 
-    def init(self):
+    def _init(self):
+
+        # Set up our key map, which maps key names to their current state
 
         self.key_map = {
         'left' : False,
@@ -65,6 +72,9 @@ class KeyboardPlayerController(PlayerController):
         'down' : False,
         'space' : False
         }
+
+
+        # Set up our key bindings
 
         win = obengine.gfx.get_rootwin()
 
@@ -80,14 +90,22 @@ class KeyboardPlayerController(PlayerController):
         win.accept('space', self.set_key, ['space', True])
         win.accept('space-up', self.set_key, ['space', False])
 
+        # Update us every frame
+
         win.connect_on_update(self.update_player)
 
+        # This is used to keep sneaky players from flying!
+        # NOTE: This will eventually be replaced with something better,
+        # like checking for a collision with ground
         self.last_jump_time = time.time()
 
     def set_key(self, key, val):
         self.key_map[key] = val
 
     def update_player(self, task):
+
+        # Check our key map.
+        # If any keys are pressed, perform their appropriate actions
 
         if self.key_map['left'] == True:
             self.view._rotate_l()
@@ -101,22 +119,29 @@ class KeyboardPlayerController(PlayerController):
         elif self.key_map['down'] == True:
             self.view._move_b()
 
+        # Is the space key pressed, and the user waited long enough to jump again?
         if self.key_map['space'] == True and time.time() - self.last_jump_time > self.jump_interval:
 
+            # Save the current time, and then jump
             self.last_jump_time = time.time()
             self.view._jump()
 
+        # Make ourselves be called again
         return task.cont
 
 class PlayerView(object):
     """
     If you're directly using OpenBlox from Python, use this class instead of obengine.player.Player.
-    Experimental!
+    This is a full drop-in replacement for obengine.player.Player, for non-server (i.e, graphical) purposes.
     """
 
+    # Dictates how fast we move
     move_speed = 5
 
     def __init__(self, name):
+        """
+        name is the name of this view. Just like obengine.player.Player.
+        """
 
         self.name = name
         self.player = obengine.player.Player(name)
@@ -127,11 +152,19 @@ class PlayerView(object):
         self.player.on_full += self.model_on_full
 
     def join_world(self, world, pos = Vector(0, 0, 0)):
+        """
+        Joins the world world.
+        pos is the position to initially start at.
+        NOTE: pos will eventually be removed, and replaced with Spawn Points (see http://openblox.sf.net/idea/spawn-points)
+        """
 
         self.pos = pos
         self.player.join_world(world)
 
     def leave_world(self):
+        """
+        Leaves a world.
+        """
         self.player.leave_world()
 
     def model_on_joined(self, world):
@@ -148,6 +181,11 @@ class PlayerView(object):
         del self.world
 
     def _construct_avatar(self, pos = Vector(0, 0, 0)):
+        """
+        Actually builds the avatar.
+        Currently, the avatar always has yellow arms, legs, and head, with a blue torso,
+        but soon it will be re-configurable on a user-to-user basis.
+        """
 
         factory = obengine.elementfactory.ElementFactory()
 
@@ -215,7 +253,7 @@ class PlayerView(object):
 
     def _construct_gui(self):
 
-        OnscreenText(text = 'you are ' + self.name, scale = (0.06, 0.06), pos = (0, 0.95, 1), bg = (0, 0, 0, 0.5), fg = (1, 1, 1, 0.9))
+        OnscreenText(text = self.name, scale = (0.06, 0.06), pos = (0, 0.95, 1), bg = (0, 0, 0, 0.5), fg = (1, 1, 1, 0.9))
 
         obengine.gfx.get_rootwin().disableMouse()
         obengine.gfx.get_rootwin().taskMgr.add(self._update_camera, self.name + '_update', priority = 1)
@@ -234,6 +272,8 @@ class PlayerView(object):
 
 
     def _move_f(self):
+
+        # See moveexp.txt for what this means
 
         h = self._get_member('torso').brick.hpr.h
 
@@ -288,6 +328,8 @@ class PlayerView(object):
 
 
     def _move_b(self):
+
+        # See moveexp.txt for what this means
 
         h = self._get_member('torso').brick.hpr.h
 
@@ -361,10 +403,22 @@ class PlayerView(object):
         return names
 
     def _update_camera(self, task):
+        """
+        Updates the camera's position.
+        Currently, 2 positions are supported:
+
+        * FPS
+        * Adventure/Isometric
+
+        A third-person view with the camera always pointing directly at the player's back is
+        in the offing.
+        """
 
         pos = copy.copy(self._get_member('head').brick.coords)
 
         if obengine.cfg.get_config_var('viewmode') == 'fps':
+
+            # FPS view is very simple. Just move to wherever the player's head is, and copy its hpr!
 
             self.camera.setPos(*pos)
 
@@ -377,6 +431,8 @@ class PlayerView(object):
 
         else:
 
+            # Adventure/Isometric is also simple: Offset the camera a bit, and then look at the player's head.
+
             pos.x = pos.x - 70
             pos.y = pos.y - 80
             pos.z = pos.z + 60
@@ -384,4 +440,5 @@ class PlayerView(object):
             self.camera.setPos(*pos)
             self.camera.lookAt(self._get_member('head').view.model)
 
+        # Set ourselves up to be called again
         return task.cont

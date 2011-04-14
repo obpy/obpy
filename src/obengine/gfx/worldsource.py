@@ -38,9 +38,13 @@ class WorldSource(list):
         pass
 
     def retrieve(self):
+
+        # This method needs to be overrid
         raise NotImplementedError
 
     def handle_brick(self, child):
+
+        # Create the different brick attributes, with defaults
 
         rgb = Color()
         coords = Vector()
@@ -91,8 +95,10 @@ class WorldSource(list):
 
     def handle_skybox(self, child):
 
-        element = ElementFactory().make('skybox')
-        
+        # Create a skybox, optionally with a custom texture
+        element = ElementFactory().make('skybox', child.attrib.get('src'))
+
+        # Add it
         self.append(element)
 
     def handle_script(self, child):
@@ -108,8 +114,20 @@ class WorldSource(list):
         self.append(element)
 
     def handle_sound(self, child):
+        """
+        Creates a sound from a XML element.
+        """
 
-        element = ElementFactory().make('sound', child.attrib['name'], child.attrib['src'], child.attrib.get('autoplay', False))
+        # We need to convert "yes" and "no" to True/False, so we do it with a dict
+        yes_no = { 'yes' : True, 'no' : False}
+
+        # Retrieve the scene graph name, filename, and autoplay (play on added)
+        name = child.attrib['name']
+        src = child.attrib['src']
+        autoplay = yes_no[child.attrib.get('autoplay', False)]
+
+        # Create the element
+        element = ElementFactory().make('sound', name, src, autoplay)
 
         self.append(element)
 
@@ -120,23 +138,31 @@ class WorldSource(list):
         * UnknownWorldTag when an unknown tag is encountered.
         * InsufficientVersion if the "version" attribute of the world tag is greater than this engine's version
         """
-        
+
+        # self.retrieve returns a file-like object
         file = self.retrieve()
 
         tree = xmlparser.parse(file)
         rootnode = tree.getroot()
 
-        if tuple(int(v) for v in rootnode.attrib.get('version', '0.0.0').split('.')) > obengine.ENGINE_VERSION:
-            raise InsufficientVersion, rootnode.attrib.get('version', '0.0.0')
+        # Check the version. We use 0.6.2 as the default, as that was the last version of OpenBlox
+        # to not have this feature
+        game_version = tuple(int(v) for v in rootnode.attrib.get('version', '0.6.2').split('.'))
+
+        # We can't load this game if it's for a non-compatible version of OpenBlox
+        if game_version[0] != obengine.ENGINE_VERSION[0]:
+            raise InsufficientVersion, rootnode.attrib.get('version', '0.6.2')
 
         supported_tags = { 'brick' : 'handle_brick', 'skybox' : 'handle_skybox', 'script' : 'handle_script', 'sound' : 'handle_sound' }
 
-
+        # Run over all the children of the top-level "world" tag
         for child in rootnode:
 
+            # Do we know how to handle this tag?
             if child.tag in supported_tags:
                 getattr(self, supported_tags[child.tag])(child)
 
+            # We don't. Raise an exception
             else:
                 raise UnknownWorldTag, child.tag
 
