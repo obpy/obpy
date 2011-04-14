@@ -113,10 +113,10 @@ class GameBrowser(wx.Frame):
             target = os.system
 
             if os.name == 'nt':
-                arg = 'ppython.exe oblaunch.py %s' % game
+                arg = 'ppython.exe oblaunch.py \"%s\"' % game
 
             else:
-                arg = 'python oblaunch.py %s' % game
+                arg = 'python oblaunch.py \"%s\"' % game
 
             launcher = multiprocessing.Process(target = target, args = (arg, ), group = None)
             launcher.daemon = True
