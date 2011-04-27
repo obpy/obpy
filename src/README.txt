@@ -160,4 +160,4 @@ The OpenBlox Wiki:
 
 The OpenBlox Forums (always search for a solution before asking for help):
 
-    http://openblox.sourceforge.net/?q=forum
+    http://openblox.sourceforge.net/forum

@@ -31,7 +31,7 @@ def _implements(obj, interface):
     if interface_set.issubset(obj_set) is False:
         raise InterfaceOmissionError, tuple(interface_set - obj_set)
 
-    for interface_method in filter(inspect.ismethod, interface_set):
+    for interface_method in filter(inspect.ismethod, map(interface.__dict__.__getitem__, interface_set)):
 
         obj_method = getattr(obj, interface_method)
 
@@ -50,8 +50,6 @@ def implements(*args):
 
     if hasattr(obj, '__implements__'):
 
-        print 'using cache'
-
         while args:
 
             if args.pop(0) not in obj.__implements__:
@@ -61,7 +59,6 @@ def implements(*args):
 
     else:
 
-        print 'creating cache'
         obj.__implements__ = []
 
         try:
