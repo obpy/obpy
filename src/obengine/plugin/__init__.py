@@ -20,3 +20,5 @@ This file is part of The OpenBlox Game Engine.
 
 __author__="openblocks"
 __date__ ="$Apr 27, 2011 2:38:29 PM$"
+
+from pluginmanager import *

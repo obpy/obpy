@@ -26,9 +26,60 @@ import sys
 import ConfigParser
 
 import obengine.cfg
+import obengine.utils
 import obengine.event
 
 PLUGIN_CFG_NAME = 'plugin.ini'
+
+class Plugin(object):
+    """
+    Represents a loaded plugin.
+    This is mostly an class that should just be used by PluginManager,
+    though there could be other uses.
+    """
+
+    def __init__(self, name, root_module, root_dir, provides):
+        """
+        Arguments:
+         * name - the name of this plugin
+         * root_module - the Python module to import; it must be inside root_dir
+         * root_dir - the path (absolute or relative) to the directory containing the plugin's plugin.ini file
+         * provides - the list of facilites (virtual plugins) that this plugin provides
+        """
+
+        self.name = name
+        self.root_module = root_module
+        self.root_dir = root_dir
+        self.provides = provides
+
+    def load(self):
+        """
+        Loads this plugin; adds the root module to sys.modules,
+        and adds this plugin as the implementation for all the virtual plugins it provides
+        """
+
+        # Add the root directory, so we can easily import the root module
+        sys.path.insert(0, self.root_dir)
+
+        __import__(self.root_module, globals(), locals())
+
+        self.module = sys.modules[self.root_module]
+
+        # Does this plugin provide any facilites (virtual plugins)?
+        if self.provides != ['none']:
+        
+            for provision in self.provides:
+
+                # Set ourselves as the implementation of each virtual plugin we provide
+                sys.modules[provision] = self.module
+
+        # Remove the root directory of this plugin, so we don't pollute sys.path
+        sys.path.pop(0)
+        
+    def init(self):
+
+        # Merely delegate to the root module
+        self.module.init()
 
 class PluginManager(object):
     """
@@ -41,56 +92,159 @@ class PluginManager(object):
     See the dummy plugin (in plugins/dummy-plugin) to see how to write an actual plugin.
     """
 
-    def __init__(self):
+    def __init__(self, search_path = None):
+        """
+        Arguments:
+         * search_path (optional) - the path to search for plugins. If not given, OPENBLOX_DIR/plugins is used
+        """
 
-        self.search_path = os.path.join(obengine.cfg.get_config_var('cfgdir'), 'plugins')
+        self.search_path = search_path or os.path.join(obengine.cfg.get_config_var('cfgdir'), 'plugins')
 
+        # Various events, for extensibilty purposes
         self.on_plugin_found = obengine.event.Event()
         self.on_plugin_loaded = obengine.event.Event()
 
         self.plugins = []
 
     def find_plugins(self):
+        """
+        Finds all plugins under the set search path, and sets them up to be loaded.
+        Note that conflicting plugins are not checked at this stage!
+        """
+
+        # Find every plugin under our search path
+
+        for root_dir, child_dirs, files in os.walk(self.search_path):
+
+            # Does this directory constitute a valid plugin?
+            
+            if PLUGIN_CFG_NAME in files:
+                self.load_plugin(root_dir)
+
+    def find_plugin(self, name):
+        """
+        Finds a plugin, with a given name.
+        Arguments:
+         * name - name of the plugin to find
+        Returns:
+        The root directory of the plugin with the given name; None, if no such plugin was found.
+        """
 
         for root_dir, child_dirs, files in os.walk(self.search_path):
 
             if PLUGIN_CFG_NAME in files:
 
-                self.on_plugin_found(root_dir)
-                self.parse_plugin_dir(root_dir)
+                if name in self.parse_plugin_dir(root_dir):
+                    return root_dir
 
-    def load_all_plugins(self):
+    def load_plugin(self, root_dir):
+        """
+        Loads a plugin. The name is slightly misleading, as the plugin is not acutally initalized,
+        just put in the initialization queue.
+        Arguments:
+         * root_dir - the root directory of the plugin to load
+        """
 
-        for plugin in self.plugins:
+        self.on_plugin_found(root_dir)
+        self.parse_plugin_dir(root_dir)
 
+    def load_all_plugins(self, exclusion_list = []):
+        """
+        Initalizes all found plugins.
+        Arguments:
+         * exclusion_list - if given, specifies plugins to not load
+        """
+
+        for plugin in filter(lambda p: p.name not in exclusion_list, self.plugins):
+
+            plugin.load()
             plugin.init()
             self.on_plugin_loaded(plugin)
 
+    def all_plugins(self):
+        """
+        A generator, that yields every found plugin.
+        Returns:
+        A generator, containing all found plugins, represented as instances of Plugin.
+        """
+
+        for plugin in self.plugins:
+            yield plugin
+
+    def provided_plugins(self):
+        """
+        A generator that yields all provided virtual plugin names.
+        """
+
+        for plugin in self.all_plugins():
+
+            for provision in filter(lambda p: p != ['none'], plugin.provides):
+                yield provision
+
+    def all_plugin_names(self):
+        """
+        A generator that yields the names of all currently loaded (not neccessarily initalized!) plugins.
+        """
+
+        for plugin in self.all_plugins():
+            yield plugin.name
+
     def parse_plugin_dir(self, root_dir):
+        """
+        Parses a plugin, and adds it to the initialization queue.
+
+        Arguments:
+         * root_dir - the root directory of the plugin to be parsed
+
+        Returns:
+        The list of virtual plugins the newly loaded plugin provides
+        """
 
         parser = ConfigParser.ConfigParser()
         parser.read(os.path.join(root_dir, PLUGIN_CFG_NAME))
 
-        location = parser.get('core', 'module')
-        provides = parser.has_option('core', 'provides') and parser.get('core', 'provides').split() or ['none']
+        module = parser.get('core', 'module')
+        name = parser.get('core', 'name')
+        provides = self._get_optional_split_option(parser, 'core', 'provides', ['none'])
+        depends = self._get_optional_split_option(parser, 'core', 'depends', ['none'])
+        conflicts = self._get_optional_split_option(parser, 'core', 'conflicts', ['none'], ',')
 
-        sys.path.insert(0, root_dir)
+        for possible_conflict in conflicts:
 
-        __import__(location, globals(), locals())
+            if possible_conflict in self.provided_plugins() or possible_confict in self.all_plugin_names:
 
-        plugin = sys.modules[location]
+                message = 'Conflict between %s and %s' % (name, possible_confict)
+                obengine.utils.critical(message)
+                raise PluginConflictError(message)
 
-        for provision in filter(lambda name: name != 'none', provides):
-            sys.modules[provision] = plugin
+        if depends != ['none']:
 
-        sys.path.pop(0)
+            for dependency in depends:
+
+                if dependency in self.provided_plugins():
+                    continue
+
+                self.load_plugin(self.find_plugin(dependency))
+
+        plugin = Plugin(name, module, root_dir, provides)
 
         self.plugins.append(plugin)
 
-    @property
-    def search_path(self):
-        return self._search_path
+        return provides
 
-    @search_path.setter
-    def search_path(self, path):
-        self._search_path = path
+    def _get_optional_option(self, config_parser, section, option, default = None):
+        return config_parser.has_option(section, option) and config_parser.get(section, option) or default
+
+    def _get_optional_split_option(self, config_parser, section, option, default = None, splitter = ' '):
+
+        val = self._get_optional_option(config_parser, section, option, default)
+
+        if val != default:
+            val = val.split(splitter)
+
+        return val
+
+class PluginConfictException(Exception):
+    """
+    Raised when two conflicting plugins (two graphics front-ends, for example) are loaded.
+    """
