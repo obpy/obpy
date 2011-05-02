@@ -1,5 +1,5 @@
 """
-Copyright (C) 2010 The OpenBlox Project
+Copyright (C) 2011 The OpenBlox Project
 
 This file is part of The OpenBlox Game Engine.
 
@@ -17,21 +17,25 @@ This file is part of The OpenBlox Game Engine.
     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 
 """
+
 __author__="openblocks"
-__date__ ="$Jul 14, 2010 12:19:08 AM$"
+__date__ ="$May 2, 2011 1:15:36 AM$"
 
 import lupa
 
 import sys
 
 # Panda3D hack for errant Windows sys.path
+
 if sys.platform == 'win32':
-    
+
     sys.path.insert(0, 'C:\\Program Files\\OpenBlox')
     sys.path.insert(1, 'C:\\Program Files\\OpenBlox\\obengine\\scripting')
 
 from obengine.utils import error, wrap_callable
 from obengine.attrdict import AttrDict
+
+import obengine.event
 
 # Default globals that lupa creates when its lua runtime is created.
 # We don't want to expose these, so we make a list of them here
@@ -88,8 +92,9 @@ class ScriptEngine(object):
     OpenBlox's powerful script engine class. Use this to run Lua scripts, by calling execute.
     You can also expose Python objects, by calling expose.
 
-    Also, this class has attributes(namely, method and var) that exposes all Lua methods and variables:
-    Example:
+    Also, this class has attributes (namely, method and var) that exposes all Lua methods and variables.
+
+    Example::
 
     lua = ScriptEngine()
 
@@ -101,12 +106,12 @@ class ScriptEngine(object):
 
     lua.method.hello()
 
-    This should output:
+    This should output::
 
     Hello Python world!
 
     NEW IN 0.5:
-    You can set Lua variables and methods outside of the runtime, like this:
+    You can set Lua variables and methods outside of the runtime, like this::
 
     lua = ScriptEngine()
 
@@ -117,22 +122,18 @@ class ScriptEngine(object):
 
     lua.execute('print(a)')
 
-    This should output:
+    This should output::
 
     1
     10
     """
-    
-    def __init__(self, filename = '<stdin>', error_cb = None):
+
+    def __init__(self, filename = '<stdin>'):
         """
         If error_cb is None(i.e, not given), error messages are printed on stdout.
         """
 
-        if error_cb:
-            self.error_cb = error_cb
-
-        else:
-            self.error_cb = self.default_error_cb
+        self.on_error = obengine.event.Event()
 
         # Create the Lua runtime
         self.lua = lupa.LuaRuntime()
@@ -174,7 +175,7 @@ class ScriptEngine(object):
 
         # Houston, we have a problem...
         except Exception, message:
-            self.error_cb(message)
+            self.on_error(message)
 
     def execute(self, string):
         """
@@ -197,7 +198,7 @@ class ScriptEngine(object):
                         self.method[key] = self.globals()[key]
 
         except Exception, message:
-            self.error_cb(exc.message)
+            self.on_error(message)
 
     def expose(self, obj):
         """

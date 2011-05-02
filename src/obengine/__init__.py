@@ -24,3 +24,14 @@ __author__="openblocks"
 __date__ ="$Jul 12, 2010 7:59:47 PM$"
 
 ENGINE_VERSION = (0, 7, 0)
+
+def init():
+    """
+    Wrapper around obengine.depman.init().
+    Call this function, after importing all the modules you need.
+    """
+
+    import depman
+
+    depman.gendeps()
+    depman.init()

@@ -25,10 +25,14 @@ import logging
 import os
 import sys
 import time
-
+import types
 
 import obengine.cfg
 import obengine.event
+
+import obengine.depman
+
+obengine.depman.gendeps()
 
 
 loglevels = { 'debug' : logging.DEBUG,
@@ -78,3 +82,9 @@ def wrap_callable(method, before, after):
     wrapper.__name__ = method.__name__
 
     return wrapper
+
+class Borg:
+    __shared_state = {}
+
+    def __init__(self):
+        self.__dict__ = self.__shared_state

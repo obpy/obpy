@@ -21,6 +21,9 @@ __author__="openblocks"
 __date__ ="$Jan 23, 2011 8:10:16 AM$"
 
 from obengine.element import Element
+import obengine.plugin
+
+obengine.plugin.require('core.scripting')
 
 class ScriptElement(Element):
 
@@ -46,11 +49,12 @@ class ScriptElement(Element):
 
 
     def run(self):
-        
-        import obengine.scripting.luaengine as luaeng
+
+
+        import core.scripting
         import obengine.elementfactory
 
-        self.script_engine = luaeng.ScriptEngine(self.name)
+        self.script_engine = core.scripting.ScriptEngine(self.name)
 
         self.script_engine.expose(self.world)
         self.script_engine.expose(self)
