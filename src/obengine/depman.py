@@ -28,8 +28,6 @@ from sys import _getframe as getframe
 import inspect
 import modulefinder
 
-import obengine.utils
-
 collected_modules = []
 dependency_map = {}
 
@@ -134,7 +132,6 @@ def init():
 
     errors = []
 
-
     collected_modules.sort(_cmp_modules)
 
     # Run over all the modules we collected
@@ -161,7 +158,7 @@ def init():
                         
                         if module_name + module_dependency not in errors:
 
-                            obengine.utils.warn('Circular dependency between %s and %s' % (module_name, module_dependency))
+                            print >> sys.stderr, 'Circular dependency between %s and %s' % (module_name, module_dependency)
                             errors.append(module_name + module_dependency)
 
     # We just finished checking for circular dependencies, so now,

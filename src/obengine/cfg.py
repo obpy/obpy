@@ -25,8 +25,13 @@ __date__ ="$Aug 3, 2010 2:36:03 PM$"
 
 import os
 import sys
+import warnings
 import ConfigParser
 
+import obengine.vfs
+
+import obengine.depman
+obengine.depman.gendeps()
 
 config_vars = {}
 
@@ -37,13 +42,7 @@ def init():
     # These are our default variables.
     # If no config file can be found, these are loaded instead
 
-    defaults = {
-    'loglevel' : 'debug',
-    'logfile' : 'oblog.txt',
-    'viewmode' : 'third-person',
-    'fps' : 50.0,
-    'physxfps' : 45.0
-    }
+    obengine.vfs.filesystem.mount('/config', obengine.vfs.MemoryFS())
 
     # If this is True, then we're running normally
     if '.zip' not in __file__:
@@ -72,17 +71,14 @@ def init():
     add_config_var('cfgdir', basedir)
     add_config_var('lualibdir', lualibdir)
     add_config_var('datadir', datadir)
-    add_config_var('loglevel', cfgparser.has_section('optional') and cfgparser.get('optional', 'loglevel') or defaults['loglevel'])
-    add_config_var('logfile', cfgparser.has_section('optional') and cfgparser.get('optional', 'logfile') or defaults['logfile'])
-    add_config_var('viewmode', cfgparser.has_section('optional') and cfgparser.get('optional', 'viewmode') or defaults['viewmode'])
+    
+    add_config_var('log-level', cfgparser.get('core', 'log-level'))
+    add_config_var('log-file', cfgparser.get('core', 'log-file'))
 
-    add_config_var('fps', cfgparser.has_section('required') and cfgparser.getfloat('required', 'fps') or (defaults['fps']))
-    add_config_var('physxfps', cfgparser.has_section('required') and cfgparser.getfloat('required', 'physxfps') or defaults['physxfps'])
+    for section in filter(lambda s: s != 'core', cfgparser.sections()):
 
-    if cfgparser.has_section('optional'):
-
-        for key, value in cfgparser.items('optional'):
-            add_config_var(key, value)
+        for option in cfgparser.options(section):
+            add_config_var(option, cfgparser.get(section, option))
 
 def add_config_var(key, value):
     """
@@ -90,9 +86,8 @@ def add_config_var(key, value):
     If you want to make a persistent configuration variable, modifiy obconf.cfg directly.
     """
 
-    global config_vars
-    
-    config_vars[key] = value
+    obengine.vfs.filesystem.open('/config/%s' % key, 'w').write(value)
+
 
 def get_config_var(key):
     """
@@ -100,6 +95,26 @@ def get_config_var(key):
     Raises KeyError if key isn't found.
     """
 
-    global config_vars
+    # It's easier to ask forgiveness than permission, isn't it? :)
 
-    return config_vars[key]
+    try:
+        data = obengine.vfs.filesystem.open('/config/%s' % key).read()
+
+    except IOError:
+        raise KeyError(key)
+
+    try:
+        return int(data)
+
+    except ValueError:
+
+        try:
+            return float(data)
+
+        except ValueError:
+
+            try:
+                return {'yes' : True, 'no' : False}[data]
+
+            except:
+                return data

@@ -49,6 +49,8 @@ class Event(object):
         try:
             self.handlers.remove(handler)
 
+            return self
+
         except:
             raise ValueError('Given handler is not handling this event, and thus cannot be removed')
 

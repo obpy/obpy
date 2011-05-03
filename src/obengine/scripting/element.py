@@ -1,5 +1,3 @@
-# To change this template, choose Tools | Templates
-# and open the template in the editor.
 """
 This file is part of The OpenBlox Game Engine.
 
@@ -49,7 +47,6 @@ class ScriptElement(Element):
 
 
     def run(self):
-
 
         import core.scripting
         import obengine.elementfactory

@@ -31,7 +31,6 @@ import obengine.cfg
 import obengine.event
 
 import obengine.depman
-
 obengine.depman.gendeps()
 
 
@@ -43,8 +42,8 @@ loglevels = { 'debug' : logging.DEBUG,
 
 def init():
 
-    level = obengine.cfg.get_config_var('loglevel')
-    logfile = obengine.cfg.get_config_var('logfile')
+    level = obengine.cfg.get_config_var('log-level')
+    logfile = obengine.cfg.get_config_var('log-file')
 
     # Writing to C:\Program Files is deprecated
     if sys.platform == 'win32':

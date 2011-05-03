@@ -20,6 +20,8 @@ __date__ ="$Mar 3, 2011 3:30:17 PM$"
 
 import warnings
 
+import obengine.event
+
 class Vector(object):
     """
     Simple vector class; things like dot-product
@@ -27,10 +29,44 @@ class Vector(object):
     """
 
     def __init__(self, x = 0, y = 0, z = 0):
-        
-        self.x = x
-        self.y = y
-        self.z = z
+
+        self.on_x_changed = obengine.event.Event()
+        self.on_y_changed = obengine.event.Event()
+        self.on_z_changed = obengine.event.Event()
+
+        self._x = float(x)
+        self._y = float(y)
+        self._z = float(z)
+
+    @property
+    def x(self):
+        return self._x
+
+    @x.setter
+    def x(self, value):
+
+        self._x = float(value)
+        self.on_x_changed(self._x)
+
+    @property
+    def y(self):
+        return self._y
+
+    @y.setter
+    def y(self, value):
+
+        self._y = float(value)
+        self.on_y_changed(self._y)
+
+    @property
+    def z(self):
+        return self._z
+
+    @z.setter
+    def z(self, value):
+
+        self._z = float(value)
+        self.on_z_changed(self._z)
 
     def __getitem__(self, index):
         """
@@ -60,13 +96,13 @@ class Vector(object):
         warnings.warn('Usage of lists for vectors will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
 
         if index == 0:
-            self.x = value
+            self.x = float(value)
 
         elif index == 1:
-            self.y = value
+            self.y = float(value)
             
         elif index == 2:
-            self.z = value
+            self.z = float(value)
 
 class EulerAngle(object):
     """
@@ -76,9 +112,43 @@ class EulerAngle(object):
 
     def __init__(self, h = 0, p = 0, r = 0):
 
-        self.h = h
-        self.p = p
-        self.r = r
+        self.on_h_changed = obengine.event.Event()
+        self.on_p_changed = obengine.event.Event()
+        self.on_p_changed = obengine.event.Event()
+
+        self._h = float(h)
+        self._p = float(p)
+        self._r = float(r)
+
+    @property
+    def h(self):
+        return self._h
+
+    @h.setter
+    def h(self, value):
+
+        self._h = float(value)
+        self.on_h_changed(self._h)
+
+    @property
+    def p(self):
+        return self._p
+
+    @p.setter
+    def p(self, value):
+
+        self._h = float(value)
+        self.on_h_changed(self._p)
+
+    @property
+    def r(self):
+        return self._r
+
+    @r.setter
+    def r(self, value):
+
+        self._r = float(value)
+        self.on_z_changed(self._r)
 
     def __getitem__(self, index):
         """
@@ -105,25 +175,70 @@ class EulerAngle(object):
         warnings.warn('Usage of lists for Euler angles will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
 
         if index == 0:
-            self.h = value
+            self.h = float(value)
 
         elif index == 1:
-            self.p = value
+            self.p = float(value)
 
         elif index == 2:
-            self.r = value
+            self.r = float(value)
 
 class Color(object):
     """
     This class manages RGBA colors.
     """
 
-    def __init__(self, r = 0, g = 0, b = 0, a = 255):
+    def __init__(self, r = 0.0, g = 0.0, b = 0.0, a = 255.0):
 
-        self.r = r
-        self.g = g
-        self.b = b
-        self.a = a
+        self.on_r_changed = obengine.event.Event()
+        self.on_g_changed = obengine.event.Event()
+        self.on_b_changed = obengine.event.Event()
+        self.on_a_changed = obengine.event.Event()
+
+        self._r = float(r)
+        self._g = float(g)
+        self._b = float(b)
+        self._a = float(a)
+
+    @property
+    def r(self):
+        return self._r
+
+    @r.setter
+    def r(self, value):
+
+        self._r = float(value)
+        self.on_r_changed(self._r)
+
+    @property
+    def g(self):
+        return self._g
+
+    @g.setter
+    def g(self, value):
+
+        self._g = float(value)
+        self.on_g_changed(self._g)
+
+    @property
+    def b(self):
+        return self._b
+
+    @b.setter
+    def b(self, value):
+
+        self._b = float(value)
+        self.on_b_changed(self._b)
+
+    @property
+    def a(self):
+        return self._a
+
+    @a.setter
+    def a(self, value):
+
+        self._a = float(value)
+        self.on_a_changed(self._a)
 
     def __getitem__(self, index):
         """
@@ -150,13 +265,13 @@ class Color(object):
         warnings.warn('Usage of lists for RGBA colors will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
 
         if index == 0:
-            self.r = value
+            self.r = float(value)
 
         elif index == 1:
-            self.g = value
+            self.g = float(value)
 
         elif index == 2:
-            self.b = value
+            self.b = float(value)
 
         elif index == 3:
-            self.a = value
+            self.a = float(value)
