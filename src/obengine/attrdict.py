@@ -20,57 +20,8 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Jul 12, 2010 8:02:01 PM$"
 
-class AttrDict(dict):
-    """
-    A decorated dict that links attributes to keys, so we can do this:
+import warnings
 
-    from obengine.attrdict import AttrDict
+warnings.warn('obengine.attrdict is deprecated, use obengine.datatypes instead', stacklevel = 2)
 
-    a = AttrDict()
-    a.Key1 = "Test1"
-    a.Key2 = "Test2"
-
-    print a.Key1
-    print a['Key1']
-    print a.Key2
-    print a['Key2']
-
-    This should output:
-
-    Test1
-    Test1
-    Test2
-    Test2
-
-    NEW IN 0.5:
-
-    You can also initalize AttrDict like a regular dict:
-
-    from obengine.attrdict import AttrDict
-
-    a = AttrDict(a = 1, b = 2, c = 3)
-    print a.a, a.b, a.c
-
-    This should output:
-    
-    1 2 3
-    """
-
-    def __init__(self, **kwargs):
-        dict.__init__(self, **kwargs)
-
-    def __getattr__(self, item):
-
-        try:
-            return self.__getitem__(item)
-
-        except:
-            raise AttributeError(item)
-
-    def __setattr__(self, item, value):
-
-        if self.__dict__.has_key(item):
-            dict.__setattr__(self, item, value)
-
-        else:
-            self.__setitem__(item, value)
+from obengine.datatypes import *

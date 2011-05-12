@@ -1,90 +1,90 @@
 OpenBlox Coding Standard
-------------------------
+========================
 
 Indentation
------------
+===========
 
 Indentation is done with tabs.
 Each tab is the equivalent of 4 spaces, therefore, each tab is 4 spaces long.
 
 Comments
---------
+========
 
 Regular comments(beginning with #) have a space after the hash, # like this.
 
 If the comment is for a conditional construct, the comment is placed immediately proceeding the construct.
 If the comment is for an assignment or a regular line of code(method call, class creation, etc...), the comment is placed immediately proceeding the code.
-If the comment needs to span more than one line, triple double quotes are used instead,
-"""
-like this.
-"""
+If the comment needs to span more than one line, triple double quotes are used instead::
 
-Examples:
+    """
+    like this.
+    """
 
-# Set a
-a = 1
+Examples::
 
-"""
-complicated_method is complex,
-so we need several lines
-"""
-complicated_method(f, o, o, b, a, r, s, p, a, m, e, g, g, s)
+    # Set a
+    a = 1
+
+    """
+    complicated_method is complex,
+    so we need several lines to explain it
+    """
+    complicated_method(f, o, o, b, a, r, s, p, a, m, e, g, g, s)
 
 Variables
----------
+=========
 
 Variables are named like_this.
 Variables are declared at the start of their owning module or class.
 There is a blank line between the last variable declaration, and the first coding construct, or method declaration(if the variable is global).
 
-Examples:
+Examples::
 
-foo_bar = 0
-eggs_n_spam = [ 0, 1, 2, 3, 4, 5]
+    foo_bar = 0
+    eggs_n_spam = [ 0, 1, 2, 3, 4, 5]
 
-#method declaration here
+    #method declaration here
 
 Coding Constructs
------------------
+=================
 
 All conditional and loop constructs are followed by a blank line, unless the following code is only one logical line.
 If the following logical line is a construct as well, the construct is followed by a blank line.
-Examples:
+Examples::
 
-for x in range(2, 11):
-    #do something with x
+    for x in range(2, 11):
+        #do something with x
 
-for x in range(1, 11):
+    for x in range(1, 11):
 
-    #two lines,
-    # so there is a blank line below the for loop declaration
+        #two lines,
+        # so there is a blank line below the for loop declaration
 
 Methods
--------
+=======
 
 Methods are named like_this.
 
 Private methods begin with _.
 
-Methods are fully documented,
-which means basic behavior, and each parameter is explained, as well as the expected type.
+Methods are fully documented, which means basic behavior, and each parameter is explained, as well as the expected type.
 Documentation is written as a multi-line string, began and terminated with """.
 
 There is a space after every parameter's terminating , character.
 This also applies to method calls.
 
-Example:
+Example::
 
-def method do_x(a, b, c):
-    """
-    Prints a, the first element of b, and the second element of c,
-    all on a single line.
-    """
+    def method do_x(a, b, c):
+        """
+        Prints a, the first element of b, and the second element of c,
+        all on a single line.
+        """
 
-    print a, b[0], c[1]
+        print a, b[0], c[1]
 
 Classes
--------
+=======
 
 Classes are titled LikeThis.
 If the class does not inherit from anything in partictular, it needs to inherit from object(to ensure compatability with Python 2.6/2.5).
@@ -98,37 +98,37 @@ There is also a blank line between the last line of a method, and the def line o
 Every class also has documentation, itself.
 Documentation, like methods, is written as a multi-line string, began and terminated with """.
 
-Examples:
+Examples::
 
-class ClassA(object):
-    """
-    ClassA is for XYZ.
-    Volatile - ClassA's interface might change in the future!
-    """
-
-    def __init__(self):
-
-        object.__init__(self)
-
-    def foo(self, a):
+    class ClassA(object):
         """
-        Prints a.
+        ClassA is for XYZ.
+        Volatile - ClassA's interface might change in the future!
         """
 
-        self._bar(a)
+        def __init__(self):
 
-    def _bar(self, a):
+            object.__init__(self)
 
-        print a
+        def foo(self, a):
+            """
+            Prints a.
+            """
 
+            self._bar(a)
+
+        def _bar(self, a):
+            print a
 
 Modules
--------
+=======
 
-Modules have this header, at their beginning:
+Modules have this header, at their beginning::
 
-"""
-This file is part of The OpenBlox Game Engine.
+    """
+    Copyright (C) <year> The OpenBlox Project
+    
+    This file is part of The OpenBlox Game Engine.
 
     The OpenBlox Game Engine is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -143,7 +143,7 @@ This file is part of The OpenBlox Game Engine.
     You should have received a copy of the GNU General Public License
     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 
-"""
+    """
 
 Modules are named likethis.
 There is a blank line between the terminating """ of the header, and the first variable declaration.

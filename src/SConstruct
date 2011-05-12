@@ -1,0 +1,56 @@
+env = Environment()
+conf = Configure(env)
+
+
+platform = ARGUMENTS.get('OS', Platform())
+panda_version = ARGUMENTS.get('PANDA_VERSION', '1.7.2')
+
+Help("""
+Type 'scons' to build OpenBlox.
+
+Arguments:
+    * PANDA_VERSION - specifies the version of Panda3D installed on your system (used only on Windows)
+    * OS - specifies the OS to build for (optional; normally found automatically)
+""")
+
+def configure():
+
+    global env
+
+    if platform == 'win32':
+        env['LIBPATH'] = ['C:\Panda3D-%s\lib' % panda_version, 'C:\Panda3D-%s\python\lib' % panda_version]
+
+    elif platform == 'darwin':
+        env['LIBPATH'] = ['/Developer/Panda3D/lib']
+
+    else:
+        env['LIBPATH'] = ['/usr/lib/panda3d']
+
+    EnsurePythonVersion(2, 6)
+
+    if not conf.CheckLib('p3pystub', language = 'CXX'):
+
+        print 'Could not find Panda3D Python stub!'
+        Exit(1)
+
+    if not conf.CheckLib('panda', language = 'CXX'):
+
+        print 'Could not find Panda3D core!'
+        Exit(1)
+
+    if not conf.CheckLib('pandaode', language = 'CXX'):
+
+        print 'Could not find ODE binding for Panda3D!'
+        Exit(1)
+
+    if not conf.CheckLib('p3direct', language = 'CXX'):
+
+        print 'Could not find Panda3D Direct library!'
+        Exit(1)
+
+    env = conf.Finish()
+
+if not env.GetOption('clean') and not env.GetOption('help'):
+
+    configure()
+    VariantDir('build', './', duplicate = 0)

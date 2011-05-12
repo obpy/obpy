@@ -1,4 +1,3 @@
-
 """
 Copyright (C) 2011 The OpenBlox Project
 
@@ -20,20 +19,12 @@ This file is part of The OpenBlox Game Engine.
 """
 
 __author__="openblocks"
-__date__ ="$May 2, 2011 7:20:47 PM$"
+__date__ ="$May 4, 2011 11:24:29 AM$"
 
 import time
 
-import obengine.event
 import obengine.depman
-
 obengine.depman.gendeps()
-
-def init():
-
-    global scheduler
-
-    scheduler = Scheduler()
 
 class Task(object):
     """
@@ -43,7 +34,7 @@ class Task(object):
 
     AGAIN = 0
     STOP = 1
-    
+
     def __init__(self, action, priority = 0, name = None, args = [], kwargs = {}):
         """
         Arguments:
@@ -157,62 +148,9 @@ class DelayedTask(Task):
         else:
 
             now = time.time()
-            
+
             if now - self.start_time > self.delay:
                 self.scheduler.add(Task(self.action, self.name, self.args, self.kwargs))
 
             else:
                 self._reschedule()
-
-class Scheduler(object):
-    """
-    Asynchronous task scheduler.
-    """
-
-    def __init__(self):
-
-        self.queue = []
-        self.task_buffer = set()
-        self.time = time.time
-        self.delay = time.sleep
-
-    def add(self, task):
-        """
-        Adds a task to the task buffer.
-        Arguments:
-         * task - the task to add
-        """
-
-        task.scheduler = self
-        self.task_buffer.add(task)
-
-    def empty(self):
-        """
-        Returns True if there are no more tasks to run, False otherwise.
-        """
-        return not self.queue and not self.task_buffer
-
-    def loop(self):
-        """
-        Runs forever, or at least until there are no more tasks to run :)
-        """
-
-        while True:
-
-            if len(self.task_buffer) == 0:
-                break
-
-            elif len(self.queue) == 0:
-                self._copy_from_task_buffer()
-
-            self.queue.pop(0).execute()
-
-    def _copy_from_task_buffer(self):
-
-        self.queue = list(self.task_buffer.copy())
-        self.queue.sort(cmp = self._priority_sort, reverse = True)
-
-        self.task_buffer.clear()
-
-    def _priority_sort(self, task1, task2):
-        return cmp(task1.priority, task2.priority)

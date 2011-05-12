@@ -1,10 +1,13 @@
+===========================
 OpenBlox Game Engine Readme
----------------------------
+===========================
 
-Version 0.7
+------------------------
+For OpenBlox version 0.7
+------------------------
 
 Installing on Windows
----------------------
+----------------------
 
 (You'll need an Internet connection to run the Windows installer.
 Note that it may take around 2-5 minutes to for the installer to download the required libraries.)
@@ -20,7 +23,7 @@ Installing on Linux
 -------------------
 
 System Requirements
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 * Panda3D(available from http://panda3d.org/download.php, currently, you must download the SDK ("Panda3D SDK for Developers"), not "Panda3D Runtime for End-Users").
 * Python 2.6
@@ -34,7 +37,7 @@ Installing on Mac OSX
 ---------------------
 
 System Requirements
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 * Python 2.6
 * Panda3D
@@ -53,7 +56,9 @@ A wxPython DMG is downloadable at:
 
 Just run the wxPython installer inside the DMG image.
 
-Lupa is downloadable from http://pypi.python.org/packages/source/l/lupa/lupa-0.18.tar.gz#md5=331237744561d41a1a659e514893d938 .
+Lupa is downloadable from:
+
+    http://pypi.python.org/packages/source/l/lupa/lupa-0.18.tar.gz#md5=331237744561d41a1a659e514893d938 .
 
 (Note: Lupa/Lua is a C application, and thus needs to be compiled. No pre-compiled binaries are yet availiable, otherwise this step would be unnecessary.
 If you like, email the OpenBlox administrator at openblocks@users.sourceforge.net with the attached OSX binaries of Lupa, so others won't have to go through this step.)
@@ -62,16 +67,19 @@ To compile Lupa:
 * Download LuaJIT (at http://luajit.org/download/LuaJIT-2.0.0-beta4.tar.gz)
 * Untar the LuaJIT folder inside the Lupa directory
 * Open a Terminal, and change directories to the LuaJIT folder
-* Type "make" (without quotes)
-* Type "cd .." (again, without quotes)
-* Type "make" again
+* Type::
+
+    make
+    cd ..
+    make
+
 * Copy the build/lib.xxxxx-xxxx-2.6/lupa directory to the obengine/scripting/lupa directory inside your OpenBlox download archive.
 
 
 Now you can proceed to the 'Testing' section...
 
 Testing
------------------
+--------
 
 Windows
 -------
@@ -86,7 +94,7 @@ Linux
 -------
 
 GUI
--------
+~~~~~~
 
 Open OpenBlox from your desktop, or applications menu (the location varies across distributions).
 Select the test world (World).
@@ -95,7 +103,7 @@ Press "Play game."
 See the "Playing" section for more information.
 
 Command-line UI (if you didn't install wxPython)
-------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Open up a terminal, and type "cd ~/OpenBlox" (without quotes).
 Next, type "python oblaunch.py World" (again, without quotes).
@@ -103,10 +111,10 @@ Next, type "python oblaunch.py World" (again, without quotes).
 See the "Playing" section for more information.
 
 Mac OSX
---------
+-------
 
 GUI
---------
+~~~~
 
 Open the directory where you extracted OpenBlox.
 Double-click oblaunchgui.py (If this step doesn't work, open up a terminal, change directories, and type "python oblaunchgui.py", without quotes ).
@@ -116,7 +124,7 @@ Press "Play game."
 See the "Playing" section for more information.
 
 Command-line UI (if you didn't install wxPython)
-------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Open up a terminal, and change directories to where you extracted OpenBlox
 Next, type "python oblaunch.py World" (again, without quotes).
@@ -128,16 +136,16 @@ Playing
 
 You can move with the following keys:
 
-Up arrow key: Move forward
-Down arrow key: Move forward
-Left arrow key: Rotate left
-Right arrow key: Rotate right
-Space: Jump
+ * Up arrow key: Move forward
+ * Down arrow key: Move forward
+ * Left arrow key: Rotate left
+ * Right arrow key: Rotate right
+ * Space: Jump
 
 (Note that the character can fall down at times, so either restart OpenBlox, or set your avatar upright by carefully pressing Jump)
 
 Creating your own games
------------------------
+------------------------
 
 The OpenBlox wiki has all the info you need to make your very own OpenBlox games.
 Go to:
@@ -147,12 +155,12 @@ Go to:
 for more information, and a tutorial.
 
 FAQ
------------------
+----
 
-H
+Under construction...
 
 Further support
------------------
+---------------
 
 The OpenBlox Wiki:
 

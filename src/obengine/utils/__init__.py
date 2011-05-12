@@ -21,69 +21,12 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Sep 28, 2010 1:35:13 PM$"
 
-import logging
-import os
-import sys
-import time
-import types
-
-import obengine.cfg
-import obengine.event
-
+import warnings
 import obengine.depman
+
+from obengine.datatypes import *
+from obengine.log import *
+
 obengine.depman.gendeps()
 
-
-loglevels = { 'debug' : logging.DEBUG,
-                'info' : logging.INFO,
-                'warning' : logging.WARNING,
-                'error' : logging.ERROR,
-                'critical' : logging.CRITICAL}
-
-def init():
-
-    level = obengine.cfg.get_config_var('log-level')
-    logfile = obengine.cfg.get_config_var('log-file')
-
-    # Writing to C:\Program Files is deprecated
-    if sys.platform == 'win32':
-        fileloc = os.path.join(os.getenv('APPDATA'), 'OpenBlox', logfile)
-
-    else:
-        fileloc = os.path.join(obengine.cfg.get_config_var('cfgdir'), logfile)
-    
-    logging.basicConfig(level = loglevels.get(level, logging.NOTSET), filename = fileloc)
-
-def info(string):
-    logging.info(time.ctime() + ': ' + string)
-
-def warn(string):
-    logging.warn(time.ctime() + ': ' + string)
-
-def error(string):
-    logging.error(time.ctime() + ': ' + string)
-
-def critical(string):
-    logging.critical(time.ctime() + ': ' + string)
-
-def wrap_callable(method, before, after):
-
-    def wrapper(*args, **kwargs):
-
-        before(*args, **kwargs)
-
-        try:
-            return method(*args, **kwargs)
-
-        finally:
-            after(*args, **kwargs)
-
-    wrapper.__name__ = method.__name__
-
-    return wrapper
-
-class Borg:
-    __shared_state = {}
-
-    def __init__(self):
-        self.__dict__ = self.__shared_state
+warnings.warn('obengine.utils is deprecated; use obengine.datatypes or obengine.log instead', stacklevel = 2)

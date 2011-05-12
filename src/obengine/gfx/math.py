@@ -114,7 +114,7 @@ class EulerAngle(object):
 
         self.on_h_changed = obengine.event.Event()
         self.on_p_changed = obengine.event.Event()
-        self.on_p_changed = obengine.event.Event()
+        self.on_r_changed = obengine.event.Event()
 
         self._h = float(h)
         self._p = float(p)
@@ -137,8 +137,8 @@ class EulerAngle(object):
     @p.setter
     def p(self, value):
 
-        self._h = float(value)
-        self.on_h_changed(self._p)
+        self._p = float(value)
+        self.on_p_changed(self._p)
 
     @property
     def r(self):
@@ -148,7 +148,7 @@ class EulerAngle(object):
     def r(self, value):
 
         self._r = float(value)
-        self.on_z_changed(self._r)
+        self.on_r_changed(self._r)
 
     def __getitem__(self, index):
         """

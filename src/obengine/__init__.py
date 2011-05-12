@@ -23,6 +23,8 @@ This is the base OpenBlox Python package. Look at this package's subpackages for
 __author__="openblocks"
 __date__ ="$Jul 12, 2010 7:59:47 PM$"
 
+import time
+
 ENGINE_VERSION = (0, 7, 0)
 
 def init():
@@ -33,5 +35,11 @@ def init():
 
     import depman
 
+    t1 = time.time()
+
     depman.gendeps()
     depman.init()
+
+    t2 = time.time()
+
+    print 'Initialization took %f seconds' % (t2 - t1)

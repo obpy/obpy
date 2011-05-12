@@ -47,4 +47,4 @@ class RealFS(basefs.BaseFS):
         return self._actual_path(path)
 
     def _actual_path(self, path):
-        return os.path.join(self.real_loc, path.replace(basefs.SEPERATOR, os.sep))
+        return os.sep.join([self.real_loc, path.replace(basefs.SEPERATOR, os.sep)[1:]])

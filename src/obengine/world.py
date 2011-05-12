@@ -20,7 +20,7 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Jul 13, 2010 6:30:46 PM$"
 
-import attrdict
+import obengine.datatypes
 
 class World(object):
     """
@@ -38,8 +38,8 @@ class World(object):
         self.max_players = max_players
         self.num_players = 0
 
-        self.element = attrdict.AttrDict()
-        self.player = attrdict.AttrDict()
+        self.element = obengine.datatypes.AttrDict()
+        self.player = obengine.datatypes.AttrDict()
 
         # Puzzled? Go look at attrdict.py
 

@@ -37,12 +37,15 @@ config_vars = {}
 
 def init():
 
+    # NOTE: We can't have logging here, otherwise, it would create a circular dependency
+    # between us and obengine.log
+
     global config_vars
 
     # These are our default variables.
     # If no config file can be found, these are loaded instead
 
-    obengine.vfs.filesystem.mount('/config', obengine.vfs.MemoryFS())
+    obengine.vfs.mount('/config', obengine.vfs.MemoryFS())
 
     # If this is True, then we're running normally
     if '.zip' not in __file__:
@@ -86,7 +89,7 @@ def add_config_var(key, value):
     If you want to make a persistent configuration variable, modifiy obconf.cfg directly.
     """
 
-    obengine.vfs.filesystem.open('/config/%s' % key, 'w').write(value)
+    obengine.vfs.open('/config/%s' % key, 'w').write(value)
 
 
 def get_config_var(key):
@@ -98,23 +101,31 @@ def get_config_var(key):
     # It's easier to ask forgiveness than permission, isn't it? :)
 
     try:
-        data = obengine.vfs.filesystem.open('/config/%s' % key).read()
+        data = obengine.vfs.open('/config/%s' % key).read()
 
     except IOError:
         raise KeyError(key)
+
+    # Integers are the most demanding data type, so we try those first
 
     try:
         return int(data)
 
     except ValueError:
 
+        # What we wanted wasn't an integer, maybe it's a float?
+
         try:
             return float(data)
 
         except ValueError:
 
+            # Not a float. Is it a boolean?
+
             try:
                 return {'yes' : True, 'no' : False}[data]
 
-            except:
+            except KeyError:
+
+                # Nope, it must be a string
                 return data

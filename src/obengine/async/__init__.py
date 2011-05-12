@@ -19,4 +19,16 @@ This file is part of The OpenBlox Game Engine.
 """
 
 __author__="openblocks"
-__date__ ="$Apr 14, 2011 5:33:22 AM$"
+__date__ ="$May 4, 2011 11:21:01 AM$"
+
+from scheduler import *
+from task import *
+from utils import *
+
+import obengine.depman
+obengine.depman.gendeps()
+
+def init():
+
+    global scheduler
+    scheduler = Scheduler()

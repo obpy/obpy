@@ -26,7 +26,8 @@ import sys
 import ConfigParser
 
 import obengine.cfg
-import obengine.utils
+import obengine.log
+import obengine.datatypes
 import obengine.event
 
 import obengine.depman
@@ -59,7 +60,7 @@ def require(plugin_name):
         pm.initialize_plugin(plugin)
 
 
-class Plugin(obengine.utils.Borg):
+class Plugin(obengine.datatypes.Borg):
     """
     Represents a loaded plugin.
     This is mostly an class that should just be used by PluginManager,
@@ -173,6 +174,7 @@ class PluginManager(object):
          * root_dir - the root directory of the plugin to load
         """
 
+        obengine.log.debug('Loading plugin from directory %s' % root_dir)
         self.on_plugin_found(root_dir)
 
         plugin = self.parse_plugin_dir(root_dir)[1]
@@ -183,9 +185,13 @@ class PluginManager(object):
         return plugin
 
     def initialize_plugin(self, plugin):
-
+        
+        obengine.log.debug('Initalizing plugin %s' % plugin.name)
+        
         plugin.init()
         self.on_plugin_initialized(plugin)
+
+        obengine.log.info('Plugin %s initalized' % plugin.name)
 
     def initialize_all_plugins(self):
 
@@ -231,22 +237,32 @@ class PluginManager(object):
         The list of virtual plugins the newly loaded plugin provides
         """
 
+        obengine.log.debug('Parsing plugin from directory %s' % root_dir)
+
         parser = ConfigParser.ConfigParser()
         parser.read(os.path.join(root_dir, PLUGIN_CFG_NAME))
 
         module = parser.get('core', 'module')
         name = parser.get('core', 'name')
+
+        obengine.log.debug('Plugin name is %s; root module is %s' % (name, module))
         
         provides = self._get_optional_split_option(parser, 'core', 'provides', ['none'])
         depends = self._get_optional_split_option(parser, 'core', 'depends', ['none'])
         conflicts = self._get_optional_split_option(parser, 'core', 'conflicts', ['none'], ',')
 
+        obengine.log.debug('Plugin provides %s; depends on %s; conflicts with %s' % (
+        ','.join(provides),
+        ','.join(depends),
+        ','.join(conflicts)
+        ))
+
         for possible_conflict in conflicts:
 
             if possible_conflict in self.provided_plugins() or possible_conflict in self.all_plugin_names():
 
-                message = 'Conflict between %s and %s' % (name, possible_conflict)
-                obengine.utils.critical(message)
+                message = 'Plugin conflict between %s and %s' % (name, possible_conflict)
+                obengine.log.critical(message)
                 raise PluginConflictException(message)
 
         if depends != ['none']:
