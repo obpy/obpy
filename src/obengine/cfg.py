@@ -25,107 +25,141 @@ __date__ ="$Aug 3, 2010 2:36:03 PM$"
 
 import os
 import sys
-import warnings
 import ConfigParser
 
-import obengine.vfs
+import datatypes
+import depman
 
-import obengine.depman
-obengine.depman.gendeps()
+depman.gendeps()
 
-config_vars = {}
+__all__ = ['Config']
+
+WINDOWS_CFG_LOC = 'C:\\Program Files\\OpenBlox'
+UNIX_CFG_LOC = os.path.join(os.getenv('HOME', '/home/' + os.getlogin()), 'OpenBlox')
+CFG_FILE = 'obconf.cfg'
 
 def init():
 
-    # NOTE: We can't have logging here, otherwise, it would create a circular dependency
-    # between us and obengine.log
+    if hasattr(Config, 'parser') is False:
+        Config().load(CFG_FILE)
 
-    global config_vars
+class Config(datatypes.Borg):
+    """Provides basic configuration utilites.
+    This is a Monostate/Borg class - sections and option values are
+    maintained across class instances.
+    """
 
-    # These are our default variables.
-    # If no config file can be found, these are loaded instead
+    options = {}
 
-    obengine.vfs.mount('/config', obengine.vfs.MemoryFS())
+    def load(self, filename):
+        """Loads a configuration from filename
+        Arguments:
+        * filename - absolute path to the configuration file to be loaded.
+        It must be in INI format (*not* with the extended Windows syntax).
+        """
 
-    # If this is True, then we're running normally
-    if '.zip' not in __file__:
-        basedir = __file__[:len(__file__) - len(os.path.join('obengine', 'cfg.py')) - 1]
+        # If this is True, then we're running normally
+        if '.zip' not in __file__:
+            basedir = __file__[:len(__file__) - len(os.path.join('obengine', 'cfg.py')) - 1]
 
-    # We're running inside a .zip archive, probably for BloxWorks
-    else:
-
-        if sys.platform == 'win32':
-            basedir = 'C:\\Program Files\\OpenBlox'
-
+        # We're running inside a .zip archive, probably for BloxWorks
         else:
-            basedir = os.path.join(os.getenv('HOME', '/home/' + os.getlogin()), 'OpenBlox')
 
-    # Creae the configuration parser
+            if sys.platform == 'win32':
+                basedir = WINDOWS_CFG_LOC
 
-    cfgparser = ConfigParser.ConfigParser()
+            else:
+                basedir = UNIX_CFG_LOC
 
-    lualibdir = os.path.join(basedir, 'lualibs')
-    datadir = os.path.join(basedir, 'data')
+        self.parser = ConfigParser.ConfigParser()
+        self._root_dir = os.path.abspath(os.path.dirname(filename))
 
-    cfgparser.read(os.path.join(basedir, 'obconf.cfg'))
+        lualibdir = os.path.join(self._root_dir, 'lualibs')
+        datadir = os.path.join(self._root_dir, 'data')
 
-    # Add the required configuration variables
+        self.parser.read(filename)
 
-    add_config_var('cfgdir', basedir)
-    add_config_var('lualibdir', lualibdir)
-    add_config_var('datadir', datadir)
-    
-    add_config_var('log-level', cfgparser.get('core', 'log-level'))
-    add_config_var('log-file', cfgparser.get('core', 'log-file'))
+        self.add_var('cfgdir', self._root_dir)
+        self.add_var('lualibdir', lualibdir)
+        self.add_var('datadir', datadir)
 
-    for section in filter(lambda s: s != 'core', cfgparser.sections()):
+    def add_var(self, name, val, section = 'core'):
+        """Adds a configuration variable
+        Arguments:
+        * name - the name of the variable
+        * val - the value of this variable (anything will do)
+        * section - the section to add the variable in.
+        By default, this is `core`.
+        """
+        
+        self.options.setdefault(section, {})[name] = val
 
-        for option in cfgparser.options(section):
-            add_config_var(option, cfgparser.get(section, option))
+    def get_var(self, name, section = 'core'):
+        """Retrieves a configuration variable
+        Retrieves ``name`` out of ``section``, if it exists.
+        Otherwise, if ``name`` is not inside ``section``, then
+        NoOptionError is raised.
+        If ``section`` doesn't exist, then NoSectionError is raised.
 
-def add_config_var(key, value):
-    """
-    Adds a (non-persistent) configuration variable.
-    If you want to make a persistent configuration variable, modifiy obconf.cfg directly.
-    """
-
-    obengine.vfs.open('/config/%s' % key, 'w').write(value)
-
-
-def get_config_var(key):
-    """
-    Retrives key from the configuration variable list.
-    Raises KeyError if key isn't found.
-    """
-
-    # It's easier to ask forgiveness than permission, isn't it? :)
-
-    try:
-        data = obengine.vfs.open('/config/%s' % key).read()
-
-    except IOError:
-        raise KeyError(key)
-
-    # Integers are the most demanding data type, so we try those first
-
-    try:
-        return int(data)
-
-    except ValueError:
-
-        # What we wanted wasn't an integer, maybe it's a float?
+        You probably want to use one of the other, higher-level methods instead,
+        unless you've somehow managed to store a custom data type :)
+        """
 
         try:
-            return float(data)
+            return self.options[section][name]
 
-        except ValueError:
-
-            # Not a float. Is it a boolean?
+        except KeyError:
 
             try:
-                return {'yes' : True, 'no' : False}[data]
+                val = self.parser.get(section, name)
 
-            except KeyError:
+            except ConfigParser.NoOptionError:
+                raise NoOptionError(name)
 
-                # Nope, it must be a string
-                return data
+            except ConfigParser.NoSectionError:
+                raise NoSectionError(section)
+
+            else:
+
+                self.add_var(name, val, section)
+                return val
+
+    def get_str(self, name, section = 'core'):
+        """Returns configuration variable ``name``, stringified
+        See Logger.get_var for more documentation.
+        """
+        return str(self.get_var(name, section))
+
+    def get_int(self, name, section = 'core'):
+        """Returns configuration variable ``name`` as an integer
+        See Logger.get_var for more documentation.
+        """
+        return int(self.get_var(name, section))
+
+    def get_float(self, name, section = 'core'):
+        """Returns configuration variable ``name`` as a float
+        See Logger.get_var for more documentation.
+        """
+        return float(self.get_var(name, section))
+
+    def get_bool(self, name, section = 'core'):
+        """Returns configuration variable ``name`` as a boolean
+        If the variable marked by ``name``'s value is "yes", then ``True`` is returned.
+        Otherwise, if variable ``name``'s value is "no", then False is returned.
+        If it is neither, ValueError is raised.
+        
+        See Logger.get_var for more documentation.
+        """
+
+        conv_dict = {'yes' : True, 'no' : False}
+
+        try:
+            return conv_dict[self.get_var(name, section)]
+
+        except KeyError:
+            raise ValueError('Config variable %s in section %s was not a valid boolean' % (name, section))
+
+
+class ConfigException(Exception): pass
+class NoOptionError(ConfigException): pass
+class NoSectionError(ConfigException): pass

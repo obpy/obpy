@@ -12,7 +12,7 @@ Installing on Windows
 (You'll need an Internet connection to run the Windows installer.
 Note that it may take around 2-5 minutes to for the installer to download the required libraries.)
 
-Be sure to keep the default installation location (C:\Program Files\OpenBlox); otherwise, OpenBlox won't work.
+Be sure to keep the default installation location (`C:\\Program Files\\OpenBlox`); otherwise, OpenBlox won't work.
 Also, if a message comes up concerning "EGG caching", you can safely press "No."
 If there is a dialog box comes up about "default Python installation", press "Yes."
 

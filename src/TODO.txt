@@ -4,7 +4,3 @@ Todos
 
 * All math classes still need events to be fired when using __getitem__ and __setitem__
 * SCENE EDITOR!!!!!!
-* Integrate the remaining old code with the new plugin-based architecture
-* Physics plugin fully implemented:
- * Static objects fully implemented
- * Dynamic objects fully implemented

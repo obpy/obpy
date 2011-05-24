@@ -25,50 +25,117 @@ __date__ ="$May 4, 2011 7:09:12 PM$"
 
 import sys
 import os
-
 from sys import _getframe as getframe
-
-import time
 import logging
 
-import obengine.cfg
-import obengine.depman
-obengine.depman.gendeps()
+import cfg
+import datatypes
+import depman
+import deprecated
 
-loglevels = { 'debug' : logging.DEBUG,
-                'info' : logging.INFO,
-                'warning' : logging.WARNING,
-                'error' : logging.ERROR,
-                'critical' : logging.CRITICAL}
+depman.gendeps()
 
 def init():
 
-    level = obengine.cfg.get_config_var('log-level')
-    logfile = obengine.cfg.get_config_var('log-file')
+    if hasattr(Logger, '_level') is False:
+        Logger().autoconfig()
 
-    # Writing to C:\Program Files is deprecated
-    if sys.platform == 'win32':
-        fileloc = os.path.join(os.getenv('APPDATA'), 'OpenBlox', logfile)
+class Logger(datatypes.Borg):
 
-    else:
-        fileloc = os.path.join(obengine.cfg.get_config_var('cfgdir'), logfile)
+    log_levels = {
+    'debug' : logging.DEBUG,
+    'info' : logging.INFO,
+    'warning' : logging.WARNING,
+    'error' : logging.ERROR,
+    'critical' : logging.CRITICAL,
+    'dontcare' : logging.NOTSET
+    }
+    
+    format_str = '%(levelname)s:%(name)s:%(asctime)s: %(message)s'
 
-    logging.basicConfig(level = loglevels.get(level, logging.NOTSET), filename = fileloc)
+    def __init__(self):
+        self.config_src = cfg.Config()
 
+    def autoconfig(self):
+
+        log_level = self.config_src.get_str('log-level')
+        log_file = self.config_src.get_str('log-file')
+
+        if sys.platform == 'win32':
+            default_dir = os.path.join(os.getenv('APPDATA'), 'OpenBlox')
+
+        else:
+            default_dir = self.config_src.get_str('cfgdir')
+
+        if os.path.isabs(log_file) is False:
+            log_file = os.path.join(default_dir, log_file)
+
+        self.config(log_level, log_file)
+
+    def config(self, log_level, log_file):
+
+        formatter = logging.Formatter(self.format_str)
+
+        self._level = self.log_levels[log_level]
+        self._file = log_file
+
+        self._handler = logging.FileHandler(log_file)
+        self._handler.setLevel(self._level)
+        self._handler.setFormatter(formatter)
+
+    def debug(self, message):
+
+        logger = self._create_logger()
+        logger.debug(message)
+
+    def info(self, message):
+
+        logger = self._create_logger()
+        logger.info(message)
+
+    def warn(self, message):
+
+        logger = self._create_logger()
+        logger.warn(message)
+
+    def error(self, message):
+
+        logger = self._create_logger()
+        logger.error(message)
+
+    def critical(self, message):
+
+        logger = self._create_logger()
+        logger.critical(message)
+
+    def _create_logger(self):
+
+        logger = logging.getLogger(_get_calling_package())
+        logger.setLevel(self._level)
+        logger.addHandler(self._handler)
+
+        return logger
+
+
+@deprecated.deprecated
 def debug(string):
-    logging.getLogger(_get_calling_package()).debug(time.ctime() + ': ' + string)
+    Logger().debug(string)
 
+@deprecated.deprecated
 def info(string):
-    logging.getLogger(_get_calling_package()).info(time.ctime() + ': ' + string)
+    Logger().info(string)
 
+@deprecated.deprecated
 def warn(string):
-    logging.getLogger(_get_calling_package()).warn(time.ctime() + ': ' + string)
+    Logger().warn(string)
 
+@deprecated.deprecated
 def error(string):
-    logging.getLogger(_get_calling_package()).error(time.ctime() + ': ' + string)
+    Logger().error(string)
 
+@deprecated.deprecated
 def critical(string):
-    logging.getLogger(_get_calling_package()).critical(time.ctime() + ': ' + string)
+    Logger().critical(string)
 
 def _get_calling_package():
     return getframe(2).f_globals.get('__name__', 'root')

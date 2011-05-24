@@ -15,11 +15,11 @@ This file is part of The OpenBlox Game Engine.
     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 
 """
+
 __author__="openblocks"
 __date__ ="$Mar 3, 2011 3:30:17 PM$"
 
 import warnings
-
 import obengine.event
 
 class Vector(object):

@@ -21,6 +21,8 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$May 4, 2011 8:08:03 PM$"
 
+import obengine.event
+
 class AttrDict(dict):
     """
     A decorated dict that links attributes to keys, so we can do this:
@@ -58,26 +60,85 @@ class AttrDict(dict):
     """
 
     def __init__(self, **kwargs):
+        """Just like initalizing a normal dict. See dict.__init__ for more info.
+        """
         dict.__init__(self, **kwargs)
 
     def __getattr__(self, item):
-
         try:
             return self.__getitem__(item)
-
         except:
             raise AttributeError(item)
 
     def __setattr__(self, item, value):
-
         if self.__dict__.has_key(item):
             dict.__setattr__(self, item, value)
-
         else:
             self.__setitem__(item, value)
 
-class Borg:
+class Borg(object):
+    
     __shared_state = {}
 
-    def __init__(self):
-        self.__dict__ = self.__shared_state
+    def __new__(cls, *p, **k):
+
+        self = object.__new__(cls)
+        self.__dict__ = cls.__shared_state
+
+        return self
+
+class EventDict(dict):
+
+    def __init__(self, *args, **kwargs):
+
+        dict.__init__(self, *args, **kwargs)
+
+        self.on_item_added = obengine.event.Event()
+        self.on_item_retrieved = obengine.event.Event()
+        self.on_item_changed = obengine.event.Event()
+        self.on_item_removed = obengine.event.Event()
+
+    def __getitem__(self, key):
+
+        item = dict.__getitem__(self, key)
+        self.on_item_retrieved(key)
+
+        return item
+
+    def __setitem__(self, key, value):
+
+        item_changed = False
+        item_added = False
+
+        if self.has_key(key):
+            item_changed = True
+
+        else:
+            item_added = True
+
+        dict.__setitem__(self, key, value)
+
+        item_value = dict.__getitem__(self, key)
+
+        if item_changed is True:
+            self.on_item_changed(key, item_value)
+
+        else:
+            self.on_item_added(key, item_value)
+
+    def __delitem__(self, key):
+
+        dict.__delitem__(self, key)
+        self.on_item_removed
+
+def wrap_callable(func, before, after):
+    
+    def wrapper(*args, **kwargs):
+
+        try:
+
+            before(*args, **kwargs)
+            return func(*args, **kwargs)
+        
+        finally:
+            after(*args, **kwargs)

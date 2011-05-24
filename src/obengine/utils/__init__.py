@@ -21,7 +21,6 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Sep 28, 2010 1:35:13 PM$"
 
-import warnings
 import obengine.depman
 
 from obengine.datatypes import *
@@ -29,4 +28,5 @@ from obengine.log import *
 
 obengine.depman.gendeps()
 
-warnings.warn('obengine.utils is deprecated; use obengine.datatypes or obengine.log instead', stacklevel = 2)
+def search_dict(searched_dict, key, modifier = lambda a: a):
+    return [k for k, v in searched_dict.iteritems() if key == modifier(v)]

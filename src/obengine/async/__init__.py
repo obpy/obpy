@@ -27,8 +27,3 @@ from utils import *
 
 import obengine.depman
 obengine.depman.gendeps()
-
-def init():
-
-    global scheduler
-    scheduler = Scheduler()

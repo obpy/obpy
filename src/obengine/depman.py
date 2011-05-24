@@ -23,15 +23,14 @@ __date__ ="$May 2, 2011 1:38:18 AM$"
 import sys
 import atexit
 from sys import _getframe as getframe
-
-
 import inspect
-import modulefinder
+
+__all__ = ['gendeps', 'init']
 
 collected_modules = []
 dependency_map = {}
 
-def gendeps(modname = None, prefix = 'obengine', excludes=[]):
+def gendeps(prefix = 'obengine', modname = None, excludes=[]):
     """
     Use this function to record your module's dependencies.
     Call it like this at the start of your module::
@@ -84,10 +83,9 @@ def gendeps(modname = None, prefix = 'obengine', excludes=[]):
     deps = sys.modules[name].deps
 
     # Find all the modules that the module we're examining imports
-    module_finder = modulefinder.ModuleFinder()
-    module_finder.run_script(inspect.getsourcefile(sys.modules[name]))
+    dependencies = find_modules(sys.modules[name])
 
-    for dependency_name in module_finder.modules.keys():
+    for dependency_name in dependencies:
 
         # Is this dependency inside the same package as the module we're
         # currently examining?
@@ -104,25 +102,8 @@ def gendeps(modname = None, prefix = 'obengine', excludes=[]):
 
                 # Also, generate its dependencies with a recursive call
 
-                gendeps(dependency_name, package, excludes)
+                gendeps(package, dependency_name, excludes)
 
-def _cmp_modules(module1, module2):
-
-    # Does module2 depend upon module1?
-    if module1 in dependency_map.get(module2, []):
-
-        # Then module1 should be initalized first
-        return -1
-
-    # Then, does module1 depend on module2?
-    elif module2 in dependency_map.get(module1, []):
-
-        # In that case, module2 should be initalized first
-        return 1
-
-    # They don't depend on each other - either one goes
-    else:
-        return 0
 
 def init():
     """
@@ -158,7 +139,13 @@ def init():
                         
                         if module_name + module_dependency not in errors:
 
-                            print >> sys.stderr, 'Circular dependency between %s and %s' % (module_name, module_dependency)
+                            # A circular dependency is a serious error,
+                            # one that should only occur in a development
+                            # environment, so let whoever's running us know!
+                            
+                            msg = 'Circular dependency between %s and %s' % (module_name, module_dependency)
+                            print >> sys.stderr, msg
+
                             errors.append(module_name + module_dependency)
 
     # We just finished checking for circular dependencies, so now,
@@ -169,7 +156,7 @@ def init():
         # Get the actual module, instead of the name
         module = sys.modules[module]
 
-        # Initalize this module
+        # Initalize this module.
         # Since we iterate over modules closer to their
         # respective package's root, we know packages higher up the
         # package tree are properly initalized.
@@ -177,11 +164,49 @@ def init():
         if hasattr(module, 'init'):
             module.init()
 
+        
         # Another neat trick. atexit seems to store functions to be called on program
         # exit as a list, and every atexit.register call invokes list.append.
         # So, this means functions are called on a first-come, first-served
         # basis: the sooner they're call atexit.register, the sooner atexit.register
         # calls them, which perfectly coincides with the way we store collected
         # modules!
+        
         elif hasattr(module, 'deinit'):
             atexit.register(module.deinit)
+
+
+def find_modules(module):
+    """Find modules that `module` depends upon
+    Returns a list of module names that `module` depends on.
+
+    NOTE: This algorithim, while faster than modulefinder.ModuleFinder,
+    is incompatible with the `from module import *` idiom!
+    """
+
+    # Find all the modules that are defined in module
+    dependent_modules = filter(inspect.ismodule, vars(module).itervalues())
+
+    # We now have a list of modules, but we need module names!
+    # So, we get all the module names instead
+    dependent_modules = map(lambda m: m.__name__, dependent_modules)
+
+    return dependent_modules
+
+def _cmp_modules(module1, module2):
+
+    # Does module2 depend upon module1?
+    if module1 in dependency_map.get(module2, []):
+
+        # Then module1 should be initalized first
+        return -1
+
+    # Then, does module1 depend on module2?
+    elif module2 in dependency_map.get(module1, []):
+
+        # In that case, module2 should be initalized first
+        return 1
+
+    # They don't depend on each other - either one goes
+    else:
+        return 0

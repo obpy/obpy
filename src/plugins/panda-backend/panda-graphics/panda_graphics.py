@@ -30,45 +30,26 @@ import obengine.log
 import obengine.event
 import obengine.async
 import obengine.vfs
-
 import obengine.gfx.math
 
 obengine.depman.gendeps()
 
-
 COLOR_SCALER = 255.0
-RENDER_PRIORITY = 10
-
-def init():
-
-    # We have to retrieve graphics-specific configuration things first. Why?
-    # Panda3D requires you to set all data concerning frame rate and the like *before*
-    # you create a window
-    _setup_config_values()
-
-    # In case you're wondering why this variable isn't used, it's because
-    # ShowBase's constructor assigns a lot of stuff to the __builtin__ namespace
-    show_base = ShowBase()
-
-    # Initalize the window, now that we've set it up
-    _setup_window()
-
-    obengine.async.scheduler.add(obengine.async.LoopingCall(taskMgr.step, priority = RENDER_PRIORITY))
 
 class PandaResource(object):
     """
     Base resource class containing various OpenBlox-to-Panda3D conversion utilities.
-    It also provides a common, garunteed interface for all Panda3D resources
+    It also provides a common, guaranteed interface for all Panda3D resources.
     """
 
     def __init__(self):
         self.on_loaded = obengine.event.Event()
 
     def panda_path(self, path):
-        
+
         if obengine.vfs.SEPERATOR in path:
             return Filename.fromOsSpecific(obengine.vfs.getsyspath(path))
-
+        
         else:
             return path
 
@@ -81,6 +62,7 @@ class PandaResource(object):
     def convert_euler_angle(self, angle):
         return [angle.h, angle.p, angle.r]
 
+
 class Model(PandaResource):
     """
     Represents a Panda3D model.
@@ -88,29 +70,24 @@ class Model(PandaResource):
     
     """
 
-    def __init__(self, model_path, position = None, rotation = None, scale = None, color = None):
+    def __init__(self, model_path, window, position = None, rotation = None, scale = None, color = None):
 
         PandaResource.__init__(self)
 
         self.model_path = model_path
         self.panda_model_path = self.panda_path(model_path)
-
         self.panda_node = None
-
         self.load_okay = False
-        
+        self.window = window
         self._showing = False
+        
         self._texture = None
-
         self._position = position or obengine.gfx.math.Vector()
         self._setup_position()
-
         self._color = color or obengine.gfx.math.Color()
         self._setup_color()
-
         self._rotation = rotation or obengine.gfx.math.EulerAngle()
         self._setup_rotation()
-
         self._scale = scale or obengine.gfx.math.Vector()
         self._setup_scale()
 
@@ -122,7 +99,7 @@ class Model(PandaResource):
         the model is ready to be used.
         """
         
-        loader.loadModel(self.panda_model_path, callback = self._set_load_okay)
+        self.window.panda_window.loader.loadModel(self.panda_model_path, callback = self._set_load_okay)
 
     @property
     def showing(self):
@@ -131,10 +108,10 @@ class Model(PandaResource):
     @showing.setter
     def showing(self, val):
 
-        if val == True:
-            self.panda_node.reparentTo(base.render)
+        if val is True:
+            self.panda_node.reparentTo(self.window.panda_window.render)
 
-        elif val == False:
+        elif val is False:
             self.panda_node.detachNode()
 
         else:
@@ -256,6 +233,7 @@ class Model(PandaResource):
         
         self.on_loaded()
 
+
 class Texture(PandaResource):
     """
     Represents a Panda3D texture.
@@ -287,6 +265,7 @@ class Texture(PandaResource):
     def _set_load_okay(self, tex):
         self.texture = tex
 
+
 class Light(PandaResource):
     """
     Represents a Panda3D light.
@@ -296,8 +275,8 @@ class Light(PandaResource):
     DIRECTIONAL = 'directional'
     AMBIENT = 'ambient'
 
-    def __init__(self, light_type, name, color = obengine.gfx.math.Color(255, 255, 255, 255), cast_shadows = False, rotation = obengine.gfx.math.EulerAngle(0, 0, 0)):
-        """
+    def __init__(self, light_type, name, window, color = obengine.gfx.math.Color(255, 255, 255, 255), cast_shadows = False, rotation = obengine.gfx.math.EulerAngle(0, 0, 0)):
+        """Creates a new light
         Arguments:
          * light_type - either Light.DIRECTIONAL for a directional light, or
                         Light.AMBIENT for an ambient light
@@ -317,13 +296,13 @@ class Light(PandaResource):
         self._casting_shadows = cast_shadows
         self._light_type = light_type
         self._rotation = rotation
+        self._window = window
 
         if light_type not in [Light.DIRECTIONAL, Light.AMBIENT]:
             raise ValueError('Unknown light type "%s"' % light_type)
 
     def load(self):
-        """
-        Loads this light.
+        """Loads this light
         Note that this is actually a synchronous method, but for transparency reasons,
         you should wait for Light's on_loaded event instead.
         """
@@ -334,14 +313,14 @@ class Light(PandaResource):
         elif self._light_type == Light.AMBIENT:
             self._init_ambient_light()
 
-        self.panda_node = base.render.attachNewNode(self.panda_light)
+        self.panda_node = self._window.panda_window.render.attachNewNode(self.panda_light)
         base.render.setLight(self.panda_node)
 
         self.on_loaded()
 
     def look_at(self, obj):
-        """
-        Points the light at obj. Currently, obj can only be a directional light
+        """Points the light at obj
+        Currently, obj can only be a directional light
         or a model.
         """
 
@@ -407,53 +386,76 @@ class Light(PandaResource):
         if self._casting_shadows == True:
             obengine.utils.warn('Tried to turn on shadows for an ambient light')
 
-def _setup_window():
+class Window(object):
 
-    base.setBackgroundColor(1, 1, 1, 1)
-    base.render.setShaderAuto()
+    RENDER_PRIORITY = 10
+    LOAD_PRIORITY = 25
 
-def _setup_config_values():
+    def __init__(self, window_title, scheduler):
 
-    obengine.log.debug('Initalizing Panda3D render window')
+        self.on_loaded = obengine.event.Event()
+        self._config_src = obengine.cfg.Config()
+        self.title = window_title
+        self.scheduler = scheduler
 
-    # Get the frame rate
-    frame_rate = obengine.cfg.get_config_var('frame-rate')
+    def start_rendering(self):
+        self.scheduler.add(obengine.async.LoopingCall(self.panda_window.taskMgr.step, priority=Window.RENDER_PRIORITY))
 
-    # Should we show the frame rate?
-    show_frame_rate = int(obengine.cfg.get_config_var('show-frame-rate'))
+    def load(self):
+        self.scheduler.add(obengine.async.Task(self._actual_load, priority=Window.LOAD_PRIORITY))
 
-    # Get the requested resolution
-    resolution = ' '.join(obengine.cfg.get_config_var('resolution').split('x'))
+    def _actual_load(self, task):
 
-    datadir = obengine.cfg.get_config_var('datadir')
+        self.frame_rate = self._config_src.get_int('frame-rate', 'core.gfx')
+        self.show_frame_rate = self._config_src.get_bool('show-frame-rate', 'core.gfx')
+        self.resolution = map(int, self._config_src.get_str('resolution', 'core.gfx').split('x'))
+        self.search_path = self._config_src.get_str('cfgdir') + '/data'
 
-    obengine.log.debug('Frame rate = %s FPS' % frame_rate)
-    obengine.log.debug('%s' % bool(show_frame_rate) and 'Showing frame rate' or 'Not showing frame rate')
+        self.clock = ClockObject.getGlobalClock()
+        self.clock.setMode(ClockObject.MLimited)
+        self.clock.setFrameRate(self.frame_rate)
 
-    # Mount the data directory
-    obengine.vfs.mount('/data', obengine.vfs.RealFS(datadir))
+        self.window_properties = WindowProperties()
+        self.window_properties.setSize(*self.resolution)
 
-    # Has the user specified any extra paths?
-    # If so, add them, too
-    try:
-        user_paths = obengine.cfg.get_config_var('data-paths').split()
+        self.panda_window = ShowBase()
+        self.panda_window.setFrameRateMeter(self.show_frame_rate)
+        self.panda_window.setBackgroundColor(1, 1, 1, 1)
+        self.panda_window.win.requestProperties(self.window_properties)
+        self.panda_window.render.setShaderAuto()
 
-    except KeyError:
-        user_paths = []
+        getModelPath().appendPath(self.search_path)
 
-    data_paths = [datadir] + user_paths
-    obengine.log.debug('Model path: %s' % ','.join(data_paths))
+        self.on_loaded()
 
-    # Now, we can actually give the configuration values to Panda!
+        return task.STOP
 
-    loadPrcFileData('', 'show-frame-rate-meter %s' % show_frame_rate)
-    loadPrcFileData('', 'win-size %s' % resolution)
 
-    for path in data_paths:
-        loadPrcFileData('','model-path %s' % path)
+class Camera(object):
 
-    # Set the frame rate
+    def __init__(self, window):
 
-    global_clock = ClockObject.getGlobalClock()
-    global_clock.setMode(ClockObject.MLimited)
-    global_clock.setFrameRate(frame_rate)
+        self.on_loaded = obengine.event.Event()
+
+        self.window = window
+        self.camera = self.window.panda_window.camera
+
+    def load(self):
+        self.on_loaded()
+
+    def look_at(self, model):
+        self.camera.lookAt(model.panda_node)
+
+    @property
+    def position(self):
+
+        cam_vec = self.camera.getPos()
+        return obengine.gfx.math.Vector(cam_vec.getX(), cam_vec.getY(), cam_vec.getZ())
+
+    @position.setter
+    def position(self, pos):
+
+        if isinstance(pos, tuple):
+            pos = obengine.gfx.math.Vector(*pos)
+            
+        self.camera.setPos(pos.x, pos.y, pos.z)

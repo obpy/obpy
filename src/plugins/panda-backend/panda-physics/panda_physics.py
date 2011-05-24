@@ -24,7 +24,6 @@ __date__ ="$May 2, 2011 12:30:08 PM$"
 from panda3d.core import Vec3, VBase4, Quat
 
 from libs import odeWorldManager
-from libs import kcc
 from libs import staticObject, dynamicObject
 
 import obengine.event
@@ -47,11 +46,13 @@ class PandaConverter(object):
         q.setHpr(Vec3(angle.h, angle.p, angle.r))
         return q
 
+    @staticmethod
+    def convert_vec3(vector):
+        return obengine.gfx.math.Vector(vector.getX(), vector.getY(), vector.getZ())
+
 class World(object):
     
     def __init__(self):
-
-        self.world_manager = odeWorldManager()
 
         self.on_loaded = obengine.event.Event()
         self.on_body_added = obengine.event.Event()
@@ -60,7 +61,9 @@ class World(object):
 
     def load(self):
 
+        self.world_manager = odeWorldManager()
         self.world_manager.stepSize = 1 / 60.0
+        
         self.on_loaded()
 
     def add(self, obj):
@@ -80,13 +83,15 @@ class World(object):
 
 class Box(object):
 
-    def __init__(self, model, world, anchored = False, weight = None):
+    def __init__(self, model, world, owner, anchored = False, weight = None):
 
         self.model = model
-        self.anchored = anchored
         self.on_loaded = obengine.event.Event()
-        self.world = world
+        self.on_collision = obengine.event.Event()
 
+        self.world = world
+        self.owner = owner
+        self.anchored = anchored
         self.weight = weight or (self.model.scale.x or 1.0) * (self.model.scale.y or 1.0) * (self.model.scale.z or 1.0)
 
     def load(self):
@@ -116,7 +121,10 @@ class Box(object):
         self.object.destroy()
 
     def _general_init(self):
+
         self.object.setCatColBits('general')
+        self.object.collisionCallback = self._translate_collision_cb
+        self.object.owner = self.owner
 
     def _init_dynamic_object(self):
 
@@ -133,3 +141,6 @@ class Box(object):
         self.object.setBoxGeomFromNodePath(self.model.panda_node)
         self.object.setPos(PandaConverter.convert_vector(self.model.position))
         self.object.setQuat(PandaConverter.convert_angle(self.model.rotation))
+
+    def _translate_collision_cb(self, entry, object1, object2):
+        self.on_collision(object1.owner, object2.owner)

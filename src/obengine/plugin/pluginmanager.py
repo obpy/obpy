@@ -29,7 +29,6 @@ import obengine.cfg
 import obengine.log
 import obengine.datatypes
 import obengine.event
-
 import obengine.depman
 
 from obengine.plugin.importhook import PluginImportHook
@@ -42,12 +41,12 @@ def init():
     sys.meta_path.append(PluginImportHook(PluginManager()))
 
 def require(plugin_name):
-    """
+    """Checks if a virtual plugin is implemented
     Wrapper around PluginManager, to check if a plugin (given by plugin_name) is currently loaded.
     If not, it attempts to load an implementation of said plugin, throwing PluginNotFoundException if the operation fails.
 
     Call this function at the start of your module, for every plugin your module requires.
-    *If* the plugins are available, require will load them. Otherwise, require will throw an exception.
+    *If* the plugins are available, require will load them. Otherwise, require will raise PluginNotFoundException.
     """
 
     pm = PluginManager()
@@ -56,11 +55,10 @@ def require(plugin_name):
 
         plugin = pm.find_plugin(plugin_name)
         plugin = pm.load_plugin(plugin)
-        
         pm.initialize_plugin(plugin)
 
 
-class Plugin(obengine.datatypes.Borg):
+class Plugin(object):
     """
     Represents a loaded plugin.
     This is mostly an class that should just be used by PluginManager,
@@ -109,43 +107,29 @@ class PluginManager(object):
     Simple plugin manager framework.
 
     Events:
-     * on_plugin_found - gives the root directory of the found plugin
-     * on_plugin_initalized - gives the actual module of the initalized plugin
-
-    See the dummy plugin (in plugins/dummy-plugin) to see how to write an actual plugin.
+    * on_plugin_found - gives the root directory of the found plugin
+    * on_plugin_initalized - gives the actual module of the initalized plugin
     """
 
     search_path = None
     plugins = []
     on_plugin_found = obengine.event.Event()
     on_plugin_initialized = obengine.event.Event()
+    _logger = obengine.log.Logger()
 
     def __init__(self, search_path = None):
         """
         Arguments:
-         * search_path (optional) - the path to search for plugins. If not given, OPENBLOX_DIR/plugins is used
+        * search_path (optional) - the path to search for plugins. If not given, OPENBLOX_DIR/plugins is used
         """
-        
+
+        self._config_src = obengine.cfg.Config()
+
         if self.search_path is None:
-            self.search_path = search_path or os.path.join(obengine.cfg.get_config_var('cfgdir'), 'plugins')
+            self.search_path = search_path or os.path.join(self._config_src.get_str('cfgdir'), 'plugins')
 
         elif search_path is not None:
-            self.search_path = search_path or os.path.join(obengine.cfg.get_config_var('cfgdir'), 'plugins')
-
-    def find_plugins(self):
-        """
-        Finds all plugins under the set search path, and sets them up to be loaded.
-        Note that conflicting plugins are not checked at this stage!
-        """
-
-        # Find every plugin under our search path
-
-        for root_dir, child_dirs, files in os.walk(self.search_path):
-
-            # Does this directory constitute a valid plugin?
-            
-            if PLUGIN_CFG_NAME in files:
-                self.load_plugin(root_dir)
+            self.search_path = search_path or os.path.join(self._config_src.get_str('cfgdir'), 'plugins')
 
     def find_plugin(self, name):
         """
@@ -161,42 +145,37 @@ class PluginManager(object):
 
             if PLUGIN_CFG_NAME in files:
 
-                if name in self.parse_plugin_dir(root_dir)[0]:
+                if name in self._parse_plugin_dir(root_dir).provides:
                     return root_dir
 
-        raise PluginNotFoundException(root_dir)
+        raise PluginNotFoundException(name)
 
     def load_plugin(self, root_dir):
         """
         Loads a plugin. The name is slightly misleading, as the plugin is not acutally initalized,
         just put in the initialization queue.
         Arguments:
-         * root_dir - the root directory of the plugin to load
+        * root_dir - the root directory of the plugin to load
         """
 
-        obengine.log.debug('Loading plugin from directory %s' % root_dir)
+        self._logger.debug('Loading plugin from directory %s' % root_dir)
         self.on_plugin_found(root_dir)
 
-        plugin = self.parse_plugin_dir(root_dir)[1]
+        plugin = self._parse_plugin_dir(root_dir)
         plugin.load()
 
         self.add_plugin(plugin)
-
         return plugin
 
     def initialize_plugin(self, plugin):
         
-        obengine.log.debug('Initalizing plugin %s' % plugin.name)
+        self._logger.debug('Initalizing plugin %s' % plugin.name)
         
         plugin.init()
         self.on_plugin_initialized(plugin)
 
-        obengine.log.info('Plugin %s initalized' % plugin.name)
+        self._logger.info('Plugin %s initalized' % plugin.name)
 
-    def initialize_all_plugins(self):
-
-        for plugin in self.all_plugins():
-            self.initialize_plugin(plugin)
 
     def all_plugins(self):
         """
@@ -226,60 +205,20 @@ class PluginManager(object):
         for plugin in self.all_plugins():
             yield plugin.name
 
-    def parse_plugin_dir(self, root_dir):
-        """
-        Parses a plugin, and adds it to the initialization queue.
+    def add_plugin(self, plugin):
+        self.plugins.append(plugin)
 
-        Arguments:
-         * root_dir - the root directory of the plugin to be parsed
-
-        Returns:
-        The list of virtual plugins the newly loaded plugin provides
-        """
-
-        obengine.log.debug('Parsing plugin from directory %s' % root_dir)
+    def _parse_plugin_dir(self, root_dir):
 
         parser = ConfigParser.ConfigParser()
         parser.read(os.path.join(root_dir, PLUGIN_CFG_NAME))
 
-        module = parser.get('core', 'module')
         name = parser.get('core', 'name')
-
-        obengine.log.debug('Plugin name is %s; root module is %s' % (name, module))
-        
-        provides = self._get_optional_split_option(parser, 'core', 'provides', ['none'])
-        depends = self._get_optional_split_option(parser, 'core', 'depends', ['none'])
-        conflicts = self._get_optional_split_option(parser, 'core', 'conflicts', ['none'], ',')
-
-        obengine.log.debug('Plugin provides %s; depends on %s; conflicts with %s' % (
-        ','.join(provides),
-        ','.join(depends),
-        ','.join(conflicts)
-        ))
-
-        for possible_conflict in conflicts:
-
-            if possible_conflict in self.provided_plugins() or possible_conflict in self.all_plugin_names():
-
-                message = 'Plugin conflict between %s and %s' % (name, possible_conflict)
-                obengine.log.critical(message)
-                raise PluginConflictException(message)
-
-        if depends != ['none']:
-
-            for dependency in depends:
-
-                if dependency in self.provided_plugins():
-                    continue
-
-                self.load_plugin(self.find_plugin(dependency))
+        module = parser.get('core', 'module')
+        provides = self._get_optional_split_option(parser, 'core', 'provides', ['none'], ',')
 
         plugin = Plugin(name, module, root_dir, provides)
-
-        return provides, plugin
-
-    def add_plugin(self, plugin):
-        self.plugins.append(plugin)
+        return plugin
 
     def _get_optional_option(self, config_parser, section, option, default = None):
         return config_parser.has_option(section, option) and config_parser.get(section, option) or default

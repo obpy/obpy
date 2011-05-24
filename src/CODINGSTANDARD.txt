@@ -1,40 +1,64 @@
+========================
 OpenBlox Coding Standard
 ========================
 
-Indentation
-===========
+Copyright (C) 2011 The OpenBlox Project
 
-Indentation is done with tabs.
-Each tab is the equivalent of 4 spaces, therefore, each tab is 4 spaces long.
+Overview
+---------
+
+This is the OpenBlox coding standard, which closely follows Python PEP 8 (http://www.python.org/dev/peps/pep-0008/).
+However, there are a few differences:
+
+ * Usage of blank lines is encouraged
+ * Docstrings are *required* to use reST
+
+If you have any questions concerning this document, send a message to OpenBlox (http://openblox.sf.net/users/openblox).
+
+Indentation
+-----------
+
+Indentation is done with 4 spaces. Never, *ever*, use tabs.
 
 Comments
-========
+---------
 
-Regular comments(beginning with #) have a space after the hash, # like this.
+Regular comments(beginning with #) have a space after the hash, `# like this`.
 
 If the comment is for a conditional construct, the comment is placed immediately proceeding the construct.
-If the comment is for an assignment or a regular line of code(method call, class creation, etc...), the comment is placed immediately proceeding the code.
-If the comment needs to span more than one line, triple double quotes are used instead::
-
-    """
-    like this.
-    """
+If the comment is for an assignment or a regular line of code(method call, class creation, etc...),
+the comment is placed immediately proceeding the code.
 
 Examples::
 
     # Set a
     a = 1
 
-    """
-    complicated_method is complex,
-    so we need several lines to explain it
-    """
+    # complicated_method is complex,
+    # so we need several lines to explain it
+    
     complicated_method(f, o, o, b, a, r, s, p, a, m, e, g, g, s)
 
+Docstrings
+-----------
+
+Every module, function, and public class method should have a docstring.
+Docstrings should be written using reST_.
+
+A docstring's basic format is this::
+
+    """Quick one-liner summary (no ending period)
+    In-depth explanation of whatever this docstring belongs to.
+    As you can see, each sentence has an ending period.
+    Also, this docstring uses *reStructuredText* (http://docutils.sf.net/rst.html).
+    
+    """
+
 Variables
-=========
+----------
 
 Variables are named like_this.
+(Constants, however, are named LIKE_THIS.)
 Variables are declared at the start of their owning module or class.
 There is a blank line between the last variable declaration, and the first coding construct, or method declaration(if the variable is global).
 
@@ -46,10 +70,10 @@ Examples::
     #method declaration here
 
 Coding Constructs
-=================
+------------------
 
 All conditional and loop constructs are followed by a blank line, unless the following code is only one logical line.
-If the following logical line is a construct as well, the construct is followed by a blank line.
+If the following logical line is a conditional or loop construct as well, the construct is *not* followed by a blank line.
 Examples::
 
     for x in range(2, 11):
@@ -60,8 +84,23 @@ Examples::
         #two lines,
         # so there is a blank line below the for loop declaration
 
+    for x in range(0, 5):
+        for y in range(0, 5):
+            print 'Nested loops with one non-loop instruction should look like this!'
+
+    for x in range(0, 5):
+        for y in range(0, 5):
+
+            print 'This is inside a nested loop with multiple'
+            print 'logical lines, so there is a blank line'
+            print 'between the last loop declaration, and'
+            print 'the first non-loop line'
+
+Docstrings
+------------------
+
 Methods
-=======
+--------
 
 Methods are named like_this.
 
@@ -76,7 +115,7 @@ This also applies to method calls.
 Example::
 
     def method do_x(a, b, c):
-        """
+        """Does x.
         Prints a, the first element of b, and the second element of c,
         all on a single line.
         """
@@ -84,10 +123,11 @@ Example::
         print a, b[0], c[1]
 
 Classes
-=======
+--------
 
 Classes are titled LikeThis.
-If the class does not inherit from anything in partictular, it needs to inherit from object(to ensure compatability with Python 2.6/2.5).
+If the class does not *need* to inherit from anything in partictular,
+it needs to inherit from object (to ensure compatability with Python 2.6/2.5).
 
 The first method defined is __init__.
 Every method that is not private is given documentation.
@@ -121,7 +161,7 @@ Examples::
             print a
 
 Modules
-=======
+--------
 
 Modules have this header, at their beginning::
 
@@ -147,3 +187,5 @@ Modules have this header, at their beginning::
 
 Modules are named likethis.
 There is a blank line between the terminating """ of the header, and the first variable declaration.
+
+.. _reST: http://docutils.sf.net/rst.html

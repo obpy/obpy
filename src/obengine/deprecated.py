@@ -1,5 +1,5 @@
 """
-Copyright (C) 2010 The OpenBlox Project
+Copyright (C) 2011 The OpenBlox Project
 
 This file is part of The OpenBlox Game Engine.
 
@@ -16,24 +16,29 @@ This file is part of The OpenBlox Game Engine.
     You should have received a copy of the GNU General Public License
     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 
-
-This is the base OpenBlox Python package. Look at this package's subpackages for the actual code/documentation.
 """
 
 __author__="openblocks"
-__date__ ="$Jul 12, 2010 7:59:47 PM$"
+__date__ ="$May 22, 2011 6:07:18 AM$"
 
-import time
+import warnings
+import functools
 
-ENGINE_VERSION = (0, 7, 0)
-
-def init():
+def deprecated(func):
+    """Sets a function as deprecated
+    A decorator than issues a DeprecationWarning whenever its decorated function
+    is called.
     """
-    Wrapper around obengine.depman.init().
-    Call this function, after importing all the modules you need.
-    """
 
-    import depman
+    @functools.wraps(func)
+    def warning_wrapper(*args, **kwargs):
 
-    depman.gendeps()
-    depman.init()
+        warnings.warn(
+        '%s is deprecated' % func.__name__,
+        category = DeprecationWarning,
+        stacklevel = 2
+        )
+
+        return func(*args, **kwargs)
+
+    return warning_wrapper

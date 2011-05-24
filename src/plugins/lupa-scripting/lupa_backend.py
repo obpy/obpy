@@ -18,8 +18,8 @@ This file is part of The OpenBlox Game Engine.
 
 """
 
-__author__="openblocks"
-__date__ ="$May 2, 2011 1:15:36 AM$"
+__author__ = "openblocks"
+__date__  = "$May 2, 2011 1:15:36 AM$"
 
 import lupa
 
@@ -28,7 +28,6 @@ import sys
 # Panda3D hack for errant Windows sys.path
 
 if sys.platform == 'win32':
-
     sys.path.insert(0, 'C:\\Program Files\\OpenBlox')
     sys.path.insert(1, 'C:\\Program Files\\OpenBlox\\obengine\\scripting')
 
@@ -129,8 +128,10 @@ class ScriptEngine(object):
     """
 
     def __init__(self, filename = '<stdin>'):
-        """
-        If error_cb is None(i.e, not given), error messages are printed on stdout.
+        """If error_cb is None(i.e, not given), error messages are printed on stdout.
+        filename is the name of the Lua script being processed. If not given, it is
+        automatically <stdin>. It's for error output only; nothing is read from the file
+        that filename represents.
         """
 
         self.on_error = obengine.event.Event()
@@ -145,8 +146,21 @@ class ScriptEngine(object):
         self.method = AttrDict()
 
         # We have to bypass AttrDict's custom __setattr__ and __getattr__
-        object.__setattr__(self.var, '__setitem__', wrap_callable(getattr(self.var,'__setitem__'), self._before_globals_update, self._after_globals_update))
-        object.__setattr__(self.method, '__setitem__', wrap_callable(getattr(self.method,'__setitem__'), self._before_globals_update, self._after_globals_update))
+
+        var_set_wrapper = wrap_callable(
+        getattr(self.var,'__setitem__'),
+        self._before_globals_update,
+        self._after_globals_update
+        )
+
+        method_set_wrapper = wrap_callable(
+        getattr(self.method,'__setitem__'),
+        self._before_globals_update,
+        self._after_globals_update
+        )
+        
+        object.__setattr__(self.var, '__setitem__', var_set_wrapper)
+        object.__setattr__(self.method, '__setitem__', method_set_wrapper)
 
     def eval(self, string):
         """
@@ -182,38 +196,34 @@ class ScriptEngine(object):
         Runs a Lua script; nothing(None) is returned.
         If the script is invalid, error_cb is called.
         """
-
         try:
-
             self.lua.execute(string)
 
             for key in self.lua.globals():
-
                 if key not in default_globals:
 
-                    if str(self.lua.globals()['type'](self.globals()[key])) != u'function':
+                    added_globals_type = str(self.lua.globals()['type'](self.globals()[key]))
+                    
+                    if added_globals_type != u'function':
                         self.var[key] = self.globals()[key]
 
-                    elif str(self.lua.globals()['type'](self.globals()[key])) == u'function':
+                    elif added_globals_type == u'function':
                         self.method[key] = self.globals()[key]
 
         except Exception, message:
             self.on_error(message)
 
     def expose(self, obj):
-        """
-        Exposes obj to the Lua interpreter.
+        """Exposes obj to the Lua interpreter.
         If obj has a __tolua__ method, the return value of that method is used as the exposed
         name. Otherwise, obj's class name is used.
         """
-
         if hasattr(obj, '__tolua__'):
             self.lua.globals()[obj.__tolua__()] = obj
-
         else:
             self.lua.globals()[obj.__class__.__name__] = obj
 
-    def default_error_cb(self, msg):
+    def _default_error_cb(self, msg):
         error('Script error: Script ' + self.filename + ', error: ' + msg)
 
     def globals(self):

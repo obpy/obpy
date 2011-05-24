@@ -30,11 +30,11 @@ class PluginImportHook(object):
     To use, simply append an instance of this class to sys.meta_path.
     Now, you can access plugins as if they were normal modules, like this:
 
-    # To import the loaded scripting plugin:
-    import obplugin.core.scripting
+        # To import the loaded scripting plugin:
+        import obplugin.core.scripting
 
-    # To import the loaded graphics plugin:
-    import obplugin.core.gfx
+        # To import the loaded graphics plugin:
+        import obplugin.core.graphics
 
     All plugins are under the module(s) obplugin.<virtual plugin implementation>.
     """
@@ -47,7 +47,7 @@ class PluginImportHook(object):
         self.obplugin = types.ModuleType(PLUGIN_MODULE)
         self.obplugin.__path__ = []
 
-    def find_module(self, fullname, path=None):
+    def find_module(self, fullname, _):
 
         # Is this the initial call to find_module?
         if fullname == 'obplugin':

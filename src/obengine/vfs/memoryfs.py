@@ -36,9 +36,8 @@ class MemoryFS(basefs.BaseFS):
 
             components = path.split(basefs.SEPERATOR)
             filename = components.pop(-1)
-
+            
             for index, node in enumerate(components):
-
                 if not cur_node.has_key(node):
 
                     if mode == 'r':
@@ -68,9 +67,9 @@ class MemoryFS(basefs.BaseFS):
         return StringIO.StringIO(cur_node[filename].getvalue())
       
     def mkdir(self, path):
-
+        
         if path.count(basefs.SEPERATOR) > 0:
-      
+
             components = path.split(basefs.SEPERATOR)
 
             for index, directory in enumerate(components):
@@ -85,7 +84,7 @@ class MemoryFS(basefs.BaseFS):
             self._mkdir(path)
 
     def rmdir(self, path):
-
+        
         try:
             del self.fs[path]
 
