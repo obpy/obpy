@@ -20,26 +20,28 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Jul 13, 2010 6:13:05 PM$"
 
-import obengine.event
+import event
+import scenegraph
 
-class Element(object):
+class Element(scenegraph.SceneNode):
     """
     The base class for all elements(i.e, scripts, bricks, etc...).
     You shouldn't make an instance of this class.
     """
 
-    def __init__(self, name):
+    def __init__(self, name, parent = None):
 
-        self.name = name
+        scenegraph.SceneNode.__init__(self, name, parent)
         
-        self.on_add = obengine.event.Event()
-        self.on_remove = obengine.event.Event()
+        self.on_add = event.Event()
+        self.on_remove = event.Event()
+        self.on_world_loaded = event.Event()
 
 class BrickElement(Element):
     
-    def __init__(self, name, coords, rgb, size, hpr):
+    def __init__(self, name, coords, rgb, size, hpr, parent = None):
 
-        Element.__init__(self, name)
+        Element.__init__(self, name, parent)
 
         self.coords = coords
         self.size = size

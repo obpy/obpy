@@ -2,5 +2,5 @@
 Todos
 =============
 
-* All math classes still need events to be fired when using __getitem__ and __setitem__
 * SCENE EDITOR!!!!!!
+* Update and expand README

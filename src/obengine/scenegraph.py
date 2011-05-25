@@ -21,20 +21,16 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$May 23, 2011 8:33:32 PM$"
 
-if __name__ == '__main__':
-
-    import sys
-    sys.path.append('..')
-
 import functools
 import sqlite3
+import warnings
 
-import obengine.event
-import obengine.datatypes
-import obengine.utils
-import obengine.depman
+import event
+import datatypes
+import utils
+import depman
 
-obengine.depman.gendeps()
+depman.gendeps()
 
 class SceneGraph(object):
     """
@@ -95,7 +91,8 @@ class SceneGraph(object):
         self.db.row_factory = sqlite3.Row
         self.db.execute(self._schema)
 
-        self.nodes = obengine.datatypes.EventDict()
+        self.nodes = datatypes.EventDict()
+        self.node_handlers = {}
 
     def add_node(self, node, error_on_exist = True):
         """
@@ -136,10 +133,16 @@ class SceneGraph(object):
         
         self.nodes[node_id] = node
 
-        node.on_name_changed += functools.partial(self._update_node_name, node)
-        node.children.on_item_added += functools.partial(self._update_node_children, node)
-        node.children.on_item_removed += functools.partial(self._update_node_children, node)
-        node.on_parent_changed += functools.partial(self._update_node_parent, node)
+        name_updater = functools.partial(self._update_node_name, node)
+        children_updater = functools.partial(self._update_node_children, node)
+        parent_updater = functools.partial(self._update_node_parent, node)
+
+        node.on_name_changed += name_updater
+        node.children.on_item_added += children_updater
+        node.children.on_item_removed += children_updater
+        node.on_parent_changed += parent_updater
+
+        self.node_handlers[node_id] = (name_updater, children_updater, parent_updater)
 
     def remove_node_by_id(self, id):
         """
@@ -152,6 +155,12 @@ class SceneGraph(object):
 
         node = self.get_node_by_id(id)
         children = node.children.keys()
+        event_handlers = self.node_handlers[id]
+
+        node.on_name_changed -= event_handlers[0]
+        node.children.on_item_added -= event_handlers[1]
+        node.children.on_item_removed -= event_handlers[1]
+        node.on_parent_changed -= event_handlers[2]
 
         for child_id in children:
             self.remove_node_by_id(child_id)
@@ -163,6 +172,7 @@ class SceneGraph(object):
             node.parent.remove_child(node.id)
 
         del self.nodes[id]
+        del self.node_handlers[id]
 
     def remove_node_by_name(self, name):
         """
@@ -173,8 +183,15 @@ class SceneGraph(object):
         """
 
         node = self.get_node_by_name(name)
+        children = node.children.keys()
+        event_handlers = self.node_handlers[id]
 
-        for child_id in node.children:
+        node.on_name_changed -= event_handlers[0]
+        node.children.on_item_added -= event_handlers[1]
+        node.children.on_item_removed -= event_handlers[1]
+        node.on_parent_changed -= event_handlers[2]
+
+        for child_id in children:
             self.remove_node_by_id(child_id)
 
         cursor = self.db.cursor()
@@ -183,6 +200,8 @@ class SceneGraph(object):
         node.parent.remove_child(node.id)
 
         del self.nodes[node.id]
+        del self.node_handlers[id]
+
 
     def get_node_by_id(self, id):
         """
@@ -269,6 +288,27 @@ class SceneGraph(object):
         cursor = self.db.cursor()
         cursor.execute(update_sql, (parent_id, node.id))
 
+    def __getattr__(self, key):
+
+        if key in self.__dict__:
+            return self.__dict__[key]
+
+        try:
+
+            node = self.get_node_by_name(key)
+
+            warnings.warn(
+            '''Attribute-style node access has been deprecated for OpenBlox 0.7,
+            and will be removed in OpenBlox 0.8
+            ''',
+            category = DeprecationWarning,
+            stacklevel = 2)
+
+            return node
+
+        except (NoSuchNameException, AmbiguousNameException):
+            raise AttributeError(key)
+
 
 class SceneNode(object):
     """
@@ -293,10 +333,10 @@ class SceneNode(object):
         if self.parent:
             self.parent.children[self.id] = self
 
-        self.children = obengine.datatypes.EventDict()
+        self.children = datatypes.EventDict()
 
-        self.on_name_changed = obengine.event.Event()
-        self.on_parent_changed = obengine.event.Event()
+        self.on_name_changed = event.Event()
+        self.on_parent_changed = event.Event()
 
         SceneNode._next_avail_id += 1
 
@@ -331,11 +371,64 @@ class SceneNode(object):
             child_node.remove_all_children()
             self.remove_child(id)
 
+    def find_child_by_name(self, name, fail_on_ambiguous = False, error_on_non_existent = True):
+        """
+        Recursively searches this node's children for the first node named `name`.
+        Arguments:
+
+        * `name` - the name of the requested node
+        * `fail_on_ambiguous` - if `True` (`False` is the default), then
+          if any node has more than one node named `name`, then `AmbiguousNameException`
+          will be raised. Otherwise, the first match is returned
+        * `error_on_non_existent` - if `True` ('False` is the default), then if
+          no node named `name` exists under this node, then `NoSuchNameException` is
+          raised. Otherwise, `None` is returned
+        """
+
+        if fail_on_ambiguous is False:
+
+            try:
+                return self.children[utils.search_dict(self.children, name, lambda n: n.name)[0]]
+
+            except IndexError:
+                pass
+
+        else:
+
+            try:
+                return self.get_child_by_name(name)
+
+            except NoSuchNameException:
+                pass
+
+        for child in self.children.itervalues():
+
+            sub_child = child.find_child_by_name(name, fail_on_ambiguous, False)
+
+            if sub_child:
+                return sub_child
+
+        if error_on_non_existent is True:
+            raise NoSuchNameException(id)
+
+        else:
+            return None
+
     def get_child_by_id(self, id):
         """
         Returns the child (with ID `id`) from this node's list of children.
         If this node doesn't have a child with said ID,
         then NoSuchIdException is raised.
+
+        Example:
+
+            >>> sg = SceneGraph()
+            >>> n1 = SceneNode('Node 1')
+            >>> n2 = SceneNode('Node 2')
+            >>> sg.add_node(n1)
+            >>> n2.parent = n1
+            >>> print n1.get_child_by_id(n2.id).name
+            Node 2
         """
 
         try:
@@ -354,7 +447,7 @@ class SceneNode(object):
         then AmbiguousNameException is raised.
 
         *WARNING:* This method can be slow if this node has a lot of children (> 10000).
-        In that case, you're better off using `SceneNode.get_child_by_id` (which takes O(n) time),
+        In that case, you're better off using `SceneNode.get_child_by_id` (which takes O(1) time),
         `SceneGraph.get_node_by_name` which is *much* faster, or `SceneGraph.get_node_by_id`.
 
         Example:
@@ -368,7 +461,7 @@ class SceneNode(object):
             Node 2
         """
 
-        search_results = obengine.utils.search_dict(self.children, name, lambda n: n.name)
+        search_results = utils.search_dict(self.children, name, lambda n: n.name)
 
         if len(search_results) == 0:
             raise NoSuchNameException(name)

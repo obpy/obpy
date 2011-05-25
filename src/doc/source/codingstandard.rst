@@ -74,35 +74,40 @@ Coding Constructs
 
 All conditional and loop constructs are followed by a blank line, unless the following code is only one logical line.
 If the following logical line is a conditional or loop construct as well, the construct is *not* followed by a blank line.
+
 Examples::
 
-    for x in range(2, 11):
-        #do something with x
+   # Single loop with single logical line
+   for x in range(0, 5):
+       print x
 
-    for x in range(1, 11):
+   # Single loop with multiple logical lines
+   for x in range(1, 11):
 
-        #two lines,
-        # so there is a blank line below the for loop declaration
+      x += 5
+      print x
 
-    for x in range(0, 5):
-        for y in range(0, 5):
-            print 'Nested loops with one non-loop instruction should look like this!'
+   # Nested loops with single logical lines
+   for x in range(0, 5):
+      for y in range(0, 5):
+         print 'Nested loops with one-loop instruction should look like this!'
 
-    for x in range(0, 5):
-        for y in range(0, 5):
+   # Nested loops with multiple logical lines
+   for x in range(0, 5):
+      for y in range(0, 5):
 
-            print 'This is inside a nested loop with multiple'
-            print 'logical lines, so there is a blank line'
-            print 'between the last loop declaration, and'
-            print 'the first non-loop line'
-
+         print 'This is inside a nested loop with multiple'
+         print 'logical lines, so there is a blank line'
+         print 'between the last loop declaration, and'
+         print 'the first non-loop line'
+         
 Docstrings
 ------------------
 
 Methods
 --------
 
-Methods are named like_this.
+Methods are named `like_this`.
 
 Private methods begin with _.
 
@@ -114,7 +119,7 @@ This also applies to method calls.
 
 Example::
 
-    def method do_x(a, b, c):
+    def do_x(a, b, c):
         """Does x.
         Prints a, the first element of b, and the second element of c,
         all on a single line.
@@ -122,10 +127,11 @@ Example::
 
         print a, b[0], c[1]
 
+
 Classes
 --------
 
-Classes are titled LikeThis.
+Classes are titled `LikeThis`.
 If the class does not *need* to inherit from anything in partictular,
 it needs to inherit from object (to ensure compatability with Python 2.6/2.5).
 
@@ -166,23 +172,13 @@ Modules
 Modules have this header, at their beginning::
 
     """
-    Copyright (C) <year> The OpenBlox Project
-    
-    This file is part of The OpenBlox Game Engine.
+    <package name>
+    ~~~~~~~~~~~~~~~~
 
-    The OpenBlox Game Engine is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    <Brief description and usage>
 
-    The OpenBlox Game Engine is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
-
+    :copyright: (C) <year> The OpenBlox Project
+    :license: GNU GPL v3
     """
 
 Modules are named likethis.

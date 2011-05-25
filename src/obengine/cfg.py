@@ -34,10 +34,6 @@ depman.gendeps()
 
 __all__ = ['Config']
 
-WINDOWS_CFG_LOC = 'C:\\Program Files\\OpenBlox'
-UNIX_CFG_LOC = os.path.join(os.getenv('HOME', '/home/' + os.getlogin()), 'OpenBlox')
-CFG_FILE = 'obconf.cfg'
-
 def init():
 
     if hasattr(Config, 'parser') is False:
@@ -57,6 +53,10 @@ class Config(datatypes.Borg):
         * filename - absolute path to the configuration file to be loaded.
         It must be in INI format (*not* with the extended Windows syntax).
         """
+
+        WINDOWS_CFG_LOC = 'C:\\Program Files\\OpenBlox'
+        UNIX_CFG_LOC = os.path.join(os.getenv('HOME', '/home/' + os.getlogin()), 'OpenBlox')
+        CFG_FILE = 'obconf.cfg'
 
         # If this is True, then we're running normally
         if '.zip' not in __file__:

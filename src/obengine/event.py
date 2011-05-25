@@ -21,6 +21,9 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Feb 22, 2011 5:11:32 PM$"
 
+import depman
+depman.gendeps()
+
 class Event(object):
     """
     Basic event manager.
@@ -28,6 +31,37 @@ class Event(object):
     Use __iadd__ or add_handler to add a handler for an Event instance.
     Next, use __call__ or fire to trigger all bound handlers.
     You can also use __isub__ or remove_handler to remove a bound handler.
+
+    Sample usage:
+
+        >>> def callback():
+        ...     print 'Callback called!'
+        ...
+        >>> event = Event()
+        >>> event += callback
+        >>> event()
+        Callback called!
+        
+    Event callbacks can also be removed:
+    
+        >>> event -= callback
+        >>> event()
+        >>>
+
+    Arguments given to the Event instance are passed to each callback, as well:
+
+        >>> def callback_with_args(arg1, arg2):
+        ...     print 'arg1:', arg1, 'arg2:', arg2
+        ...
+        >>> event += callback_with_args
+        >>> event('Hello,', 'World!')
+        arg1: Hello, arg2: World!
+
+    You can also clear all the handlers:
+
+        >>> event.clear()
+        >>> event()
+        >>>
     """
 
     def __init__(self):
@@ -47,8 +81,8 @@ class Event(object):
         """
 
         try:
+            
             self.handlers.remove(handler)
-
             return self
 
         except:
@@ -70,6 +104,15 @@ class Event(object):
         """
         return len(self.handlers)
 
+    def clear(self):
+        self.handlers = set()
+
     __iadd__ = add_handler
     __isub__ = remove_handler
     __call__ = fire
+    __len__ = handler_count
+
+if __name__ == '__main__':
+
+    import doctest
+    doctest.testmod()

@@ -17,8 +17,8 @@ This file is part of The OpenBlox Game Engine.
     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-__author__="openblocks"
-__date__ ="$May 2, 2011 1:38:18 AM$"
+__author__ = "openblocks"
+__date__  = "$May 2, 2011 1:38:18 AM$"
 
 import sys
 import atexit
@@ -30,7 +30,7 @@ __all__ = ['gendeps', 'init']
 collected_modules = []
 dependency_map = {}
 
-def gendeps(prefix = 'obengine', modname = None, excludes=[]):
+def gendeps(prefix = 'obengine', modname = None, excludes = None):
     """
     Use this function to record your module's dependencies.
     Call it like this at the start of your module::
@@ -44,6 +44,9 @@ def gendeps(prefix = 'obengine', modname = None, excludes=[]):
 
     package = prefix
     name = modname or getframe(1).f_globals['__name__']
+
+    if excludes is None:
+        excludes = []
 
     excludes.append('obengine')
 
@@ -161,6 +164,7 @@ def init():
         # respective package's root, we know packages higher up the
         # package tree are properly initalized.
         # Pretty neat, huh?
+        
         if hasattr(module, 'init'):
             module.init()
 
@@ -194,6 +198,12 @@ def find_modules(module):
     return dependent_modules
 
 def _cmp_modules(module1, module2):
+    """Compares two modules
+    Returns:
+    * -1 if module1 depends upon module2
+    * 1 if module2 depends on module1
+    * 0 if neither module depends on the other
+    """
 
     # Does module2 depend upon module1?
     if module1 in dependency_map.get(module2, []):

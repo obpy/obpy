@@ -20,7 +20,9 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Jul 13, 2010 6:30:46 PM$"
 
-import obengine.datatypes
+import scenegraph
+import datatypes
+import deprecated
 
 class World(object):
     """
@@ -38,8 +40,8 @@ class World(object):
         self.max_players = max_players
         self.num_players = 0
 
-        self.element = obengine.datatypes.AttrDict()
-        self.player = obengine.datatypes.AttrDict()
+        self.element = scenegraph.SceneGraph()
+        self.player = datatypes.AttrDict()
 
         # Puzzled? Go look at attrdict.py
 
@@ -54,13 +56,16 @@ class World(object):
         for element in world_source:
             self.add_element(element)
 
+        for element in self.element.itervalues():
+            element.on_world_loaded()
+
     def add_element(self, element):
         """
-        Adds an element(a subclass of class Element in element.py) to the world.
+        Adds an element (a subclass of class Element in element.py) to the world.
         You should probably call load_world instead.
         """
 
-        self.element[element.name] = element
+        self.element.add_node(element)
         element.on_add(self)
 
     def remove_element(self, name):
@@ -103,7 +108,7 @@ class World(object):
         else:
             raise KeyError(name)
 
-    # Thats most of the interesting functions. The rest are just helpers..
+    # That's most of the interesting functions. The rest are just helpers..
 
     def is_full(self):
         """
