@@ -43,8 +43,6 @@ class World(object):
         self.element = scenegraph.SceneGraph()
         self.player = datatypes.AttrDict()
 
-        # Puzzled? Go look at attrdict.py
-
         self.name = name
 
     def load_world(self, world_source):
@@ -59,8 +57,12 @@ class World(object):
         for element in self.element.itervalues():
             element.on_world_loaded()
 
+    @deprecated.deprecated
     def add_element(self, element):
         """
+        .. deprecated:: 0.7
+            Use `obengine.world.World.element.add_node` instead.
+            `
         Adds an element (a subclass of class Element in element.py) to the world.
         You should probably call load_world instead.
         """
@@ -68,14 +70,18 @@ class World(object):
         self.element.add_node(element)
         element.on_add(self)
 
+    @deprecated.deprecated
     def remove_element(self, name):
         """
+        .. deprecated:: 0.7
+            Use `obengine.world.World.element.remove_node_by_name` instead.
+            
         Removes an element with its name contained in name.
         There are a few cases where you should call this.
         """
 
         self.element[name].on_remove()
-        del self.element[name]
+        self.element.remove_node_by_id(self.element.get_node_by_name())
 
     def add_player(self, player):
         """

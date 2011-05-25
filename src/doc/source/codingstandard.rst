@@ -2,8 +2,6 @@
 OpenBlox Coding Standard
 ========================
 
-Copyright (C) 2011 The OpenBlox Project
-
 Overview
 ---------
 
@@ -171,17 +169,18 @@ Modules
 
 Modules have this header, at their beginning::
 
-    """
-    <package name>
-    ~~~~~~~~~~~~~~~~
+   # <module purpose> (<module name>)
+   # ===================
+   #
+   # <one-liner description>
+   #
+   # Copyright (C) <year> The OpenBlox Project
+   # License: GNU GPL v3
+   #
+   # See <module documentation link> for the primary source of documentation
+   # for this module.
 
-    <Brief description and usage>
-
-    :copyright: (C) <year> The OpenBlox Project
-    :license: GNU GPL v3
-    """
-
-Modules are named likethis.
+Modules are named `likethis`.
 There is a blank line between the terminating """ of the header, and the first variable declaration.
 
 .. _reST: http://docutils.sf.net/rst.html

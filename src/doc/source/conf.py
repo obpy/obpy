@@ -22,7 +22,13 @@ sys.path.append(os.path.abspath(os.path.join(os.pardir, os.pardir)))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.inheritance_diagram']
+extensions = [
+'sphinx.ext.autodoc',
+'sphinx.ext.doctest',
+'sphinx.ext.todo',
+'sphinx.ext.inheritance_diagram',
+'sphinx.ext.intersphinx'
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -81,11 +87,13 @@ default_role = 'obj'
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'trac'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
 
+# Intersphinx mapping.
+intersphinx_mapping = {'http://docs.python.org/release/2.6.6': None}
 
 # -- Options for HTML output ---------------------------------------------------
 

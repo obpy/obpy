@@ -1,12 +1,29 @@
-================
-The Scene Graph
-================
+====================================================
+OpenBlox scene graph library (`obengine.scenegraph`)
+====================================================
+
+:synopsis: Basic scene graph library.
+
+.. versionadded:: 0.7
+
+:copyright: 2011 The OpenBlox Project
+:license: GNU GPL v3
 
 Overview
 ========
 
+`obengine.scenegraph` provides a simple, SQLite [1]_-based scene graph implementation.
+Before OpenBlox 0.7, the only "scene graph" available was `obengine.datatypes.AttrDict`, and that class
+had several shortcomings:
+
+* Scene nodes were *required* to use unique names - this was unacceptable for OpenBlox 0.7, with the release of BloxWorks (with which users would make large [> 2,000 element] worlds with many elements sharing the same name)
+* If scene nodes had duplicate names, they overwrote each other, without any errors or warnings whatsoever
+* There was no concept of parenting, or nested nodes
+
+To address these issues, this module, `obengine.scenegraph`, was born.
+
 Concepts
---------
+========
 
 Each node on the scene graph has its own unique ID number (node ID/NID) - no two nodes (no matter when or where they were created)
 have identical ID numbers. So, each node's primary means of identification is through its NID.
@@ -39,7 +56,7 @@ It is up to you to decide which identification method better suits your purposes
 * Use a unique name for each node you want to access from a Lua script
 
 Examples
----------
+========
 
 
 Basic usage:
@@ -51,7 +68,7 @@ Basic usage:
    >>> print sg.get_node_by_name('Node 1').name
    Node 1
 
-Nodes can have names, but they must be unique *within their scope*, i.e, 
+Nodes can have names, but they must be unique *within their scope*, i.e,
 their parent can have no other children with the same name, if you want to be able to use `obengine.scenegraph.SceneNode.get_child_by_name`:
 
    >>> n2 = SceneNode('Node 2')
@@ -68,11 +85,14 @@ But, if we try to use `obengine.scenegraph.SceneGraph.get_node_by_name`, what ha
       ...
    AmbiguousNameException: Node 2
 
-This occurred because the scene graph wasn't able to figure out which node with the name `Node 2` you wanted: `n1` or `n2`.
+This occurred because the scene graph wasn't able to figure out which node with the name **Node 2** you wanted: **n1** or **n2**.
 
-General documentation
-----------------------
+Module reference
+============================
 
- .. automodule:: obengine.scenegraph
+.. automodule:: obengine.scenegraph
    :members:
-   
+
+.. rubric:: Footnotes
+
+.. [1] http://sqlite.org - the SQLite website
