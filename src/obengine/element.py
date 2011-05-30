@@ -32,9 +32,6 @@ class Element(scenegraph.SceneNode):
     def __init__(self, name, parent = None):
 
         scenegraph.SceneNode.__init__(self, name, parent)
-        
-        self.on_add = event.Event()
-        self.on_remove = event.Event()
         self.on_world_loaded = event.Event()
 
 class BrickElement(Element):

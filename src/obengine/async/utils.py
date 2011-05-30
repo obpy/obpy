@@ -78,3 +78,28 @@ class LoopingCall(object):
     @scheduler.setter
     def scheduler(self, sched):
         self.task.scheduler = sched
+
+
+class AsyncCall(object):
+
+    def __init__(self, method, priority, *args, **kwargs):
+
+        self._method = method
+        self._finished = False
+        
+        self.priority = priority
+
+        self.method_args = args
+        self.method_kwargs = kwargs
+
+    def execute(self):
+
+        self._method(*self.method_args, **self.method_kwargs)
+        self._finished = True
+
+    def wait(self):
+        self.scheduler.step()
+
+    @property
+    def finished(self):
+        return self._finished

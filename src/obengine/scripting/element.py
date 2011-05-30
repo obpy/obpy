@@ -20,8 +20,13 @@ __date__ ="$Jan 23, 2011 8:10:16 AM$"
 
 from obengine.element import Element
 import obengine.plugin
+import obengine.depman
 
-obengine.plugin.require('core.scripting')
+obengine.depman.gendeps()
+
+def init():
+    obengine.plugin.require('core.scripting')
+
 
 class ScriptElement(Element):
 
@@ -37,22 +42,22 @@ class ScriptElement(Element):
 
         self.on_add += self.script_on_add
 
-    def script_on_add(self, world):
+    def script_on_add(self, scene_graph):
 
         from thread import start_new_thread
 
-        self.world = world
+        self.world = scene_graph.world
 
         start_new_thread(self.run, ())
 
 
     def run(self):
 
-        import core.scripting
+        import obplugin.core.scripting
         import obengine.elementfactory
 
-        self.script_engine = core.scripting.ScriptEngine(self.name)
-
+        self.script_engine = obplugin.core.scripting.ScriptEngine(self.name)
+        
         self.script_engine.expose(self.world)
         self.script_engine.expose(self)
         self.script_engine.expose(obengine.elementfactory.ElementFactory())

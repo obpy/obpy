@@ -64,7 +64,7 @@ This is the log file to write to. By default, it's ``oblog.txt``.
 If this is an absolute path (i.e, on Windows, it starts with a drive letter, like ``C:``, or on Unix [like Linux and Mac OSX], it starts with `/`), 
 then the file will be written there. Otherwise, the log file will be inserted in one of 2 directories:
 
-* ``$APPDATA\OpenBlox\``, if you're running Windows
+* ``%APPDATA%\OpenBlox\``, if you're running Windows
 * ``$HOME/OpenBlox/``, if you're running Unix (Linux or Mac OSX)
 
 Graphics-related

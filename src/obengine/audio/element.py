@@ -18,16 +18,17 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Apr 2, 2011 7:51:54 AM$"
 
-import element
-import depman
-import plugin
+import obengine.element
+import obengine.depman
+import obengine.plugin
 
-depman.gendeps()
+obengine.depman.gendeps()
 
 def init():
     plugin.require('core.audio')
 
-class SoundElement(element.Element):
+
+class SoundElement(obengine.element.Element):
     """
     Lets a sound be loaded and played inside an OpenBlox world.
     """

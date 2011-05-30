@@ -56,7 +56,7 @@ class MemoryFS(basefs.BaseFS):
 
         elif mode == 'w':
 
-            cur_node[filename] = StringIO.StringIO('')
+            cur_node[filename] = self._create_empty_file()
             return cur_node[filename]
 
         elif cur_node.has_key(filename):
@@ -64,7 +64,13 @@ class MemoryFS(basefs.BaseFS):
             if isinstance(cur_node[filename], dict):
                 raise IOError(path)
 
-        return StringIO.StringIO(cur_node[filename].getvalue())
+        return self._return_file(cur_node[filename])
+
+    def _create_empty_file(self):
+        return StringIO.StringIO('')
+
+    def _return_file(self, loc):
+        return StringIO.StringIO(loc.getvalue())
       
     def mkdir(self, path):
         

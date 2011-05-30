@@ -30,12 +30,12 @@ import xml.etree.ElementTree as xmlparser
 
 class WorldSource(list):
 
-    def __init__(self):
+    def __init__(self, factory):
         """
         Do NOT create this class! Create one of its derivatives, instead.
         """
 
-        pass
+        self.factory = factory
 
     def retrieve(self):
 
@@ -89,14 +89,14 @@ class WorldSource(list):
 
         # Finally, create the brick!
 
-        element = ElementFactory().make('brick', name, coords, rgb, size, orientation, False, anchored)
+        element = self.factory.make('brick', name, coords, rgb, size, orientation, False, anchored)
 
         self.append(element)
 
     def handle_skybox(self, child):
 
         # Create a skybox, optionally with a custom texture
-        element = ElementFactory().make('skybox', child.attrib.get('src'))
+        element = self.factory.make('skybox', child.attrib.get('src'))
 
         # Add it
         self.append(element)
@@ -106,10 +106,10 @@ class WorldSource(list):
         # Does this script tag refer to a file, or is the code included in the tag?
 
         if child.attrib.has_key('src'):
-            element = ElementFactory().make('script', child.attrib['name'], None, child.attrib['src'])
+            element = self.factory.make('script', child.attrib['name'], None, child.attrib['src'])
 
         else:
-            element = ElementFactory().make('script', child.attrib['name'], child.text)
+            element = self.factory.make('script', child.attrib['name'], child.text)
 
         self.append(element)
 
@@ -127,7 +127,7 @@ class WorldSource(list):
         autoplay = yes_no[child.attrib.get('autoplay', False)]
 
         # Create the element
-        element = ElementFactory().make('sound', name, src, autoplay)
+        element = self.factory.make('sound', name, src, autoplay)
 
         self.append(element)
 
@@ -135,8 +135,8 @@ class WorldSource(list):
         """
         Parses a world.
         Exceptions:
-        * UnknownWorldTag when an unknown tag is encountered.
-        * InsufficientVersion if the "version" attribute of the world tag is greater than this engine's version
+        * UnknownWorldTagError when an unknown tag is encountered.
+        * InsufficientVersionError if the "version" attribute of the world tag is greater than this engine's version
         """
 
         # self.retrieve returns a file-like object
@@ -151,9 +151,14 @@ class WorldSource(list):
 
         # We can't load this game if it's for a non-compatible version of OpenBlox
         if game_version[0] != obengine.ENGINE_VERSION[0]:
-            raise InsufficientVersion, rootnode.attrib.get('version', '0.6.2')
+            raise InsufficientVersionError, rootnode.attrib.get('version', '0.6.2')
 
-        supported_tags = { 'brick' : 'handle_brick', 'skybox' : 'handle_skybox', 'script' : 'handle_script', 'sound' : 'handle_sound' }
+        supported_tags = {
+        'brick' : 'handle_brick',
+        'skybox' : 'handle_skybox',
+        'script' : 'handle_script',
+        'sound' : 'handle_sound'
+        }
 
         # Run over all the children of the top-level "world" tag
         for child in rootnode:
@@ -164,7 +169,7 @@ class WorldSource(list):
 
             # We don't. Raise an exception
             else:
-                raise UnknownWorldTag, child.tag
+                raise UnknownWorldTagError, child.tag
 
 class FileWorldSource(WorldSource):
     """
@@ -172,16 +177,16 @@ class FileWorldSource(WorldSource):
     Supply this class to an obengine.world.World's load_world method, after calling FileWorldSource.parse.
     """
 
-    def __init__(self, path):
+    def __init__(self, factory, path):
         """
         path is the file path of the world to load.
         """
 
-        WorldSource.__init__(self)
+        WorldSource.__init__(self, factory)
         self.path = path
 
     def retrieve(self):
         return open(self.path,'r')
 
-class UnknownWorldTag(Exception): pass
-class InsufficientVersion(Exception): pass
+class UnknownWorldTagError(Exception): pass
+class InsufficientVersionError(Exception): pass

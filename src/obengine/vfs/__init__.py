@@ -24,6 +24,7 @@ __date__ ="$May 2, 2011 3:50:22 PM$"
 from basefs import *
 from memoryfs import *
 from realfs import *
+from registryfs import *
 
 import obengine.depman
 obengine.depman.gendeps()

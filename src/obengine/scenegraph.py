@@ -9,19 +9,24 @@
 # See doc/build/html/scenegraph.html for the primary source of documentation
 # for this module.
 
-__author__="openblocks"
-__date__ ="$May 23, 2011 8:33:32 PM$"
+__author__ = "openblocks"
+__date__  = "$May 23, 2011 8:33:32 PM$"
 
 import functools
 import sqlite3
 import warnings
 
-import event
-import datatypes
-import utils
-import depman
+import obengine.event
+import obengine.datatypes
+import obengine.utils
+import obengine.depman
 
-depman.gendeps()
+obengine.depman.gendeps()
+
+NO_PARENT_ID = -1
+NO_CHILDREN_MARKER = '(none)'
+CHILDREN_ID_SEP = ','
+
 
 class SceneGraph(object):
     """
@@ -74,17 +79,15 @@ class SceneGraph(object):
     name = ?
     '''
 
-    _NO_PARENT_ID = -1
-    _NO_CHILDREN_MARKER = '(none)'
-    _CHILDREN_ID_SEP = ','
+    def __init__(self, owner = None):
 
-    def __init__(self):
+        self.owner = owner
 
         self.db = sqlite3.connect(':memory:')
         self.db.row_factory = sqlite3.Row
         self.db.execute(self._schema)
 
-        self.nodes = datatypes.EventDict()
+        self.nodes = obengine.datatypes.EventDict()
         self.node_handlers = {}
 
     def add_node(self, node, error_on_exist = True):
@@ -104,14 +107,14 @@ class SceneGraph(object):
         if node.nid in self.nodes:
 
             if error_on_exist is True:
-                raise NodeIdExistsException(noden.id)
+                raise NodeIdExistsException(node.nid)
 
             else:
                 return
 
         node_name = node.name
         node_id = node.nid
-        parent_id = self._NO_PARENT_ID
+        parent_id = NO_PARENT_ID
 
         if node.parent is not None:
             parent_id = node.parent.nid
@@ -123,8 +126,8 @@ class SceneGraph(object):
             node_children.append(str(child.nid))
             self.add_node(child, False)
 
-        node_children = self._CHILDREN_ID_SEP.join(node_children)
-        node_children = node_children or self._NO_CHILDREN_MARKER
+        node_children = CHILDREN_ID_SEP.join(node_children)
+        node_children = node_children or NO_CHILDREN_MARKER
 
         args = (node_name, node_id, parent_id, node_children)
 
@@ -143,6 +146,7 @@ class SceneGraph(object):
         node.on_parent_changed += parent_updater
 
         self.node_handlers[node_id] = (name_updater, children_updater, parent_updater)
+        node.on_add(self)
 
     def remove_node_by_id(self, nid):
         """
@@ -164,7 +168,7 @@ class SceneGraph(object):
         node.children.on_item_removed -= event_handlers[1]
         node.on_parent_changed -= event_handlers[2]
 
-        for child_id in children:
+        for child_nid in children:
             self.remove_node_by_id(child_nid)
 
         cursor = self.db.cursor()
@@ -175,6 +179,8 @@ class SceneGraph(object):
 
         del self.nodes[nid]
         del self.node_handlers[nid]
+
+        node.on_remove()
 
     def remove_node_by_name(self, name):
         """
@@ -189,10 +195,71 @@ class SceneGraph(object):
         """
 
         node = self.get_node_by_name(name)
-        children = node.children.keys()
+        self.remove_node_by_id(node.nid)
 
-        for child_id in children:
-            self.remove_node_by_id(child_id)
+    def find_node_by_name(self, name, starting_nid = NO_PARENT_ID, fail_on_ambiguous = False, exc_on_non_existent = True):
+        """
+        Example:
+        
+            >>> sg = SceneGraph()
+            >>> n1 = SceneNode('Node 1')
+            >>> n2 = SceneNode('Node 2')
+            >>> sg.add_node(n1)
+            >>> n2.parent = n1
+            >>> print sg.find_node_by_name('Node 2').name
+            Node 2
+        """
+
+        search_sql = '''
+            SELECT * FROM scene_nodes WHERE
+            parent = ? AND
+            name = ?
+            '''
+
+        cursor = self.db.cursor()
+        cursor.execute(search_sql, (starting_nid, name))
+
+        rows = cursor.fetchall()
+        rowcount = len(rows)
+
+        if rowcount > 0:
+
+            if fail_on_ambiguous is True:
+                raise AmbiguousNameException(name)
+
+            else:
+
+                nid = rows[0]['id']
+                return self.nodes[nid]
+
+        else:
+
+            get_children_sql = '''
+            SELECT * FROM scene_nodes WHERE
+            parent = ?
+            '''
+            
+            cursor = self.db.cursor()
+            cursor.execute(get_children_sql, (starting_nid,))
+
+            rows = cursor.fetchall()
+            rowcount = len(rows)
+
+            if rowcount > 0:
+
+                for row in rows:
+
+                    nid =  row['id']
+                    node = self.find_node_by_name(name, nid, fail_on_ambiguous, False)
+
+                    if node:
+                        return node
+
+            if exc_on_non_existent is True:
+                raise NoSuchNameException(name)
+
+            else:
+                return None
 
     def get_node_by_id(self, nid):
         """
@@ -262,7 +329,7 @@ class SceneGraph(object):
         WHERE id = ?
         '''
 
-        children_str = self._CHILDREN_ID_SEP.join(map(str, node.children))
+        children_str = CHILDREN_ID_SEP.join(map(str, node.children))
         cursor = self.db.cursor()
 
         cursor.execute(update_sql, (children_str, node.nid))
@@ -278,7 +345,7 @@ class SceneGraph(object):
         WHERE id = ?
         '''
 
-        parent_id = self._NO_PARENT_ID
+        parent_id = NO_PARENT_ID
 
         if parent_node:
             parent_id = parent_node.nid
@@ -332,10 +399,12 @@ class SceneNode(object):
         if self.parent:
             self.parent.children[self.nid] = self
 
-        self.children = datatypes.EventDict()
+        self.children = obengine.datatypes.EventDict()
 
-        self.on_name_changed = event.Event()
-        self.on_parent_changed = event.Event()
+        self.on_name_changed = obengine.event.Event()
+        self.on_parent_changed = obengine.event.Event()
+        self.on_add = obengine.event.Event()
+        self.on_remove = obengine.event.Event()
 
         SceneNode._next_avail_id += 1
 
@@ -356,6 +425,8 @@ class SceneNode(object):
             child_node.remove_all_children()
 
             del self.children[nid]
+
+            child_node.on_remove()
 
         except KeyError:
             raise NoSuchIdException(nid)
@@ -378,22 +449,34 @@ class SceneNode(object):
         Recursively searches this node's children for the first node named *name*.
 
         :param name: The name of the requested node
-        :type name: str
+        :type name: `str`
         :param fail_on_ambiguous: Raise an exception if multiple nodes matching *name*
                                   are found under the same node?
-        :type fail_on_ambiguous: bool
+        :type fail_on_ambiguous: `bool`
         :param exc_on_non_existent: Raise an exception if no nodes named *name* were found?
         :returns: `SceneNode` if a node named *name* was found; *None*
                               if no nodes matching *name* were found and *exc_on_non_existent* is *True*
         :raises: `NoSuchNameException` if no node named *name* is a sub-node of this node,
                  `AmbiguousNameException` if multiple nodes are named *name* under the same
                  parent
+
+        Example:
+
+            >>> sg = SceneGraph()
+            >>> n1 = SceneNode('Node 1')
+            >>> n2 = SceneNode('Node 2')
+            >>> n3 = SceneNode('Node 3')
+            >>> n3.parent = n2
+            >>> n2.parent = n1
+            >>> sg.add_node(n1)
+            >>> print n1.find_child_by_name('Node 3').name
+            Node 3
         """
 
         if fail_on_ambiguous is False:
 
             try:
-                return self.children[utils.search_dict(self.children, name, lambda n: n.name)[0]]
+                return self.children[obengine.utils.search_dict(self.children, name, lambda n: n.name)[0]]
 
             except IndexError:
                 pass
@@ -449,7 +532,7 @@ class SceneNode(object):
             Node 2
         """
 
-        search_results = utils.search_dict(self.children, name, lambda n: n.name)
+        search_results = obengine.utils.search_dict(self.children, name, lambda n: n.name)
 
         if len(search_results) == 0:
             raise NoSuchNameException(name)
@@ -540,8 +623,3 @@ class AmbiguousNameException(SceneGraphException):
     there are multiple nodes with the requested name.
     """
     pass
-
-if __name__ == '__main__':
-
-    import doctest
-    doctest.testmod()

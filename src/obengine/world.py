@@ -1,28 +1,20 @@
-"""
-Copyright (C) 2010 The OpenBlox Project
+# OpenBlox world model (obengine.world)
+# ===================
+#
+# Provides OpenBlox's high-level world model.
+#
+# Copyright (C) 2010 The OpenBlox Project
+# License: GNU GPL v3
+#
+# See <TODO: no Sphinx docs yet - add some!> for the primary source of documentation
+# for this module.
 
-This file is part of The OpenBlox Game Engine.
-
-    The OpenBlox Game Engine is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The OpenBlox Game Engine is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
-
-"""
 __author__="openblocks"
 __date__ ="$Jul 13, 2010 6:30:46 PM$"
 
-import scenegraph
-import datatypes
-import deprecated
+import obengine.scenegraph
+import obengine.datatypes
+import obengine.deprecated
 
 class World(object):
     """
@@ -40,8 +32,8 @@ class World(object):
         self.max_players = max_players
         self.num_players = 0
 
-        self.element = scenegraph.SceneGraph()
-        self.player = datatypes.AttrDict()
+        self.element = obengine.scenegraph.SceneGraph(self)
+        self.player = obengine.datatypes.AttrDict()
 
         self.name = name
 
@@ -55,33 +47,28 @@ class World(object):
             self.add_element(element)
 
         for element in self.element.itervalues():
-            element.on_world_loaded()
+            element.on_world_loaded(self)
 
-    @deprecated.deprecated
     def add_element(self, element):
         """
         .. deprecated:: 0.7
-            Use `obengine.world.World.element.add_node` instead.
-            `
-        Adds an element (a subclass of class Element in element.py) to the world.
-        You should probably call load_world instead.
+            Use `obengine.world.World.element.add_node` instead
+            .
+        Adds an element (a subclass of `obengine.element.Element`) to the world.
         """
 
         self.element.add_node(element)
-        element.on_add(self)
 
-    @deprecated.deprecated
     def remove_element(self, name):
         """
         .. deprecated:: 0.7
             Use `obengine.world.World.element.remove_node_by_name` instead.
             
         Removes an element with its name contained in name.
-        There are a few cases where you should call this.
         """
 
-        self.element[name].on_remove()
-        self.element.remove_node_by_id(self.element.get_node_by_name())
+        nid = self.element.get_node_by_name().nid
+        self.element.remove_node_by_id(nid)
 
     def add_player(self, player):
         """

@@ -21,126 +21,231 @@ __author__="openblocks"
 __date__ ="$Aug 9, 2010 11:04:13 PM$"
 
 import obengine.element
-import obengine.cfg
-import obengine.gfx
-import obengine.phys
+import obengine.depman
+import obengine.plugin
+import obengine.deprecated
 import obengine.gfx.math
-from obengine.cfg import get_config_var
 
-from panda3d.core import CompassEffect, TransparencyAttrib, Filename
+obengine.depman.gendeps()
 
-import os
+DEFAULT_X_SIZE = 2.0
+DEFAULT_Y_SIZE = 4.0
+DEFAULT_Z_SIZE = 1.0
+
+def init():
+    obengine.plugin.require('core.graphics')
 
 class BrickView(object):
     """
     Base view for all different sorts of bricks.
-    To use, simply create a variable called type in your subclcass, that corresponds to a model file in data/.
+    To use, simply create a variable called type in your subclass, that corresponds to a model file in data/.
     Then, implement set_size, set_hpr, set_pos, and set_color methods
     that take obengine.gfx.math.Vector, obengine.gfx.math.EulerAngle, or obengine.gfx.math.Color as arguments.
     """
 
-    def __init__(self, size, hpr, color):
+    def __init__(self, size, hpr, color, window):
 
-        self.model = obengine.gfx.get_rootwin().loader.loadModel(Filename.fromOsSpecific(get_config_var('cfgdir') + os.path.join(os.sep + 'data', self.type)))
-        self.model.setTransparency(TransparencyAttrib.MAlpha)
-        
-        self.set_size(size)
-        self.set_hpr(hpr)
-        self.set_color(color)
+        import obplugin.core.graphics
 
+        self.model = obplugin.core.graphics.Model(self.type + '-new', window)
+        self.on_loaded = self.model.on_loaded
+
+    @property
+    def showing(self):
+        return self.model.showing
+
+    @showing.setter
+    def showing(self, show):
+        self.model.showing = show
+
+    @obengine.deprecated.deprecated
     def hide(self):
-        self.model.detachNode()
+        self.showing = False
 
+    @obengine.deprecated.deprecated
     def show(self):
-        self.model.reparentTo(obengine.gfx.get_rootwin().render)
+        self.showing = True
+
+    def load(self):
+        self.model.load()
 
 class BlockBrickView(BrickView):
 
     type = 'brick'
 
+    @property
+    def position(self):
+        return self.model.position
+
+    @position.setter
+    def position(self, new_pos):
+        self.model.position = new_pos
+
+    @property
+    def size(self):
+
+        size = self.model.size
+        brick_size = obengine.gfx.math.Vector(
+        size.x * DEFAULT_X_SIZE,
+        size.y * DEFAULT_Y_SIZE,
+        size.z * DEFAULT_Z_SIZE
+        )
+        return brick_size
+
+    @size.setter
+    def size(self, new_size):
+        self.model.scale = new_size.x / DEFAULT_X_SIZE, new_size.y / DEFAULT_Y_SIZE, new_size.z / DEFAULT_Z_SIZE
+
+    @property
+    def rotation(self):
+        return self.model.rotation
+
+    @rotation.setter
+    def rotation(self, new_rot):
+        self.model.rotation = new_rot
+
+    @property
+    def color(self):
+        return self.model.color
+
+    @color.setter
+    def color(self, new_color):
+        self.model.color = new_color
+
+    @obengine.deprecated.deprecated
     def set_pos(self, vector):
-        self.model.setPos(float(vector.x), float(vector.y), float(vector.z))
+        self.position = vector
 
+    @obengine.deprecated.deprecated
     def set_size(self, size):
-        self.model.setScale(float(size.x) / 2, float(size.y) / 4, float(size.z))
+        self.size = size
 
+    @obengine.deprecated.deprecated
     def set_hpr(self, hpr):
-        self.model.setHpr(hpr.h, hpr.p, hpr.r)
+        self.rotation = hpr
 
+    @obengine.deprecated.deprecated
     def set_color(self, rgb):
-        self.model.setColor(float(rgb.r) / 255, float(rgb.g) / 255, float(rgb.b) / 255, float(rgb.a) / 255)
+        self.color = rgb
 
 class BrickPresenter(object):
     
-    def __init__(self, brick, view, hidden = False, anchored = False):
+    def __init__(self, brick, view, phys_rep):
 
         self.brick = brick
         self.view = view
 
-        self.hidden = hidden
-
         self.on_add = self.brick.on_add
         self.on_remove = self.brick.on_remove
+        self.on_name_changed = self.brick.on_name_changed
+        self.on_parent_changed = self.brick.on_parent_changed
 
-        self.on_add += self.presenter_on_add
-        self.on_remove += self.presenter_on_remove
+        self.brick.on_add += self.presenter_on_add
+        self.brick.on_remove += self.presenter_on_remove
 
-        self.name = self.brick.name
+        self.phys_rep = phys_rep
+        self.phys_rep.owner = self
 
-        self.anchored = anchored
-
-        self.set_rgb(obengine.gfx.math.Color(self.brick.rgb.r, self.brick.rgb.g, self.brick.rgb.b, self.brick.rgb.a))
-        self.set_pos(obengine.gfx.math.Vector(self.brick.coords.x, self.brick.coords.y, self.brick.coords.z))
-        self.set_size(obengine.gfx.math.Vector(self.brick.size.x, self.brick.size.y, self.brick.size.z))
-        self.set_hpr(obengine.gfx.math.EulerAngle(self.brick.hpr.h, self.brick.hpr.p, self.brick.hpr.r))
-
-        self.phys_obj = obengine.phys.PhysicalObject(self, self.brick.size, anchored)
-        self.on_add += self.phys_obj.phys_on_add
-        self.on_remove += self.phys_obj.phys_on_remove
-
+    @obengine.deprecated.deprecated
     def hide(self):
+        pass
 
-        self.hidden = True
-        self.view.hide()
-
+    @obengine.deprecated.deprecated
     def show(self):
+        pass
 
-        self.hidden = False
-        self.view.show()
+    @property
+    def size(self):
+        return self.view.size
 
+    @size.setter
+    def size(self, new_size):
+
+        self.view.size = new_size
+        self.brick.set_size(new_size)
+
+        self.phys_obj.update_size()
+        
+    @property
+    def rotation(self):
+        return self.view.rotation
+
+    @rotation.setter
+    def rotation(self, new_rot):
+
+        self.brick.set_hpr(new_rot)
+        self.view.rotation = new_rot
+        
+        self.phys_rep.rotation = new_rot
+
+    @property
+    def position(self):
+        return self.view.position
+
+    @position.setter
+    def position(self, new_pos):
+
+        self.brick.set_pos(new_pos)
+        self.view.position = new_pos
+
+        self.phys_rep.position = new_pos
+
+    @property
+    def name(self):
+        return self.brick.name
+
+    @name.setter
+    def name(self, new_name):
+        self.brick.name = new_name
+
+    @property
+    def nid(self):
+        return self.brick.nid
+
+    @property
+    def parent(self):
+        return self.brick.parent
+
+    @parent.setter
+    def parent(self, new_parent):
+        self.brick.parent = new_parent
+
+    @property
+    def children(self):
+        return self.brick.children
+
+    @obengine.deprecated.deprecated
     def set_size(self, size):
 
         self.brick.set_size(size)
         self.view.set_size(size)
 
-    def set_hpr(self, hpr, update_phys = True):
+    @obengine.deprecated.deprecated
+    def set_hpr(self, hpr):
 
         self.brick.set_hpr(hpr)
-        self.view.set_hpr(hpr)
+        self.view.rotation = hpr
+        self.phys_rep.rotation = hpr
 
-        if hasattr(self, 'phys_obj'):
-            self.phys_obj.set_hpr(hpr.h, hpr.p, hpr.r)
-
+    @obengine.deprecated.deprecated
     def set_pos(self, vector):
 
         self.brick.set_pos(vector)
-        self.view.set_pos(vector)
+        self.view.position = vector
 
-        if hasattr(self, 'phys_obj'):
-            self.phys_obj.set_pos(vector.x, vector.y, vector.z)
+        self.phys_rep.position = vector
 
+    @obengine.deprecated.deprecated
     def set_rgb(self, color):
 
         self.brick.set_rgb(color)
-        self.view.set_color(color)
+        self.view.color = color
 
     def presenter_on_add(self, world):
-
         self.world = world
-        self.show()
 
     def presenter_on_remove(self):
-        self.hide()
+        self.model.showing = False
         
 class SkyboxElement(obengine.element.Element):
 

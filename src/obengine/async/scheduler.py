@@ -63,13 +63,21 @@ class Scheduler(object):
 
         while True:
 
-            if len(self.task_buffer) == 0:
+            try:
+                self.step()
+
+            except TaskBufferEmptyException:
                 break
 
-            elif len(self.queue) == 0:
-                self._copy_from_task_buffer()
+    def step(self):
 
-            self.queue.pop(0).execute()
+        if len(self.task_buffer) == 0 and len(self.queue) == 0:
+            raise TaskBufferEmptyException
+
+        elif len(self.queue) == 0:
+            self._copy_from_task_buffer()
+            
+        self.queue.pop(0).execute()
 
     def _copy_from_task_buffer(self):
 
@@ -80,3 +88,7 @@ class Scheduler(object):
 
     def _priority_sort(self, task1, task2):
         return cmp(task1.priority, task2.priority)
+
+
+class TaskBufferEmptyException(Exception):
+    pass

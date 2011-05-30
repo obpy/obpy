@@ -47,9 +47,9 @@ A docstring's basic format is this::
 
     """Quick one-liner summary (no ending period)
     In-depth explanation of whatever this docstring belongs to.
+    This includes explanation of parameters (and their expected type), return value, and possibly raised exceptions (where applicable).
     As you can see, each sentence has an ending period.
     Also, this docstring uses *reStructuredText* (http://docutils.sf.net/rst.html).
-    
     """
 
 Variables
@@ -99,9 +99,6 @@ Examples::
          print 'between the last loop declaration, and'
          print 'the first non-loop line'
          
-Docstrings
-------------------
-
 Methods
 --------
 

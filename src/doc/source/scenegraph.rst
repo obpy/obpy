@@ -3,11 +3,10 @@ OpenBlox scene graph library (`obengine.scenegraph`)
 ====================================================
 
 :synopsis: Basic scene graph library.
-
-.. versionadded:: 0.7
-
 :copyright: 2011 The OpenBlox Project
 :license: GNU GPL v3
+
+.. versionadded:: 0.7
 
 Overview
 ========

@@ -21,7 +21,10 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$May 4, 2011 8:08:03 PM$"
 
-import obengine.event
+import event
+import depman
+
+depman.gendeps()
 
 class AttrDict(dict):
     """
@@ -93,10 +96,10 @@ class EventDict(dict):
 
         dict.__init__(self, *args, **kwargs)
 
-        self.on_item_added = obengine.event.Event()
-        self.on_item_retrieved = obengine.event.Event()
-        self.on_item_changed = obengine.event.Event()
-        self.on_item_removed = obengine.event.Event()
+        self.on_item_added = event.Event()
+        self.on_item_retrieved = event.Event()
+        self.on_item_changed = event.Event()
+        self.on_item_removed = event.Event()
 
     def __getitem__(self, key):
 

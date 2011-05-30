@@ -50,6 +50,12 @@ class PandaConverter(object):
     def convert_vec3(vector):
         return obengine.gfx.math.Vector(vector.getX(), vector.getY(), vector.getZ())
 
+    @staticmethod
+    def convert_quat(quat):
+
+        vec = Vec3(quat)
+        return PandaConverter.convert_vec3(vec)
+
 class World(object):
     
     def __init__(self):
@@ -92,7 +98,7 @@ class Box(object):
         self.world = world
         self.owner = owner
         self.anchored = anchored
-        self.weight = weight or (self.model.scale.x or 1.0) * (self.model.scale.y or 1.0) * (self.model.scale.z or 1.0)
+        self.weight = weight or ((self.model.scale.x or 1.0) * (self.model.scale.y or 1.0) * (self.model.scale.z or 1.0))
 
     def load(self):
 
@@ -111,6 +117,14 @@ class Box(object):
         self.world.add(self)
         self.on_loaded()
 
+    def update_size(self):
+
+        if self.anchored is False:
+            self._init_dynamic_object()
+
+        elif self.anchored is True:
+            self._init_static_object()
+
     def enable(self):
         self.object.enable()
 
@@ -119,6 +133,22 @@ class Box(object):
 
     def destroy(self):
         self.object.destroy()
+
+    @property
+    def rotation(self):
+        return PandaConverter.convert_quat(self.object.getQuat())
+
+    @rotation.setter
+    def rotation(self, new_rot):
+        self.object.setQuat(PandaConverter.convert_angle(new_rot))
+
+    @property
+    def position(self):
+        return PandaConverter.convert_vec3(self.object.getPos())
+
+    @position.setter
+    def position(self, new_pos):
+        self.object.setPos(PandaConverter.convert_vec3(new_pos))
 
     def _general_init(self):
 
@@ -130,7 +160,7 @@ class Box(object):
 
         self.object.setBoxGeomFromNodePath(self.model.panda_node, remove = False)
         self.object.setNodePath(self.model.panda_node)
-        self.object.setBoxBody(self.weight, Vec3(4, 4, 4))
+        self.object.setBoxBody(self.weight, self.object.boxSize)
         self.object.setPos(PandaConverter.convert_vector(self.model.position))
         self.object.setQuat(PandaConverter.convert_angle(self.model.rotation))
 

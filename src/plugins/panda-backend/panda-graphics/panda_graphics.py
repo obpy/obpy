@@ -179,9 +179,7 @@ class Model(PandaResource):
     def color(self, color):
 
         if isinstance(color, tuple):
-
             self._color = obengine.gfx.math.Color(*color)
-            self.panda_node.setColor(self.convert_color(self._color))
 
         else:
 
@@ -189,6 +187,8 @@ class Model(PandaResource):
             self._color.g = color.g
             self._color.b = color.b
             self._color.a = color.a
+
+        self.panda_node.setColor(self.convert_color(self._color))
 
     @property
     def texture(self):
@@ -324,6 +324,7 @@ class Light(PandaResource):
         or a model.
         """
 
+        print obj.panda_node
         if hasattr(obj, 'panda_node'):
             self.panda_node.lookAt(obj.panda_node)
 

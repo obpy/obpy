@@ -30,3 +30,19 @@ obengine.depman.gendeps()
 
 def search_dict(searched_dict, key, modifier = lambda a: a):
     return [k for k, v in searched_dict.iteritems() if key == modifier(v)]
+
+def interp_range(given_range, requested_range, num):
+
+    if (given_range[0] <= num <= given_range[1]) is False:
+        raise ValueError('%d not in range %s' % (num, given_range))
+
+    max_given_range = float(given_range[1])
+    requested_range_diff = float(requested_range[1]) - float(requested_range[0])
+    given_range_diff = float(given_range[1]) - float(given_range[0])
+    
+    min_requested_range = float(requested_range[0])
+
+    percen = float(num) / max_given_range
+    result = requested_range_diff * percen + min_requested_range
+
+    return result
