@@ -91,15 +91,21 @@ class Model(PandaResource):
         self._scale = scale or obengine.gfx.math.Vector()
         self._setup_scale()
 
-    def load(self):
+    def load(self, async = True):
         """
         Loads this model.
         Note that instead of waiting for this method to return,
         listen for this Model's on_loaded event. When that event is fired,
         the model is ready to be used.
         """
-        
-        self.window.panda_window.loader.loadModel(self.panda_model_path, callback = self._set_load_okay)
+
+        if async is True:
+            self.window.panda_window.loader.loadModel(self.panda_model_path, callback = self._set_load_okay)
+
+        else:
+
+            model = self.window.panda_window.loader.loadModel(self.panda_model_path)
+            self._set_load_okay(model)
 
     @property
     def showing(self):
@@ -220,9 +226,9 @@ class Model(PandaResource):
 
     def _setup_color(self):
 
-        self._color.on_r_changed += lambda r: self.panda_node.setR(r / COLOR_SCALER)
-        self._color.on_g_changed += lambda g: self.panda_node.setG(g / COLOR_SCALER)
-        self._color.on_b_changed += lambda b: self.panda_node.setB(r / COLOR_SCALER)
+        self._color.on_r_changed += lambda r: self.panda_node.setColor(r / COLOR_SCALER, self._color.g, self._color.b)
+        self._color.on_g_changed += lambda g: self.panda_node.setColor(self._color.r, self._color.b, g / COLOR_SCALER)
+        self._color.on_b_changed += lambda b: self.panda_node.setColor(b / COLOR_SCALER, self._color.g, self._color.b)
 
     def _set_load_okay(self, model):
 
@@ -259,11 +265,12 @@ class Texture(PandaResource):
         on_loaded event. When that event is fired, the texture is ready to be used.
         """
 
-
-        loader.loadTexture(self.panda_texture_path, callback = self.on_loaded)
+        loader.loadTexture(self.panda_texture_path, callback = self._set_load_okay)
 
     def _set_load_okay(self, tex):
+
         self.texture = tex
+        self.on_loaded()
 
 
 class Light(PandaResource):
@@ -324,7 +331,6 @@ class Light(PandaResource):
         or a model.
         """
 
-        print obj.panda_node
         if hasattr(obj, 'panda_node'):
             self.panda_node.lookAt(obj.panda_node)
 

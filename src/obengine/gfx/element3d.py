@@ -20,6 +20,8 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Aug 9, 2010 11:04:13 PM$"
 
+import functools
+
 import obengine.element
 import obengine.depman
 import obengine.plugin
@@ -43,12 +45,14 @@ class BrickView(object):
     that take obengine.gfx.math.Vector, obengine.gfx.math.EulerAngle, or obengine.gfx.math.Color as arguments.
     """
 
-    def __init__(self, size, hpr, color, window):
+    def __init__(self, size, rotation, color, window):
 
         import obplugin.core.graphics
 
         self.model = obplugin.core.graphics.Model(self.type + '-new', window)
         self.on_loaded = self.model.on_loaded
+
+        self.on_loaded += functools.partial(self._init_attrs, size, rotation, color)
 
     @property
     def showing(self):
@@ -66,8 +70,18 @@ class BrickView(object):
     def show(self):
         self.showing = True
 
-    def load(self):
-        self.model.load()
+    def load(self, async = True):
+        self.model.load(async)
+
+    @property
+    def loaded(self):
+        return self.model.load_okay
+
+    def _init_attrs(self, size, rotation, color):
+
+        self.size = size
+        self.rotation = rotation
+        self.color = color
 
 class BlockBrickView(BrickView):
 
@@ -90,6 +104,7 @@ class BlockBrickView(BrickView):
         size.y * DEFAULT_Y_SIZE,
         size.z * DEFAULT_Z_SIZE
         )
+        
         return brick_size
 
     @size.setter
@@ -242,10 +257,14 @@ class BrickPresenter(object):
         self.view.color = color
 
     def presenter_on_add(self, world):
+
         self.world = world
+        self.phys_rep.enable()
 
     def presenter_on_remove(self):
+
         self.model.showing = False
+        self.phys_rep.disable()
         
 class SkyboxElement(obengine.element.Element):
 

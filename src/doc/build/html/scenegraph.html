@@ -1,0 +1,508 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>OpenBlox scene graph library (obengine.scenegraph) &mdash; The OpenBlox Game Engine v0.7.0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '0.7.0',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="The OpenBlox Game Engine v0.7.0 documentation" href="index.html" />
+    <link rel="next" title="Testing" href="testing.html" />
+    <link rel="prev" title="The OpenBlox configuration format" href="configformat.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="testing.html" title="Testing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="configformat.html" title="The OpenBlox configuration format"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The OpenBlox Game Engine v0.7.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="openblox-scene-graph-library-obengine-scenegraph">
+<h1>OpenBlox scene graph library (<tt class="xref docutils literal"><span class="pre">obengine.scenegraph</span></tt>)<a class="headerlink" href="#openblox-scene-graph-library-obengine-scenegraph" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">synopsis:</th><td class="field-body">Basic scene graph library.</td>
+</tr>
+<tr class="field"><th class="field-name">copyright:</th><td class="field-body">2011 The OpenBlox Project</td>
+</tr>
+<tr class="field"><th class="field-name">license:</th><td class="field-body">GNU GPL v3</td>
+</tr>
+</tbody>
+</table>
+<p>
+<span class="versionmodified">New in version 0.7.</span></p>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref docutils literal"><span class="pre">obengine.scenegraph</span></tt> provides a simple, SQLite <a class="footnote-reference" href="#id2" id="id1">[1]</a>-based scene graph implementation.
+Before OpenBlox 0.7, the only &#8220;scene graph&#8221; available was <tt class="xref docutils literal"><span class="pre">obengine.datatypes.AttrDict</span></tt>, and that class
+had several shortcomings:</p>
+<ul class="simple">
+<li>Scene nodes were <em>required</em> to use unique names - this was unacceptable for OpenBlox 0.7, with the release of BloxWorks (with which users would make large [&gt; 2,000 element] worlds with many elements sharing the same name)</li>
+<li>If scene nodes had duplicate names, they overwrote each other, without any errors or warnings whatsoever</li>
+<li>There was no concept of parenting, or nested nodes</li>
+</ul>
+<p>To address these issues, this module, <tt class="xref docutils literal"><span class="pre">obengine.scenegraph</span></tt>, was born.</p>
+</div>
+<div class="section" id="concepts">
+<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this headline">¶</a></h2>
+<p>Each node on the scene graph has its own unique ID number (node ID/NID) - no two nodes (no matter when or where they were created)
+have identical ID numbers. So, each node&#8217;s primary means of identification is through its NID.
+The benefits of using node IDs to access your nodes are:</p>
+<ul class="simple">
+<li>O(1) time when using a NID from an <a title="obengine.scenegraph.SceneNode" class="reference internal" href="#obengine.scenegraph.SceneNode"><tt class="xref docutils literal"><span class="pre">obengine.scenegraph.SceneNode</span></tt></a></li>
+<li>Each NID will never change - you can refer a node by its NID for the duration of its existence</li>
+<li>Each NID is globally unique - you can access a node by calling <a title="obengine.scenegraph.SceneGraph.get_node_by_id" class="reference internal" href="#obengine.scenegraph.SceneGraph.get_node_by_id"><tt class="xref docutils literal"><span class="pre">obengine.scenegraph.SceneGraph.get_node_by_id</span></tt></a> <em>without</em> having to nest calls to <tt class="xref docutils literal"><span class="pre">obengine.scenegraph.SceneNode.get_child_by_id</span></tt></li>
+<li>You can have several scene nodes with identical names, and you can still differentiate between them using their NID</li>
+</ul>
+<p>There are 2 main weaknesses with NIDs:</p>
+<ul class="simple">
+<li>The main problem with NIDs is that since each NID is automatically generated, you must hold a reference to the owning scene node to retrieve its NID (or you can look up its NID in BloxWorks)</li>
+<li>They aren&#8217;t very expressive - constants that stand for NIDs are about as good as it gets with respect to readability</li>
+</ul>
+<p>Because of these shortcomings, each scene node also has a user-defined name, which can also be used to access a scene node.
+The advantages of using scene node names are:</p>
+<ul class="simple">
+<li>They are <em>extremely</em> expressive and easy to remember</li>
+<li>You already know the node&#8217;s name, since you defined it; this is related to the first advantage</li>
+</ul>
+<p>However, node names also have some problems:</p>
+<ul class="simple">
+<li>Since it&#8217;s a possibility that more than 1 node can have the same name (especially at the root level), node names cannot be used to access a node where there is more than 1 node with the same name</li>
+<li>Searching for nodes using names with <tt class="xref docutils literal"><span class="pre">obengine.scenegraph.SceneNode.get_child_by_id</span></tt> takes O(N) time</li>
+</ul>
+<p>It is up to you to decide which identification method better suits your purposes. The best strategy right now looks like this:</p>
+<ul class="simple">
+<li>Use NIDs for nodes (especially bricks, scripts, and the like) that you&#8217;ll never access from a Lua script</li>
+<li>Use a unique name for each node you want to access from a Lua script</li>
+</ul>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Basic usage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">obengine.scenegraph</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span> <span class="o">=</span> <span class="n">SceneGraph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span> <span class="o">=</span> <span class="n">SceneNode</span><span class="p">(</span><span class="s">&#39;Node 1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">n1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">sg</span><span class="o">.</span><span class="n">get_node_by_name</span><span class="p">(</span><span class="s">&#39;Node 1&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+<span class="go">Node 1</span>
+</pre></div>
+</div>
+<p>Nodes can have names, but they must be unique <em>within their scope</em>, i.e,
+their parent can have no other children with the same name, if you want to be able to use <a title="obengine.scenegraph.SceneNode.get_child_by_name" class="reference internal" href="#obengine.scenegraph.SceneNode.get_child_by_name"><tt class="xref docutils literal"><span class="pre">obengine.scenegraph.SceneNode.get_child_by_name</span></tt></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">n2</span> <span class="o">=</span> <span class="n">SceneNode</span><span class="p">(</span><span class="s">&#39;Node 2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n3</span> <span class="o">=</span> <span class="n">SceneNode</span><span class="p">(</span><span class="s">&#39;Node 2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">n2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n3</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">n1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">n1</span><span class="o">.</span><span class="n">get_child_by_name</span><span class="p">(</span><span class="s">&#39;Node 2&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+<span class="go">Node 2</span>
+</pre></div>
+</div>
+<p>But, if we try to use <a title="obengine.scenegraph.SceneGraph.get_node_by_name" class="reference internal" href="#obengine.scenegraph.SceneGraph.get_node_by_name"><tt class="xref docutils literal"><span class="pre">obengine.scenegraph.SceneGraph.get_node_by_name</span></tt></a>, what happens?</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">sg</span><span class="o">.</span><span class="n">get_node_by_name</span><span class="p">(</span><span class="s">&#39;Node 2&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+<span class="gt">Traceback (most recent call last):</span>
+   <span class="c">...</span>
+<span class="nc">AmbiguousNameException</span>: <span class="n-Identifier">Node 2</span>
+</pre></div>
+</div>
+<p>This occurred because the scene graph wasn&#8217;t able to figure out which node with the name <strong>Node 2</strong> you wanted: <strong>n1</strong> or <strong>n2</strong>.</p>
+</div>
+<div class="section" id="module-obengine.scenegraph">
+<h2>Module reference<a class="headerlink" href="#module-obengine.scenegraph" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="obengine.scenegraph.AmbiguousNameException">
+<em class="property">exception </em><tt class="descclassname">obengine.scenegraph.</tt><tt class="descname">AmbiguousNameException</tt><a class="headerlink" href="#obengine.scenegraph.AmbiguousNameException" title="Permalink to this definition">¶</a></dt>
+<dd>Raised when a requested name has multiple occurences, i.e,
+there are multiple nodes with the requested name.</dd></dl>
+
+<dl class="exception">
+<dt id="obengine.scenegraph.NoSuchIdException">
+<em class="property">exception </em><tt class="descclassname">obengine.scenegraph.</tt><tt class="descname">NoSuchIdException</tt><a class="headerlink" href="#obengine.scenegraph.NoSuchIdException" title="Permalink to this definition">¶</a></dt>
+<dd>Raised when a requested ID doesn&#8217;t exist.</dd></dl>
+
+<dl class="exception">
+<dt id="obengine.scenegraph.NoSuchNameException">
+<em class="property">exception </em><tt class="descclassname">obengine.scenegraph.</tt><tt class="descname">NoSuchNameException</tt><a class="headerlink" href="#obengine.scenegraph.NoSuchNameException" title="Permalink to this definition">¶</a></dt>
+<dd>Raised when a requested name doesn&#8217;t exist.</dd></dl>
+
+<dl class="exception">
+<dt id="obengine.scenegraph.NodeIdExistsException">
+<em class="property">exception </em><tt class="descclassname">obengine.scenegraph.</tt><tt class="descname">NodeIdExistsException</tt><a class="headerlink" href="#obengine.scenegraph.NodeIdExistsException" title="Permalink to this definition">¶</a></dt>
+<dd>Raised when a node&#8217;s ID already exists on the scene graph,
+and the <tt class="xref docutils literal"><span class="pre">error_on_exists</span></tt> argument given to SceneGraph.add_node is True.</dd></dl>
+
+<dl class="class">
+<dt id="obengine.scenegraph.SceneGraph">
+<em class="property">class </em><tt class="descclassname">obengine.scenegraph.</tt><tt class="descname">SceneGraph</tt><big>(</big><em>owner=None</em><big>)</big><a class="headerlink" href="#obengine.scenegraph.SceneGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>
+<span class="versionmodified">New in version 0.7.</span></p>
+<p>A SQLite-based scene graph.</p>
+<dl class="method">
+<dt id="obengine.scenegraph.SceneGraph.add_node">
+<tt class="descname">add_node</tt><big>(</big><em>node</em>, <em>error_on_exist=True</em><big>)</big><a class="headerlink" href="#obengine.scenegraph.SceneGraph.add_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds <em>node</em> to the scene graph. All of <em>node</em>&#8216;s children are added, as well.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>node</em> (<a title="obengine.scenegraph.SceneNode" class="reference internal" href="#obengine.scenegraph.SceneNode"><tt class="xref docutils literal"><span class="pre">SceneNode</span></tt></a>) &#8211; The node to add to the scene graph</li>
+<li><em>error_on_exist</em> (<a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/functions.html#bool"><tt class="xref docutils literal"><span class="pre">bool</span></tt></a>) &#8211; If this is <a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/constants.html#True"><tt class="xref xref docutils literal"><span class="pre">True</span></tt></a> (the default), then if a node with <em>node</em>&#8216;s NID
+is already in the scene graph, then <a title="obengine.scenegraph.NodeIdExistsException" class="reference internal" href="#obengine.scenegraph.NodeIdExistsException"><tt class="xref docutils literal"><span class="pre">NodeIdExistsException</span></tt></a> is raised</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><a title="obengine.scenegraph.NodeIdExistsException" class="reference internal" href="#obengine.scenegraph.NodeIdExistsException"><tt class="xref docutils literal"><span class="pre">NodeIdExistsException</span></tt></a> if <em>error_on_exist</em> is <a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/constants.html#True"><tt class="xref xref docutils literal"><span class="pre">True</span></tt></a> (the default), and a node
+with <em>node</em>&#8216;s NID is already on the scene graph</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/constants.html#None"><tt class="xref xref docutils literal"><span class="pre">None</span></tt></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obengine.scenegraph.SceneGraph.find_node_by_name">
+<tt class="descname">find_node_by_name</tt><big>(</big><em>name</em>, <em>starting_nid=-1</em>, <em>fail_on_ambiguous=False</em>, <em>exc_on_non_existent=True</em><big>)</big><a class="headerlink" href="#obengine.scenegraph.SceneGraph.find_node_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span> <span class="o">=</span> <span class="n">SceneGraph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span> <span class="o">=</span> <span class="n">SceneNode</span><span class="p">(</span><span class="s">&#39;Node 1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n2</span> <span class="o">=</span> <span class="n">SceneNode</span><span class="p">(</span><span class="s">&#39;Node 2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">n1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n2</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">n1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">sg</span><span class="o">.</span><span class="n">find_node_by_name</span><span class="p">(</span><span class="s">&#39;Node 2&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+<span class="go">Node 2</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="obengine.scenegraph.SceneGraph.get_node_by_id">
+<tt class="descname">get_node_by_id</tt><big>(</big><em>nid</em><big>)</big><a class="headerlink" href="#obengine.scenegraph.SceneGraph.get_node_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the node with NID <em>nid</em> from the scene graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameter:</th><td class="field-body"><em>nid</em> (<a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/functions.html#int"><tt class="xref docutils literal"><span class="pre">int</span></tt></a>) &#8211; The NID of the node to retrieve</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/constants.html#None"><tt class="xref xref docutils literal"><span class="pre">None</span></tt></a></td>
+</tr>
+<tr class="field"><th class="field-name">Raises:</th><td class="field-body"><a title="obengine.scenegraph.NoSuchIdException" class="reference internal" href="#obengine.scenegraph.NoSuchIdException"><tt class="xref docutils literal"><span class="pre">NoSuchIdException</span></tt></a> if the requested NID couldn&#8217;t be found</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/constants.html#None"><tt class="xref xref docutils literal"><span class="pre">None</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obengine.scenegraph.SceneGraph.get_node_by_name">
+<tt class="descname">get_node_by_name</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#obengine.scenegraph.SceneGraph.get_node_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves the node named <em>name</em> from the scene graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameter:</th><td class="field-body"><em>name</em> (<a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/functions.html#str"><tt class="xref docutils literal"><span class="pre">str</span></tt></a>) &#8211; The name of the node to retrieve</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><a title="obengine.scenegraph.SceneNode" class="reference internal" href="#obengine.scenegraph.SceneNode"><tt class="xref docutils literal"><span class="pre">SceneNode</span></tt></a> if a node named <em>name</em> was found</td>
+</tr>
+<tr class="field"><th class="field-name">Raises:</th><td class="field-body"><a title="obengine.scenegraph.NoSuchNameException" class="reference internal" href="#obengine.scenegraph.NoSuchNameException"><tt class="xref docutils literal"><span class="pre">NoSuchNameException</span></tt></a> if the requested name couldn&#8217;t be found; <a title="obengine.scenegraph.AmbiguousNameException" class="reference internal" href="#obengine.scenegraph.AmbiguousNameException"><tt class="xref docutils literal"><span class="pre">AmbiguousNameException</span></tt></a> if more than one node on the scene graph is named <em>name</em></td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/constants.html#None"><tt class="xref xref docutils literal"><span class="pre">None</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obengine.scenegraph.SceneGraph.remove_node_by_id">
+<tt class="descname">remove_node_by_id</tt><big>(</big><em>nid</em><big>)</big><a class="headerlink" href="#obengine.scenegraph.SceneGraph.remove_node_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a node (with NID <em>nid</em>) from the scene graph.
+It also recursively removes all its children.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameter:</th><td class="field-body"><em>nid</em> (<a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/functions.html#int"><tt class="xref docutils literal"><span class="pre">int</span></tt></a>) &#8211; The NID of the node to remove</td>
+</tr>
+<tr class="field"><th class="field-name">Raises:</th><td class="field-body"><a title="obengine.scenegraph.NoSuchIdException" class="reference internal" href="#obengine.scenegraph.NoSuchIdException"><tt class="xref docutils literal"><span class="pre">NoSuchIdException</span></tt></a> if the requested NID couldn&#8217;t be found</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/constants.html#None"><tt class="xref xref docutils literal"><span class="pre">None</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="obengine.scenegraph.SceneGraph.remove_node_by_name">
+<tt class="descname">remove_node_by_name</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#obengine.scenegraph.SceneGraph.remove_node_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a node (with name <em>name</em>) from the scene graph.
+It also recursively removes all its children.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameter:</th><td class="field-body"><em>name</em> (<a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/functions.html#str"><tt class="xref docutils literal"><span class="pre">str</span></tt></a>) &#8211; The name of the node to remove</td>
+</tr>
+<tr class="field"><th class="field-name">Raises:</th><td class="field-body"><a title="obengine.scenegraph.NoSuchNameException" class="reference internal" href="#obengine.scenegraph.NoSuchNameException"><tt class="xref docutils literal"><span class="pre">NoSuchNameException</span></tt></a> if the requested name couldn&#8217;t be found;
+<a title="obengine.scenegraph.AmbiguousNameException" class="reference internal" href="#obengine.scenegraph.AmbiguousNameException"><tt class="xref docutils literal"><span class="pre">AmbiguousNameException</span></tt></a> if more than one node on the scene graph is named <em>name</em>.</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/constants.html#None"><tt class="xref xref docutils literal"><span class="pre">None</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="obengine.scenegraph.SceneGraphException">
+<em class="property">exception </em><tt class="descclassname">obengine.scenegraph.</tt><tt class="descname">SceneGraphException</tt><a class="headerlink" href="#obengine.scenegraph.SceneGraphException" title="Permalink to this definition">¶</a></dt>
+<dd>Base class for scene graph-related exceptions.</dd></dl>
+
+<dl class="class">
+<dt id="obengine.scenegraph.SceneNode">
+<em class="property">class </em><tt class="descclassname">obengine.scenegraph.</tt><tt class="descname">SceneNode</tt><big>(</big><em>name</em>, <em>parent=None</em><big>)</big><a class="headerlink" href="#obengine.scenegraph.SceneNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic scene node. You&#8217;ll probably want to subclass this class,
+instead of using it directly.</p>
+<dl class="method">
+<dt id="obengine.scenegraph.SceneNode.find_child_by_name">
+<tt class="descname">find_child_by_name</tt><big>(</big><em>name</em>, <em>fail_on_ambiguous=False</em>, <em>exc_on_non_existent=True</em><big>)</big><a class="headerlink" href="#obengine.scenegraph.SceneNode.find_child_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively searches this node&#8217;s children for the first node named <em>name</em>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>name</em> (<a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/functions.html#str"><tt class="xref docutils literal"><span class="pre">str</span></tt></a>) &#8211; The name of the requested node</li>
+<li><em>fail_on_ambiguous</em> (<a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/functions.html#bool"><tt class="xref docutils literal"><span class="pre">bool</span></tt></a>) &#8211; Raise an exception if multiple nodes matching <em>name</em>
+are found under the same node?</li>
+<li><em>exc_on_non_existent</em> &#8211; Raise an exception if no nodes named <em>name</em> were found?</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><a title="obengine.scenegraph.SceneNode" class="reference internal" href="#obengine.scenegraph.SceneNode"><tt class="xref docutils literal"><span class="pre">SceneNode</span></tt></a> if a node named <em>name</em> was found; <em>None</em>
+if no nodes matching <em>name</em> were found and <em>exc_on_non_existent</em> is <em>True</em></p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a title="obengine.scenegraph.NoSuchNameException" class="reference internal" href="#obengine.scenegraph.NoSuchNameException"><tt class="xref docutils literal"><span class="pre">NoSuchNameException</span></tt></a> if no node named <em>name</em> is a sub-node of this node,
+<a title="obengine.scenegraph.AmbiguousNameException" class="reference internal" href="#obengine.scenegraph.AmbiguousNameException"><tt class="xref docutils literal"><span class="pre">AmbiguousNameException</span></tt></a> if multiple nodes are named <em>name</em> under the same
+parent</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span> <span class="o">=</span> <span class="n">SceneGraph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span> <span class="o">=</span> <span class="n">SceneNode</span><span class="p">(</span><span class="s">&#39;Node 1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n2</span> <span class="o">=</span> <span class="n">SceneNode</span><span class="p">(</span><span class="s">&#39;Node 2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n3</span> <span class="o">=</span> <span class="n">SceneNode</span><span class="p">(</span><span class="s">&#39;Node 3&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n3</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">n2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n2</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">n1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">n1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">n1</span><span class="o">.</span><span class="n">find_child_by_name</span><span class="p">(</span><span class="s">&#39;Node 3&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+<span class="go">Node 3</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="obengine.scenegraph.SceneNode.get_child_by_name">
+<tt class="descname">get_child_by_name</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#obengine.scenegraph.SceneNode.get_child_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the child named <em>name</em> from this node&#8217;s list of children,
+If this node doesn&#8217;t have a child named <em>name</em>, then
+NoSuchNameException is raised.</p>
+<p>Otherwise, if this node has <em>more than one</em> child named <em>name</em>,
+then <a title="obengine.scenegraph.AmbiguousNameException" class="reference internal" href="#obengine.scenegraph.AmbiguousNameException"><tt class="xref docutils literal"><span class="pre">AmbiguousNameException</span></tt></a> is raised.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method can be slow if this node has a lot of children (&gt; 10,000).</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameter:</th><td class="field-body"><em>name</em> (<a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/functions.html#str"><tt class="xref docutils literal"><span class="pre">str</span></tt></a>) &#8211; The name of the node to search for</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><a title="obengine.scenegraph.SceneNode" class="reference internal" href="#obengine.scenegraph.SceneNode"><tt class="xref docutils literal"><span class="pre">SceneNode</span></tt></a> if the node was found</td>
+</tr>
+<tr class="field"><th class="field-name">Raises:</th><td class="field-body"><a title="obengine.scenegraph.NoSuchNameException" class="reference internal" href="#obengine.scenegraph.NoSuchNameException"><tt class="xref docutils literal"><span class="pre">NoSuchNameException</span></tt></a> if no node named <em>name</em> is a child of this node,
+or <a title="obengine.scenegraph.AmbiguousNameException" class="reference internal" href="#obengine.scenegraph.AmbiguousNameException"><tt class="xref docutils literal"><span class="pre">AmbiguousNameException</span></tt></a> if multiple children of this node are named <em>name</em></td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span> <span class="o">=</span> <span class="n">SceneGraph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span> <span class="o">=</span> <span class="n">SceneNode</span><span class="p">(</span><span class="s">&#39;Node 1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n2</span> <span class="o">=</span> <span class="n">SceneNode</span><span class="p">(</span><span class="s">&#39;Node 2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">n1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n2</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">n1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">n1</span><span class="o">.</span><span class="n">get_child_by_name</span><span class="p">(</span><span class="s">&#39;Node 2&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+<span class="go">Node 2</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="obengine.scenegraph.SceneNode.name">
+<tt class="descname">name</tt><a class="headerlink" href="#obengine.scenegraph.SceneNode.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of this scene node.
+Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span> <span class="o">=</span> <span class="n">SceneGraph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span> <span class="o">=</span> <span class="n">SceneNode</span><span class="p">(</span><span class="s">&#39;Node 1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sg</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">n1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">sg</span><span class="o">.</span><span class="n">get_node_by_name</span><span class="p">(</span><span class="s">&#39;Node 1&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+<span class="go">Node 1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n1</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;Node 1 - changed name&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">sg</span><span class="o">.</span><span class="n">get_node_by_name</span><span class="p">(</span><span class="s">&#39;Node 1 - changed name&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+<span class="go">Node 1 - changed name</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">sg</span><span class="o">.</span><span class="n">get_node_by_name</span><span class="p">(</span><span class="s">&#39;Node 1&#39;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+    <span class="o">...</span>
+<span class="nc">NoSuchNameException</span>: <span class="n-Identifier">Node 1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="obengine.scenegraph.SceneNode.remove_all_children">
+<tt class="descname">remove_all_children</tt><big>(</big><big>)</big><a class="headerlink" href="#obengine.scenegraph.SceneNode.remove_all_children" title="Permalink to this definition">¶</a></dt>
+<dd>Removes all this node&#8217;s children, and recursively removes
+all their children, as well.</dd></dl>
+
+<dl class="method">
+<dt id="obengine.scenegraph.SceneNode.remove_child">
+<tt class="descname">remove_child</tt><big>(</big><em>nid</em><big>)</big><a class="headerlink" href="#obengine.scenegraph.SceneNode.remove_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes child with NID <em>nid</em> from this node&#8217;s list of children.
+It also recursively removes all that child&#8217;s children, as well.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameter:</th><td class="field-body"><em>nid</em> (<a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/functions.html#int"><tt class="xref docutils literal"><span class="pre">int</span></tt></a>) &#8211; The NID of the child to be removed</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/release/2.6.6/library/constants.html#None"><tt class="xref xref docutils literal"><span class="pre">None</span></tt></a></td>
+</tr>
+<tr class="field"><th class="field-name">Raises:</th><td class="field-body"><a title="obengine.scenegraph.NoSuchIdException" class="reference internal" href="#obengine.scenegraph.NoSuchIdException"><tt class="xref docutils literal"><span class="pre">NoSuchIdException</span></tt></a> if no child nodes have the NID <em>nid</em></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<p class="rubric">Footnotes</p>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><a class="reference external" href="http://sqlite.org">http://sqlite.org</a> - the SQLite website</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">OpenBlox scene graph library (<tt class="docutils literal"><span class="pre">obengine.scenegraph</span></tt>)</a><ul>
+<li><a class="reference external" href="#overview">Overview</a></li>
+<li><a class="reference external" href="#concepts">Concepts</a></li>
+<li><a class="reference external" href="#examples">Examples</a></li>
+<li><a class="reference external" href="#module-obengine.scenegraph">Module reference</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="configformat.html"
+                                  title="previous chapter">The OpenBlox configuration format</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="testing.html"
+                                  title="next chapter">Testing</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/scenegraph.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="testing.html" title="Testing"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="configformat.html" title="The OpenBlox configuration format"
+             >previous</a> |</li>
+        <li><a href="index.html">The OpenBlox Game Engine v0.7.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2011, The OpenBlox Project.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+    </div>
+  </body>
+</html>

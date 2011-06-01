@@ -64,7 +64,11 @@ class LoopingCall(object):
             exc_value = str(info[1])
             exc_traceback = info[2]
 
-            obengine.log.error('Unhandled exception %s inside looping call:\nMessage: %s\nTraceback: %s' % (exc_type, exc_value, exc_traceback))
+            obengine.log.error(
+            'Unhandled exception %s inside looping call:\nMessage: %s\nTraceback: %s' % (
+                exc_type, exc_value, exc_traceback
+                )
+            )
 
             return task.STOP
 
@@ -78,6 +82,10 @@ class LoopingCall(object):
     @scheduler.setter
     def scheduler(self, sched):
         self.task.scheduler = sched
+
+    @property
+    def name(self):
+        return self.task.name
 
 
 class AsyncCall(object):
@@ -94,7 +102,7 @@ class AsyncCall(object):
 
     def execute(self):
 
-        self._method(*self.method_args, **self.method_kwargs)
+        self._result = self._method(*self.method_args, **self.method_kwargs)
         self._finished = True
 
     def wait(self):
@@ -103,3 +111,7 @@ class AsyncCall(object):
     @property
     def finished(self):
         return self._finished
+
+    @property
+    def result(self):
+        return self._result

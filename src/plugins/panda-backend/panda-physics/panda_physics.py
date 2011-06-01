@@ -27,6 +27,7 @@ from libs import odeWorldManager
 from libs import staticObject, dynamicObject
 
 import obengine.event
+import obengine.async
 import obengine.gfx.math
 import obengine.log
 import obengine.depman
@@ -67,6 +68,9 @@ class World(object):
 
     def load(self):
 
+        # It is the perversity of Panda3D's __builtin__ assignments that means
+        # a Panda3D window must be created before this method can be called
+        
         self.world_manager = odeWorldManager()
         self.world_manager.stepSize = 1 / 60.0
         
@@ -89,18 +93,24 @@ class World(object):
 
 class Box(object):
 
-    def __init__(self, model, world, owner, anchored = False, weight = None):
+    def __init__(self, model, world, owner, scheduler, anchored = False, weight = None):
 
         self.model = model
         self.on_loaded = obengine.event.Event()
         self.on_collision = obengine.event.Event()
+        self.scheduler = scheduler
 
         self.world = world
         self.owner = owner
         self.anchored = anchored
         self.weight = weight or ((self.model.scale.x or 1.0) * (self.model.scale.y or 1.0) * (self.model.scale.z or 1.0))
 
+        self._loaded = False
+
     def load(self):
+        self.scheduler.add(obengine.async.AsyncCall(self._actual_load, 10))
+
+    def _actual_load(self):
 
         if self.anchored is False:
 
@@ -113,6 +123,8 @@ class Box(object):
             self._init_static_object()
 
         self._general_init()
+
+        self._loaded = True
         
         self.world.add(self)
         self.on_loaded()
@@ -150,6 +162,10 @@ class Box(object):
     def position(self, new_pos):
         self.object.setPos(PandaConverter.convert_vec3(new_pos))
 
+    @property
+    def loaded(self):
+        return self._loaded
+
     def _general_init(self):
 
         self.object.setCatColBits('general')
@@ -173,4 +189,17 @@ class Box(object):
         self.object.setQuat(PandaConverter.convert_angle(self.model.rotation))
 
     def _translate_collision_cb(self, entry, object1, object2):
-        self.on_collision(object1.owner, object2.owner)
+
+        try:
+            first_subject = object1.owner
+
+        except AttributeError:
+            first_subject = object1
+
+        try:
+            second_subject = object2.owner
+
+        except AttributeError:
+            second_subject = object2
+
+        self.on_collision(first_subject, second_subject)

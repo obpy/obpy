@@ -1,5 +1,5 @@
-# obengine.scenegraph
-# ===================
+# OpenBlox scene graph library (obengine.scenegraph)
+# ==================================================
 #
 # Provides basic scene graph functionality.
 #

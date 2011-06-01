@@ -21,8 +21,6 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$May 4, 2011 11:24:00 AM$"
 
-import time
-
 import obengine.depman
 obengine.depman.gendeps()
 
@@ -37,8 +35,6 @@ class Scheduler(object):
 
         self.queue = []
         self.task_buffer = set()
-        self.time = time.time
-        self.delay = time.sleep
 
     def add(self, task):
         """
@@ -72,12 +68,13 @@ class Scheduler(object):
     def step(self):
 
         if len(self.task_buffer) == 0 and len(self.queue) == 0:
-            raise TaskBufferEmptyException
+            raise TaskBufferEmptyException()
 
         elif len(self.queue) == 0:
             self._copy_from_task_buffer()
-            
-        self.queue.pop(0).execute()
+
+        task = self.queue.pop(0)
+        task.execute()
 
     def _copy_from_task_buffer(self):
 

@@ -1,17 +1,7 @@
-env = Environment()
-conf = Configure(env)
+import os
 
-
-platform = ARGUMENTS.get('OS', Platform())
-panda_version = ARGUMENTS.get('PANDA_VERSION', '1.7.2')
-
-Help("""
-Type 'scons' to build OpenBlox.
-
-Arguments:
-    * PANDA_VERSION - specifies the version of Panda3D installed on your system (used only on Windows)
-    * OS - specifies the OS to build for (optional; normally found automatically)
-""")
+def getsyspath(path):
+    return path.replace('/', os.sep)
 
 def configure():
 
@@ -50,7 +40,41 @@ def configure():
 
     env = conf.Finish()
 
-if not env.GetOption('clean') and not env.GetOption('help'):
+platform = ARGUMENTS.get('OS', Platform())
+panda_version = ARGUMENTS.get('PANDA_VERSION', '1.7.2')
+sphinx = ARGUMENTS.get('SPHINX', 'sphinx-build')
+sphinx_flags = ARGUMENTS.get('SPHINX_FLAGS', '-Nq')
+sphinx_builder = ARGUMENTS.get('SPHINX_BUILDER', 'html')
+built_doc_dir = ARGUMENTS.get('BUILT_DOC_DIR', getsyspath('build/docs'))
 
+sphinx_cmd = '%s %s -b %s %s %s $SOURCE' % (sphinx, sphinx_flags, sphinx_builder, getsyspath('doc/source'), '/'.join([built_doc_dir, sphinx_builder]))
+sphinx = Builder(action = sphinx_cmd, src_suffix = '.rst', suffix = '.html')
+
+pytest = ARGUMENTS.get('PY_TEST', 'py.test')
+pytest_flags = ARGUMENTS.get('PY_TEST_FLAGS', '-q')
+pytest_cmd = '%s %s' % (pytest, pytest_flags)
+
+env = Environment(BUILDERS = {'Sphinx' : sphinx})
+conf = Configure(env)
+
+Help("""
+Type 'scons' to build OpenBlox.
+
+Arguments:
+    * PANDA_VERSION - specifies the version of Panda3D installed on your system (used only on Windows)
+    * OS - specifies the OS to build for (optional; normally found automatically)
+""")
+
+for node in Glob(getsyspath('doc/source/*.rst')):
+
+    target = str(node).replace('.rst', '.html').replace(getsyspath('doc/source'), '/'.join([built_doc_dir, sphinx_builder]))
+    builder = env.Sphinx(target, node)
+    alias = env.Alias('docs', builder)
+    Clean(builder, getsyspath('build/docs/'))
+
+if 'configure' in COMMAND_LINE_TARGETS:
+    
     configure()
-    VariantDir('build', './', duplicate = 0)
+    Exit(0)
+
+env.Alias('test', env.Command('py.test', 'pytest.ini', pytest_cmd))

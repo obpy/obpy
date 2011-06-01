@@ -31,7 +31,17 @@ def init():
 
 class ElementFactory(object):
 
-    elements = [ 'brick', 'skybox', 'script', 'sound' ]
+    def __init__(self):
+
+        self.element_handlers = {
+        'brick' : self.make_brick,
+        'skybox' : self.make_skybox,
+        'script' : self.make_script,
+        'sound' : self.make_sound
+        }
+
+    def add_element_handler(self, element_type, handler):
+        self.element_handlers[element_type] = handler
 
     def set_window(self, window):
         self.window = window
@@ -39,16 +49,16 @@ class ElementFactory(object):
     def set_sandbox(self, sandbox):
         self.sandbox = sandbox
 
-    def make(self, name, *args):
+    def make(self, name, *args, **kwargs):
         """
         Creates a new element, and returns it.
-        Extra arguments are passed to the
+        Extra arguments are passed to that element's respective handler.
         Creatable elements are:
 
         * Brick
         * Skybox
         * Script
-        * (NEW) Sound
+        * **(NEW)** Sound
 
         :param name: The type of element to create.
         :type name: `str`
@@ -56,32 +66,44 @@ class ElementFactory(object):
         :raises: `UnknownElementType` is raised if an unknown element type is given
         """
 
-        if name in self.elements:
-            return getattr(self, 'make_' + name)(*args)
+        try:
+            handler = self.element_handlers[name]
 
-        raise UnknownElementType(name)
+        except KeyError:
+            raise UnknownElementError(name)
 
-    def make_brick(self, name, coords = None, rgb = None, size = None, hpr = None, hidden = False, anchored = False):
+        return handler(*args, **kwargs)
+
+    def make_brick(self, name, coords = None, color = None, size = None, rotation = None, anchored = False):
         
         import obplugin.core.physics
 
         coords = coords or obengine.gfx.math.Vector(0, 0, 0)
-        rgb = rgb or obengine.gfx.math.Color(0, 0, 0, 255)
+        color = color or obengine.gfx.math.Color(0, 0, 0, 255)
         size = size or  obengine.gfx.math.Vector(2, 4, 1)
-        hpr = hpr or obengine.gfx.math.EulerAngle(0, 0, 0)
+        rotation = rotation or obengine.gfx.math.EulerAngle(0, 0, 0)
 
         # Create the model (not the 3D model, model as in MVC/MVP)
 
-        model = obengine.element.BrickElement(name, coords, rgb, size, hpr)
+        model = obengine.element.BrickElement(name, coords, color, size, rotation)
 
         # Create the view and presenter
 
-        view = obengine.gfx.element3d.BlockBrickView(size, hpr, rgb, self.window)
+        view = obengine.gfx.element3d.BlockBrickView(size, rotation, color, self.window)
         view.load()
 
-        phys_rep = obplugin.core.physics.Box(view.model, self.sandbox, None, anchored)
-        presenter = obengine.gfx.element3d.BrickPresenter(model, view,  phys_rep)
+        scheduler = self.window.scheduler
 
+        while view.loaded is False:
+            scheduler.step()
+
+        phys_rep = obplugin.core.physics.Box(view.model, self.sandbox, None, scheduler, anchored)
+        phys_rep.load()
+
+        while phys_rep.loaded is False:
+            scheduler.step()
+
+        presenter = obengine.gfx.element3d.BrickPresenter(model, view,  phys_rep)
         return presenter
 
     def make_skybox(self, texture = None):

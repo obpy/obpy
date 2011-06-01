@@ -95,7 +95,7 @@ class Event(object):
         method passed on to them.
         """
 
-        for handler in self.handlers:
+        for handler in reversed(list(self.handlers)):
             handler(*args, **kwargs)
 
     def handler_count(self):
