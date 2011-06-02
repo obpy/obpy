@@ -1,5 +1,5 @@
 # OpenBlox world model (obengine.world)
-# ===================
+# =====================================
 #
 # Provides OpenBlox's high-level world model.
 #
@@ -9,8 +9,8 @@
 # See <TODO: no Sphinx docs yet - add some!> for the primary source of documentation
 # for this module.
 
-__author__="openblocks"
-__date__ ="$Jul 13, 2010 6:30:46 PM$"
+__author__ = "openblocks"
+__date__  = "$Jul 13, 2010 6:30:46 PM$"
 
 import obengine.scenegraph
 import obengine.datatypes

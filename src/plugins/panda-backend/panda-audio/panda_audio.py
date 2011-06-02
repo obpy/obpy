@@ -18,8 +18,8 @@ This file is part of The OpenBlox Game Engine.
 
 """
 
-__author__="openblocks"
-__date__ ="$May 24, 2011 3:27:05 PM$"
+__author__ = "openblocks"
+__date__  = "$May 24, 2011 3:27:05 PM$"
 
 from panda3d.core import Filename, AudioSound
 
@@ -92,9 +92,5 @@ class Sound(object):
 
         if self._autoplay is True:
             self.playing = True
-
-        del self._volume
-        del self._looping
-        del self._autoplay
 
         self.on_loaded()

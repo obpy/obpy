@@ -95,7 +95,7 @@ class Config(datatypes.Borg):
         
         self.options.setdefault(section, {})[name] = val
 
-    def get_var(self, name, section = 'core'):
+    def get_var(self, name, section = 'core', default = None):
         """Retrieves a configuration variable
         Retrieves ``name`` out of ``section``, if it exists.
         Otherwise, if ``name`` is not inside ``section``, then
@@ -115,35 +115,43 @@ class Config(datatypes.Borg):
                 val = self.parser.get(section, name)
 
             except ConfigParser.NoOptionError:
-                raise NoOptionError(name)
+
+                if default is None:
+                    raise NoOptionError(name)
+
+                return default
 
             except ConfigParser.NoSectionError:
-                raise NoSectionError(section)
+
+                if default is None:
+                    raise NoSectionError(section)
+
+                return default
 
             else:
 
                 self.add_var(name, val, section)
                 return val
 
-    def get_str(self, name, section = 'core'):
+    def get_str(self, name, section = 'core', default = None):
         """Returns configuration variable ``name``, stringified
         See Logger.get_var for more documentation.
         """
-        return str(self.get_var(name, section))
+        return str(self.get_var(name, section, default))
 
-    def get_int(self, name, section = 'core'):
+    def get_int(self, name, section = 'core', default = None):
         """Returns configuration variable ``name`` as an integer
         See Logger.get_var for more documentation.
         """
-        return int(self.get_var(name, section))
+        return int(self.get_var(name, section, default))
 
-    def get_float(self, name, section = 'core'):
+    def get_float(self, name, section = 'core', default = None):
         """Returns configuration variable ``name`` as a float
         See Logger.get_var for more documentation.
         """
-        return float(self.get_var(name, section))
+        return float(self.get_var(name, section, default))
 
-    def get_bool(self, name, section = 'core'):
+    def get_bool(self, name, section = 'core', default = None):
         """Returns configuration variable ``name`` as a boolean
         If the variable marked by ``name``'s value is "yes", then ``True`` is returned.
         Otherwise, if variable ``name``'s value is "no", then False is returned.

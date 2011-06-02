@@ -21,8 +21,8 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Feb 22, 2011 5:11:32 PM$"
 
-import depman
-depman.gendeps()
+import obengine.depman
+obengine.depman.gendeps()
 
 class Event(object):
     """
@@ -111,8 +111,4 @@ class Event(object):
     __isub__ = remove_handler
     __call__ = fire
     __len__ = handler_count
-
-if __name__ == '__main__':
-
-    import doctest
-    doctest.testmod()
+    

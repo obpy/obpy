@@ -1,5 +1,3 @@
-# To change this template, choose Tools | Templates
-# and open the template in the editor.
 """
 Copyright (C) 2011 The OpenBlox Project
 
@@ -20,8 +18,8 @@ This file is part of The OpenBlox Game Engine.
 
 """
 
-__author__="openblocks"
-__date__ ="$May 4, 2011 7:09:12 PM$"
+__author__ = "openblocks"
+__date__  = "$May 4, 2011 7:09:12 PM$"
 
 import sys
 import os

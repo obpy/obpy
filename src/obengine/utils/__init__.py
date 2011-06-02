@@ -18,8 +18,8 @@ This file is part of The OpenBlox Game Engine.
 
 """
 
-__author__="openblocks"
-__date__ ="$Sep 28, 2010 1:35:13 PM$"
+__author__ = "openblocks"
+__date__  = "$Sep 28, 2010 1:35:13 PM$"
 
 import obengine.depman
 

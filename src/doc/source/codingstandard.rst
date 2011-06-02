@@ -166,7 +166,7 @@ Modules
 
 Modules have this header, at their beginning::
 
-   # <module purpose> (<module name>)
+   # <module name>
    # ===================
    #
    # <one-liner description>

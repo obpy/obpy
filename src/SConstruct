@@ -54,7 +54,8 @@ pytest = ARGUMENTS.get('PY_TEST', 'py.test')
 pytest_flags = ARGUMENTS.get('PY_TEST_FLAGS', '-q')
 pytest_cmd = '%s %s' % (pytest, pytest_flags)
 
-env = Environment(BUILDERS = {'Sphinx' : sphinx})
+env = Environment(tools = ['distzip'])
+env.Append(BUILDERS = {'Sphinx' : sphinx})
 conf = Configure(env)
 
 Help("""
@@ -69,12 +70,20 @@ for node in Glob(getsyspath('doc/source/*.rst')):
 
     target = str(node).replace('.rst', '.html').replace(getsyspath('doc/source'), '/'.join([built_doc_dir, sphinx_builder]))
     builder = env.Sphinx(target, node)
-    alias = env.Alias('docs', builder)
+
+    env.Alias('docs', builder)
+    env.Alias(getsyspath('build/docs'), builder)
     Clean(builder, getsyspath('build/docs/'))
+
 
 if 'configure' in COMMAND_LINE_TARGETS:
     
     configure()
     Exit(0)
+
+zip = env.DistZip(getsyspath('build/dist/docs/OpenBlox Documentation.zip'), env.Dir(getsyspath('build/docs')))
+env.Alias('distdoc', zip)
+Depends('distdoc', 'docs')
+Clean(zip, getsyspath('build/dist/docs'))
 
 env.Alias('test', env.Command('py.test', 'pytest.ini', pytest_cmd))
