@@ -18,31 +18,57 @@ This file is part of The OpenBlox Game Engine.
 
 """
 
-__author__="openblocks"
-__date__ ="$Aug 9, 2010 10:43:40 PM$"
+__author__ = "openblocks"
+__date__  = "$Aug 9, 2010 10:43:40 PM$"
 
 import obengine
-
-from obengine.elementfactory import ElementFactory
-from obengine.gfx.math import *
+import obengine.math
 
 import xml.etree.ElementTree as xmlparser
 
 class WorldSource(list):
 
+    _element_handlers = {}
+
     def __init__(self, factory):
         """
-        Do NOT create this class! Create one of its derivatives, instead.
+        Do *not* create this class! Create one of its derivatives, instead.
         """
 
         self.factory = factory
+        
+        self.add_element_handler('brick', self.handle_brick)
+        self.add_element_handler('script', self.handle_script)
+        self.add_element_handler('skybox', self.handle_skybox)
+        self.add_element_handler('sound', self.handle_sound)
+
+    def add_element_handler(self, tag, handler, local = True):
+
+        handler_owner = self
+
+        if local is False:
+            handler_owner = WorldSource
+
+        handler_owner._element_handlers.setdefault(tag, []).append(handler)
+
+    def supported_tag(self, tag):
+        return tag in self._element_handlers.keys()
+
+    def _handle_node(self, node):
+
+        if self.supported_tag(node.tag):
+            for handler in self._element_handlers[node.tag]:
+                handler(self, node, factory)
+
+        else:
+            raise UnknownWorldTagError, node.tag
 
     def retrieve(self):
 
-        # This method needs to be overrid
+        # This method needs to be overridden in a derivative
         raise NotImplementedError
 
-    def handle_brick(self, child):
+    def handle_brick(self, _, child, factory):
 
         # Create the different brick attributes, with defaults
 
@@ -89,31 +115,31 @@ class WorldSource(list):
 
         # Finally, create the brick!
 
-        element = self.factory.make('brick', name, coords, rgb, size, orientation, False, anchored)
+        element = factory.make('brick', name, coords, rgb, size, orientation, False, anchored)
 
         self.append(element)
 
-    def handle_skybox(self, child):
+    def handle_skybox(self, _, child, factory):
 
         # Create a skybox, optionally with a custom texture
-        element = self.factory.make('skybox', child.attrib.get('src'))
+        element = factory.make('skybox', child.attrib.get('src'))
 
         # Add it
         self.append(element)
 
-    def handle_script(self, child):
+    def handle_script(self, _, child, factory):
 
         # Does this script tag refer to a file, or is the code included in the tag?
 
         if child.attrib.has_key('src'):
-            element = self.factory.make('script', child.attrib['name'], None, child.attrib['src'])
+            element = factory.make('script', child.attrib['name'], None, child.attrib['src'])
 
         else:
-            element = self.factory.make('script', child.attrib['name'], child.text)
+            element = factory.make('script', child.attrib['name'], child.text)
 
         self.append(element)
 
-    def handle_sound(self, child):
+    def handle_sound(self, _, child, factory):
         """
         Creates a sound from a XML element.
         """
@@ -127,7 +153,7 @@ class WorldSource(list):
         autoplay = yes_no[child.attrib.get('autoplay', False)]
 
         # Create the element
-        element = self.factory.make('sound', name, src, autoplay)
+        element = factory.make('sound', name, src, autoplay)
 
         self.append(element)
 
@@ -139,7 +165,7 @@ class WorldSource(list):
         * InsufficientVersionError if the "version" attribute of the world tag is greater than this engine's version
         """
 
-        # self.retrieve returns a file-like object
+        # self.retrieve should return a file-like object
         file = self.retrieve()
 
         tree = xmlparser.parse(file)
@@ -153,23 +179,9 @@ class WorldSource(list):
         if game_version[0] != obengine.ENGINE_VERSION[0]:
             raise InsufficientVersionError, rootnode.attrib.get('version', '0.6.2')
 
-        supported_tags = {
-        'brick' : 'handle_brick',
-        'skybox' : 'handle_skybox',
-        'script' : 'handle_script',
-        'sound' : 'handle_sound'
-        }
-
         # Run over all the children of the top-level "world" tag
         for child in rootnode:
-
-            # Do we know how to handle this tag?
-            if child.tag in supported_tags:
-                getattr(self, supported_tags[child.tag])(child)
-
-            # We don't. Raise an exception
-            else:
-                raise UnknownWorldTagError, child.tag
+            self._handle_node(child)
 
 class FileWorldSource(WorldSource):
     """
@@ -188,5 +200,6 @@ class FileWorldSource(WorldSource):
     def retrieve(self):
         return open(self.path,'r')
 
-class UnknownWorldTagError(Exception): pass
-class InsufficientVersionError(Exception): pass
+class WorldSourceException(Exception): pass
+class UnknownWorldTagError(WorldSourceException): pass
+class InsufficientVersionError(WorldSourceException): pass

@@ -183,19 +183,18 @@ def init():
 def find_modules(module):
     """Find modules that `module` depends upon
     Returns a list of module names that `module` depends on.
-
-    NOTE: This algorithim, while faster than modulefinder.ModuleFinder,
-    is incompatible with the `from module import *` idiom!
     """
 
-    # Find all the modules that are defined in module
-    dependent_modules = filter(inspect.ismodule, vars(module).itervalues())
+    dependent_modules = set()
 
-    # We now have a list of modules, but we need module names!
-    # So, we get all the module names instead
-    dependent_modules = map(lambda m: m.__name__, dependent_modules)
+    for variable in vars(module).itervalues():
 
-    return dependent_modules
+        module = inspect.getmodule(variable)
+
+        if module is not None:
+            dependent_modules.add(module.__name__)
+
+    return list(dependent_modules)
 
 def _cmp_modules(module1, module2):
     """Compares two modules

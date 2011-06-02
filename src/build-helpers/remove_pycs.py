@@ -9,10 +9,23 @@ __date__  = "$Jun 1, 2011 8:36:59 PM$"
 import os
 import optparse
 
+usage = '''%prog [options] [search directories]
+Recursively removes all .pyc files from the specified search directories.
+If no search directories are given, 
+either the current directory is searched (if this script is invoked from the root OpenBlox directory, 
+that is, the one containing the "obengine" directory), or the 
+parent directory (if this script invoked from this script's parent directory).
+'''
+
 def remove_pycs(dirs, loud = False):
 
     if dirs == []:
-        dirs = [os.path.abspath(os.pardir), os.path.abspath(os.curdir)]
+
+        if os.path.exists(os.path.join(os.curdir, 'obengine')):
+            dirs = [os.curdir]
+
+        else:
+            dirs = [os.curdir, os.pardir]
 
     found_pycs = 0
 
@@ -43,7 +56,7 @@ def remove_pycs(dirs, loud = False):
 
 def main():
 
-    option_parser = optparse.OptionParser()
+    option_parser = optparse.OptionParser(usage = usage)
 
     option_parser.add_option(
     '-v',

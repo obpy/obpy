@@ -168,7 +168,6 @@ class Config(datatypes.Borg):
         except KeyError:
             raise ValueError('Config variable %s in section %s was not a valid boolean' % (name, section))
 
-
 class ConfigException(Exception): pass
 class NoOptionError(ConfigException): pass
 class NoSectionError(ConfigException): pass
