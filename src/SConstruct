@@ -3,6 +3,25 @@ import os
 def getsyspath(path):
     return path.replace('/', os.sep)
 
+platform = ARGUMENTS.get('OS', Platform())
+panda_version = ARGUMENTS.get('PANDA_VERSION', '1.7.2')
+sphinx = ARGUMENTS.get('SPHINX', 'sphinx-build')
+sphinx_flags = ARGUMENTS.get('SPHINX_FLAGS', '-Nq')
+sphinx_builder = ARGUMENTS.get('SPHINX_BUILDER', 'html')
+built_doc_dir = ARGUMENTS.get('BUILT_DOC_DIR', getsyspath('build/docs'))
+
+sphinx_cmd = '%s %s -b %s %s %s $SOURCE' % (sphinx, sphinx_flags, sphinx_builder, getsyspath('doc/source'), '/'.join([built_doc_dir, sphinx_builder]))
+sphinx = Builder(action = sphinx_cmd, src_suffix = '.rst', suffix = '.html')
+
+pytest = ARGUMENTS.get('PY_TEST', 'py.test')
+pytest_flags = ARGUMENTS.get('PY_TEST_FLAGS', '-q')
+pytest_cmd = '%s %s' % (pytest, pytest_flags)
+
+env = Environment()
+conf = Configure(env)
+
+env.Append(BUILDERS = {'Sphinx' : sphinx})
+
 def configure():
 
     global env
@@ -18,45 +37,27 @@ def configure():
 
     EnsurePythonVersion(2, 6)
 
-    if not conf.CheckLib('p3pystub', language = 'CXX'):
+    if not conf.CheckLib('p3pystub', language = 'C++'):
 
         print 'Could not find Panda3D Python stub!'
         Exit(1)
 
-    if not conf.CheckLib('panda', language = 'CXX'):
+    if not conf.CheckLib('panda', language = 'C++'):
 
         print 'Could not find Panda3D core!'
         Exit(1)
 
-    if not conf.CheckLib('pandaode', language = 'CXX'):
+    if not conf.CheckLib('pandaode', language = 'C++'):
 
         print 'Could not find ODE binding for Panda3D!'
         Exit(1)
 
-    if not conf.CheckLib('p3direct', language = 'CXX'):
+    if not conf.CheckLib('p3direct', language = 'C++'):
 
         print 'Could not find Panda3D Direct library!'
         Exit(1)
 
     env = conf.Finish()
-
-platform = ARGUMENTS.get('OS', Platform())
-panda_version = ARGUMENTS.get('PANDA_VERSION', '1.7.2')
-sphinx = ARGUMENTS.get('SPHINX', 'sphinx-build')
-sphinx_flags = ARGUMENTS.get('SPHINX_FLAGS', '-Nq')
-sphinx_builder = ARGUMENTS.get('SPHINX_BUILDER', 'html')
-built_doc_dir = ARGUMENTS.get('BUILT_DOC_DIR', getsyspath('build/docs'))
-
-sphinx_cmd = '%s %s -b %s %s %s $SOURCE' % (sphinx, sphinx_flags, sphinx_builder, getsyspath('doc/source'), '/'.join([built_doc_dir, sphinx_builder]))
-sphinx = Builder(action = sphinx_cmd, src_suffix = '.rst', suffix = '.html')
-
-pytest = ARGUMENTS.get('PY_TEST', 'py.test')
-pytest_flags = ARGUMENTS.get('PY_TEST_FLAGS', '-q')
-pytest_cmd = '%s %s' % (pytest, pytest_flags)
-
-env = Environment(tools = ['distzip'])
-env.Append(BUILDERS = {'Sphinx' : sphinx})
-conf = Configure(env)
 
 Help("""
 Type 'scons' to build OpenBlox.
@@ -80,6 +81,11 @@ if 'configure' in COMMAND_LINE_TARGETS:
     
     configure()
     Exit(0)
+
+else:
+
+    # Weird workaround for possible SCons bug
+    Tool('distzip')(env)
 
 zip = env.DistZip(getsyspath('build/dist/docs/OpenBlox Documentation.zip'), env.Dir(getsyspath('build/docs')))
 env.Alias('distdoc', zip)

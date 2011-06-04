@@ -7,6 +7,8 @@ __author__ = "openblocks"
 __date__  = "$Jun 1, 2011 8:36:59 PM$"
 
 import os
+#!/usr/bin/env python
+
 import optparse
 
 usage = '''%prog [options] [search directories]
@@ -45,13 +47,13 @@ def remove_pycs(dirs, loud = False):
                     
                     if loud is True:
 
-                        print '\t (%s) Removed pyc file %s' % (dirpath, filename)
+                        print '\t(%s) Removed pyc file %s' % (dirpath, filename)
                         found_pycs += 1
 
     if loud is True:
 
         print '=' * 5, 'RESULTS', '=' * 5
-        print '* Found and removed %d .pyc files' % found_pycs
+        print '\t* Found and removed %d .pyc file(s)' % found_pycs
 
 
 def main():
