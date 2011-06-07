@@ -23,11 +23,14 @@
 #     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-__author__="openblocks"
-__date__ ="$Jul 13, 2010 6:13:05 PM$"
+
+__author__ = "openblocks"
+__date__  = "$Jul 13, 2010 6:13:05 PM$"
+
 
 import event
 import scenegraph
+
 
 class Element(scenegraph.SceneNode):
     """

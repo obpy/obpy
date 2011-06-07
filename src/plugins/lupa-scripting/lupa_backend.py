@@ -1,43 +1,47 @@
-"""
-Copyright (C) 2011 The OpenBlox Project
+#
+# This plugin provides a Lupa (http://pypi.python.org/pypi/lupa)-based scripting
+# engine implementation.
+#
+# Copyright (C) 2011 The OpenBlox Project
+#
+# This file is part of The OpenBlox Game Engine.
+#
+#     The OpenBlox Game Engine is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     The OpenBlox Game Engine is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
+#
 
-This file is part of The OpenBlox Game Engine.
-
-    The OpenBlox Game Engine is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The OpenBlox Game Engine is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
-
-"""
 
 __author__ = "openblocks"
 __date__  = "$May 2, 2011 1:15:36 AM$"
 
-import lupa
 
 import sys
+import lupa
 
 # Panda3D hack for errant Windows sys.path
 
 if sys.platform == 'win32':
+    
     sys.path.insert(0, 'C:\\Program Files\\OpenBlox')
     sys.path.insert(1, 'C:\\Program Files\\OpenBlox\\obengine\\scripting')
 
 from obengine.utils import error, wrap_callable
 from obengine.attrdict import AttrDict
-
 import obengine.event
 
-# Default globals that lupa creates when its lua runtime is created.
-# We don't want to expose these, so we make a list of them here
+
+# Default globals that lupa/LuaJIT creates when its lua runtime is created.
+# We don't want to expose these, so we make a list of them here.
 
 default_globals = [
 
@@ -82,9 +86,9 @@ default_globals = [
 'pairs',
 'ipairs',
 'error',
-'loadfile',
-
+'loadfile'
 ]
+
 
 class ScriptEngine(object):
     """
@@ -93,38 +97,27 @@ class ScriptEngine(object):
 
     Also, this class has attributes (namely, method and var) that exposes all Lua methods and variables.
 
-    Example::
+    Example:
 
-    lua = ScriptEngine()
+        >>> lua = ScriptEngine()
+        >>> lua.execute('''
+        ... function hello()
+        ... print("Hello Python world!")
+        ... end
+        ... '''
+        >>> lua.method.hello()
+        Hello Python world!
 
-    lua.execute('''
-    function hello()
-    print("Hello Python world!")
-    end
-    '''
+    NEW IN OpenBlox 0.5:
+    You can set Lua variables and methods outside of the runtime, like this:
 
-    lua.method.hello()
-
-    This should output::
-
-    Hello Python world!
-
-    NEW IN 0.5:
-    You can set Lua variables and methods outside of the runtime, like this::
-
-    lua = ScriptEngine()
-
-    lua.execute('a = 1')
-    lua.execute('print(a)')
-
-    lua.var.a = 10
-
-    lua.execute('print(a)')
-
-    This should output::
-
-    1
-    10
+        >>> lua = ScriptEngine()
+        >>> lua.execute('a = 1')
+        >>> lua.execute('print(a)')
+        1
+        >>> lua.var.a = 10
+        >>> lua.execute('print(a)')
+        10
     """
 
     def __init__(self, filename = '<stdin>'):

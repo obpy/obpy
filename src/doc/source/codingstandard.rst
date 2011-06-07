@@ -216,6 +216,12 @@ Modules
 
         # Copyright (C) 2008, 2009, 2011 The OpenBlox Project
 
+.. note::
+
+    If you are writing a Python package, then source files located in your package
+    (save for __init__.py) need not have the Sphinx documentation link. This doesn't
+    apply to the `obengine` package, however.
+
 * Modules are named `likethis`.
 * There are 2 blank lines between the terminating `#` of the header, and the first variable declaration.
 

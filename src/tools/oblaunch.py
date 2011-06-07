@@ -1,41 +1,40 @@
 #!/usr/bin/env python
-"""
-This file is part of The OpenBlox Game Engine.
 
-    The OpenBlox Game Engine is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+# A simple command-line OpenBlox game launcher.
+# See <TODO: no Sphinx docs yet - add some> for the main source of documentation
+# for this script.
 
-    The OpenBlox Game Engine is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 
-    You should have received a copy of the GNU General Public License
-    along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
-
-"""
-import os.path
+import shutil
+import os
+import sys
+import zipfile
+import tempfile
+import atexit
 
 import obengine
 import obengine.world
 import obengine.phys
 import obengine.gfx.worldsource as worldsource
-
 from obengine.gfx.player import PlayerView
 from obengine.gfx.player import KeyboardPlayerController
 from obengine.gfx.math import Vector
 
-import shutil
-import os
-import sys
 
-import zipfile
-import tempfile
-
-import atexit
-    
 def load_world(game):
 
     def run_world(win):
@@ -82,6 +81,7 @@ def load_world(game):
         atexit.register(clean_up)
         
     obengine.gfx.run(run_world)
+
 
 if __name__ == '__main__':
 

@@ -1,36 +1,37 @@
 #!/usr/bin/env python
 
-"""
-Copyright (C) 2011 The OpenBlox Project
+# A script that automatically packs a directory into an OpenBlox-compatible
+# .zip archive (i.e, an OpenBlox game).
+# See <TODO: no Sphinx docs yet - add some> for the main source of documentation
+# for this script.
 
-This file is part of The OpenBlox Game Engine.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 
-    The OpenBlox Game Engine is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
 
-    The OpenBlox Game Engine is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
-
-"""
-import os.path
 __author__="openblocks"
 __date__ ="$Mar 29, 2011 2:39:03 PM$"
 
+
 import os
-
 import zipfile
-
 import xml
 import xml.etree.ElementTree as xmlparser
 
 import wx
+
 
 missing_world_xml = """
 The file world.xml could not be found inside %s.
@@ -42,6 +43,7 @@ invalid_xml = """
 Your world.xml file contains erroneous XML markup at %s.
 See http://openblox.tuxfamily.org/GameDevelopersManual for more info on this.
 """
+
 
 class GamePacker(object):
 
@@ -123,7 +125,8 @@ class GamePacker(object):
 
         return True
 
+if __name__ == '__main__':
 
-app = wx.App(False)
-g = GamePacker()
-app.MainLoop()
+    app = wx.App(False)
+    g = GamePacker()
+    app.MainLoop()

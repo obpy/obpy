@@ -1,4 +1,10 @@
 #
+# This is the base package for all of OpenBlox's asynchronous-releated utilites.
+# See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
+# for this module.
+#
+# Copyright (C) 2011 The OpenBlox Project
+#
 # This file is part of The OpenBlox Game Engine.
 #
 #     The OpenBlox Game Engine is free software: you can redistribute it and/or modify
