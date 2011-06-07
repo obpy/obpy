@@ -3,21 +3,37 @@
 # A simple script to remove all .pyc files, so OpenBlox's
 # Mercurial repository isn't polluted with needless files.
 
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
 __author__ = "openblocks"
 __date__  = "$Jun 1, 2011 8:36:59 PM$"
 
-import os
-#!/usr/bin/env python
 
+import os
 import optparse
+
 
 usage = '''%prog [options] [search directories]
 Recursively removes all .pyc files from the specified search directories.
-If no search directories are given, 
-either the current directory is searched (if this script is invoked from the root OpenBlox directory, 
-that is, the one containing the "obengine" directory), or the 
+If no search directories are given,
+either the current directory is searched (if this script is invoked from the root OpenBlox directory,
+that is, the one containing the "obengine" directory), or the
 parent directory (if this script invoked from this script's parent directory).
 '''
+
 
 def remove_pycs(dirs, loud = False):
 
@@ -72,6 +88,7 @@ def main():
     options, args = option_parser.parse_args()
 
     remove_pycs(args, options.verbose)
+
 
 if __name__ == '__main__':
     main()

@@ -3,12 +3,28 @@
 # A script that converts all non-binary files that have
 # Windows newlines to UNIX-style newlines.
 
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+
 __author__ = "openblocks"
 __date__  = "$Jun 3, 2011 2:26:02 PM$"
 
 import os
-import difflib
 import optparse
+
 
 usage = '''%prog [options] [search directories]
 Recursively converts all files under the given directories to use UNIX newlines.
@@ -31,6 +47,7 @@ exclude_exts = [
 '.dblite',
 '.zip',
 ]
+
 
 def convert_newlines(dirs, loud = False, exclude_exts = exclude_exts):
 
@@ -78,8 +95,8 @@ def convert_newlines(dirs, loud = False, exclude_exts = exclude_exts):
         print '=' * 5, 'RESULTS', '=' * 5
         print '\t* Found %d file(s) with at least 1 Windows newline' % found_files
 
-if __name__ == '__main__':
-
+def main():
+    
     option_parser = optparse.OptionParser(usage = usage)
 
     option_parser.add_option(
@@ -94,3 +111,6 @@ if __name__ == '__main__':
     options, args = option_parser.parse_args()
 
     convert_newlines(args, options.verbose)
+
+if __name__ == '__main__':
+    main()

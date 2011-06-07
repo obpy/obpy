@@ -1,25 +1,32 @@
-"""
-Copyright (C) 2011 The OpenBlox Project
+#
+# This module provides logging facilites to other OpenBlox packages/modules (al-
+# though you can certainly use it for your own purposes).
+# See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
+# for this module.
+#
+#
+# Copyright (C) 2011 The OpenBlox Project
+#
+# This file is part of The OpenBlox Game Engine.
+#
+#     The OpenBlox Game Engine is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     The OpenBlox Game Engine is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
+#
 
-This file is part of The OpenBlox Game Engine.
-
-    The OpenBlox Game Engine is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    The OpenBlox Game Engine is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
-
-"""
 
 __author__ = "openblocks"
 __date__  = "$May 4, 2011 7:09:12 PM$"
+
 
 import sys
 import os
@@ -33,10 +40,12 @@ import deprecated
 
 depman.gendeps()
 
+
 def init():
 
     if hasattr(Logger, '_level') is False:
         Logger().autoconfig()
+
 
 class Logger(datatypes.Borg):
 
@@ -119,21 +128,26 @@ class Logger(datatypes.Borg):
 def debug(string):
     Logger().debug(string)
 
+
 @deprecated.deprecated
 def info(string):
     Logger().info(string)
+
 
 @deprecated.deprecated
 def warn(string):
     Logger().warn(string)
 
+
 @deprecated.deprecated
 def error(string):
     Logger().error(string)
 
+
 @deprecated.deprecated
 def critical(string):
     Logger().critical(string)
+
 
 def _get_calling_package():
     return getframe(2).f_globals.get('__name__', 'root')

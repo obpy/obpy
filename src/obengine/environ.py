@@ -1,16 +1,33 @@
-# <obengine.environ>
-# ===================
 #
-# High-level interface to various low-level modules, for easier usage of OpenBlox.
+# This module provides a all-in-one class that's used as a shortcut for
+# obengine.async.Scheduler, obengine.world.World, obplugin.core.graphics.Window,
+# and obplugin.core.physics.World.
+# See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
+# for this module.
+#
 #
 # Copyright (C) 2011 The OpenBlox Project
-# License: GNU GPL v3
 #
-# See <TODO: No Sphinx docs yet - add some!> for the primary source of documentation
-# for this module.
+# This file is part of The OpenBlox Game Engine.
+#
+#     The OpenBlox Game Engine is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     The OpenBlox Game Engine is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
+#
+
 
 __author__ = "openblocks"
 __date__  = "$May 28, 2011 11:24:13 PM$"
+
 
 import obengine.async
 import obengine.vfs
@@ -19,10 +36,12 @@ import obengine.depman
 
 obengine.depman.gendeps()
 
+
 def init():
     
     obengine.plugin.require('core.graphics')
     obengine.plugin.require('core.physics')
+
 
 class Environment(object):
 
@@ -43,4 +62,3 @@ class Environment(object):
     @property
     def eid(self):
         return self._eid
-
