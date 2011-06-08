@@ -21,10 +21,6 @@ This file is part of The OpenBlox Game Engine.
 __author__="openblocks"
 __date__ ="$Oct 25, 2010 9:57:22 PM$"
 
-from direct.gui.DirectGui import *
-from panda3d.ode import OdeHingeJoint
-from direct.gui.OnscreenText import OnscreenText
-
 import obengine.gfx
 import obengine.player
 import obengine.utils

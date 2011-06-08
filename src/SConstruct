@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 def getsyspath(path):
     return path.replace('/', os.sep)
@@ -87,8 +88,14 @@ else:
     # Weird workaround for possible SCons bug
     Tool('distzip')(env)
 
-zip = env.DistZip(getsyspath('build/dist/docs/OpenBlox Documentation.zip'), env.Dir(getsyspath('build/docs')))
-env.Alias('distdoc', zip)
+env.Append(
+    DISTZIP_EXCLUDEEXTS = ['.pyc']
+)
+
+docs_zip = env.DistZip(getsyspath('build/dist/docs/OpenBlox Documentation.zip'), env.Dir(getsyspath('build/docs')))
+runtime_zip = env.DistZip(getsyspath('build/obruntime.zip'), env.Dir('obengine'))
+env.Alias('distdoc', docs_zip)
+env.Alias('runtime', runtime_zip)
 Depends('distdoc', 'docs')
 Clean(zip, getsyspath('build/dist/docs'))
 

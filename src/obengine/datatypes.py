@@ -136,7 +136,7 @@ class EventDict(dict):
     def __delitem__(self, key):
 
         dict.__delitem__(self, key)
-        self.on_item_removed
+        self.on_item_removed()
 
 def wrap_callable(func, before, after):
     

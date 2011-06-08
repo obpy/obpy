@@ -136,12 +136,6 @@ Example::
         """
         ClassA is for XYZ.
         Volatile - ClassA's interface might change in the future!
-        Example:
-
-            >>> c = ClassA()
-            Initalized an instance of ClassA!
-            >>> c.foo('Hello World!')
-            Hello World!
         """
 
         def __init__(self):
@@ -152,12 +146,9 @@ Example::
 
         def foo(self, a):
             """Prints a
-            For example:
-
-            >>> c = ClassA()
-            Initalized an instance of ClassA!
-            >>> c.foo('Printed with c.foo!')
-            Printed with c.foo!
+            Arguments:
+             * a - the object to print
+            Returns: None
             """
 
             self._bar(a)

@@ -22,6 +22,7 @@
 __author__ = "openblocks"
 __date__  = "$May 2, 2011 12:30:08 PM$"
 
+
 from panda3d.core import Vec3, VBase4, Quat
 from libs import odeWorldManager
 from libs import staticObject, dynamicObject
@@ -68,6 +69,8 @@ class World(object):
         self.on_paused = obengine.event.Event()
         self.on_unpaused = obengine.event.Event()
 
+        self.loaded = False
+
     def load(self):
 
         # It is the perversity of Panda3D's __builtin__ assignments that means
@@ -75,7 +78,8 @@ class World(object):
         
         self.world_manager = odeWorldManager()
         self.world_manager.stepSize = 1 / 60.0
-        
+
+        self.loaded = True
         self.on_loaded()
 
     def add(self, obj):

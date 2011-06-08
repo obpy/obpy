@@ -1,4 +1,6 @@
-# conftest.py - Simple Py.Test plugin to allow running of Sphinx-embedded doctests
+
+# conftest.py - Simple Py.Test plugin to allow running of 
+# Sphinx-embedded doctests (and doctests inside OpenBlox plugins)
 # from Py.Test
 
 def pytest_configure(config):

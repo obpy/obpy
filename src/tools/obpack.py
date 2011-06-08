@@ -32,7 +32,6 @@ import xml.etree.ElementTree as xmlparser
 
 import wx
 
-
 missing_world_xml = """
 The file world.xml could not be found inside %s.
 

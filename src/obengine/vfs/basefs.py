@@ -28,23 +28,23 @@ class BaseFS(object):
     Base file system class. Do *not* create an instance of this class!
     """
 
-def open(self, path, mode='r'):
-    raise NotImplementedError
+    def open(self, path, mode='r'):
+        raise NotImplementedError
 
-def listdir(self, path):
-    raise NotImplementedError
+    def listdir(self, path):
+        raise NotImplementedError
 
-def mkdir(self, path):
-    raise NotImplementedError
+    def mkdir(self, path):
+        raise NotImplementedError
 
-def rmdir(self, path):
-    raise NotImplementedError
+    def rmdir(self, path):
+        raise NotImplementedError
 
-def remove(self, path):
-    raise NotImplementedError
+    def remove(self, path):
+        raise NotImplementedError
 
-def getsyspath(self, path):
-    raise NotImplementedError
+    def getsyspath(self, path):
+        raise NotImplementedError
 
 class MountFS(BaseFS):
 

@@ -26,3 +26,4 @@ __date__ ="$Apr 27, 2011 2:38:29 PM$"
 
 
 from pluginmanager import *
+from plugin import *

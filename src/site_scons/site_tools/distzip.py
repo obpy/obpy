@@ -86,8 +86,8 @@ def DistZip(target, source, env):
    for item in source:
       item = str(item)
       sys.stderr.write(".")
-      #print "Adding to ZIP file: %s/%s" % (dir_name,item)
-      the_zip.write(item, '%s/%s' % (dir_name,item), zipfile.ZIP_DEFLATED)
+      #print "Adding to ZIP file: %s" % (item,)
+      the_zip.write(item, '%s' % (item,), zipfile.ZIP_DEFLATED)
 
    # all done
    sys.stderr.write("\n") #print "Closing ZIP file"
