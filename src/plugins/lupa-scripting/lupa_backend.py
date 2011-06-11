@@ -36,7 +36,7 @@ if sys.platform == 'win32':
     sys.path.insert(1, 'C:\\Program Files\\OpenBlox\\obengine\\scripting')
 
 from obengine.utils import error, wrap_callable
-from obengine.attrdict import AttrDict
+from obengine.datatypes import EventAttrDict
 import obengine.event
 
 
@@ -102,10 +102,10 @@ class ScriptEngine(object):
         >>> lua = ScriptEngine()
         >>> lua.execute('''
         ... function hello()
-        ... print("Hello Python world!")
+        ... return "Hello Python world!"
         ... end
-        ... '''
-        >>> lua.method.hello()
+        ... ''')
+        >>> print lua.method.hello()
         Hello Python world!
 
     NEW IN OpenBlox 0.5:
@@ -113,10 +113,8 @@ class ScriptEngine(object):
 
         >>> lua = ScriptEngine()
         >>> lua.execute('a = 1')
-        >>> lua.execute('print(a)')
-        1
         >>> lua.var.a = 10
-        >>> lua.execute('print(a)')
+        >>> print lua.eval('a')
         10
     """
 
@@ -134,26 +132,11 @@ class ScriptEngine(object):
 
         self.filename = filename
 
-        # Create the AttrDicts that will keep track of our variables and methods
-        self.var = AttrDict()
-        self.method = AttrDict()
+        # Create the EventDicts that will keep track of our variables and methods
+        self.var = EventAttrDict()
+        self.method = EventAttrDict()
 
-        # We have to bypass AttrDict's custom __setattr__ and __getattr__
-
-        var_set_wrapper = wrap_callable(
-        getattr(self.var,'__setitem__'),
-        self._before_globals_update,
-        self._after_globals_update
-        )
-
-        method_set_wrapper = wrap_callable(
-        getattr(self.method,'__setitem__'),
-        self._before_globals_update,
-        self._after_globals_update
-        )
-        
-        object.__setattr__(self.var, '__setitem__', var_set_wrapper)
-        object.__setattr__(self.method, '__setitem__', method_set_wrapper)
+        self.var.on_item_changed += self._update_globals
 
     def eval(self, string):
         """
@@ -222,7 +205,5 @@ class ScriptEngine(object):
     def globals(self):
         return self.lua.globals()
 
-    def _before_globals_update(self, *args, **kwargs): pass
-
-    def _after_globals_update(self, item, value):
+    def _update_globals(self, item, value):
         self.globals()[item] = value

@@ -1,24 +1,31 @@
-"""
-This file is part of The OpenBlox Game Engine.
+#
+# Legacy module - will probably be removed/partitioned in the near future.
+# See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
+# for this module.
+#
+#
+# Copyright (C) 2010-2011 The OpenBlox Project
+#
+# This file is part of The OpenBlox Game Engine.
+#
+#     The OpenBlox Game Engine is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     The OpenBlox Game Engine is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
+#
 
-    The OpenBlox Game Engine is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
 
-    The OpenBlox Game Engine is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+__author__ = "openblocks"
+__date__  = "$Aug 9, 2010 11:04:13 PM$"
 
-    You should have received a copy of the GNU General Public License
-    along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
-
-    This module contains all of the 3D elements, including the Brick View(s) and Presenter, and Skybox.
-"""
-
-__author__="openblocks"
-__date__ ="$Aug 9, 2010 11:04:13 PM$"
 
 import functools
 
@@ -30,12 +37,15 @@ import obengine.gfx.math
 
 obengine.depman.gendeps()
 
+
 DEFAULT_X_SIZE = 2.0
 DEFAULT_Y_SIZE = 4.0
 DEFAULT_Z_SIZE = 1.0
 
+
 def init():
     obengine.plugin.require('core.graphics')
+
 
 class BrickView(object):
     """
@@ -82,6 +92,7 @@ class BrickView(object):
         self.size = size
         self.rotation = rotation
         self.color = color
+
 
 class BlockBrickView(BrickView):
 
@@ -142,6 +153,7 @@ class BlockBrickView(BrickView):
     @obengine.deprecated.deprecated
     def set_color(self, rgb):
         self.color = rgb
+
 
 class BrickPresenter(object):
     
@@ -265,7 +277,8 @@ class BrickPresenter(object):
 
         self.model.showing = False
         self.phys_rep.disable()
-        
+
+
 class SkyboxElement(obengine.element.Element):
 
     def __init__(self, texture = None):

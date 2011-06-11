@@ -34,71 +34,66 @@ class AttrDict(dict):
     """
     A decorated dict that links attributes to keys, so we can do this:
 
-    from obengine.attrdict import AttrDict
+    >>> a = AttrDict()
+    >>> a.Key1 = "Test1"
+    >>> a.Key2 = "Test2"
 
-    a = AttrDict()
-    a.Key1 = "Test1"
-    a.Key2 = "Test2"
-
-    print a.Key1
-    print a['Key1']
-    print a.Key2
-    print a['Key2']
-
-    This should output:
-
+    >>> print a.Key1
     Test1
+    >>> print a['Key1']
     Test1
+    >>> print a.Key2
     Test2
+    >>> print a['Key2']
     Test2
 
-    NEW IN 0.5:
+    NEW IN OpenBlox 0.5:
 
     You can also initalize AttrDict like a regular dict:
 
-    from obengine.attrdict import AttrDict
-
-    a = AttrDict(a = 1, b = 2, c = 3)
-    print a.a, a.b, a.c
-
-    This should output:
-
+    >>> a = AttrDict(a = 1, b = 2, c = 3)
+    >>> print a.a, a.b, a.c
     1 2 3
     """
 
     def __init__(self, **kwargs):
-        """Just like initalizing a normal dict. See dict.__init__ for more info.
-        """
+        """Just like initalizing a normal dict. See dict.__init__ for more info."""
         dict.__init__(self, **kwargs)
 
     def __getattr__(self, item):
+
         try:
-            return self.__getitem__(item)
-        except:
+            return object.__getattr__(self, item)
+
+        except AttributeError:
+            pass
+
+        try:
+            return dict.__getitem__(self, item)
+        except KeyError:
             raise AttributeError(item)
 
     def __setattr__(self, item, value):
-        if self.__dict__.has_key(item):
-            dict.__setattr__(self, item, value)
-        else:
-            self.__setitem__(item, value)
+        self[item] = value
+
 
 class Borg(object):
     
     __shared_state = {}
 
-    def __new__(cls, *p, **k):
+    def __new__(cls):
 
         self = object.__new__(cls)
         self.__dict__ = cls.__shared_state
 
         return self
 
+
 class EventDict(dict):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
 
-        dict.__init__(self, *args, **kwargs)
+        dict.__init__(self, **kwargs)
 
         self.on_item_added = event.Event()
         self.on_item_retrieved = event.Event()
@@ -137,6 +132,20 @@ class EventDict(dict):
 
         dict.__delitem__(self, key)
         self.on_item_removed()
+
+class EventAttrDict(EventDict, AttrDict):
+
+    def __init__(self, **kwargs):
+
+        EventDict.__init__(self, **kwargs)
+        AttrDict.__init__(self, **kwargs)
+
+def nested_property(func):
+    
+    func_locals = func()
+    func_locals['doc'] = func.__doc__
+    
+    return property(**func_locals)
 
 def wrap_callable(func, before, after):
     

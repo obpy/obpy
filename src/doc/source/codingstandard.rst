@@ -1,6 +1,6 @@
-========================
-OpenBlox Coding Standard
-========================
+============================
+The OpenBlox coding standard
+============================
 
 This is the OpenBlox coding standard, which closely follows Python PEP 8 (http://www.python.org/dev/peps/pep-0008/).
 However, there are a few differences:

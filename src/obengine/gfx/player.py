@@ -1,36 +1,42 @@
-"""
-Copyright (C) 2010 The OpenBlox Project
+#
+# Legacy module - will probably be removed/partitioned in the near future.
+# See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
+# for this module.
+#
+#
+# Copyright (C) 2010-2011 The OpenBlox Project
+#
+# This file is part of The OpenBlox Game Engine.
+#
+#     The OpenBlox Game Engine is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     The OpenBlox Game Engine is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
+#
 
-This file is part of The OpenBlox Game Engine.
 
-    The OpenBlox Game Engine is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+__author__ = "openblocks"
+__date__  = "$Oct 25, 2010 9:57:22 PM$"
 
-    The OpenBlox Game Engine is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
-
-    This module provides the acutal OpenBlox UI and 3D player.
-"""
-__author__="openblocks"
-__date__ ="$Oct 25, 2010 9:57:22 PM$"
+import time
+import copy
 
 import obengine.gfx
 import obengine.player
 import obengine.utils
 import obengine.elementfactory
 import obengine.phys
-
 from obengine.gfx.math import *
 
-import time
-import copy
 
 class PlayerController(object):
     """
@@ -52,6 +58,7 @@ class PlayerController(object):
     It initalizes the controller, which could mean adding
     key bindings, or another means to control the player.
     """
+
 
 class KeyboardPlayerController(PlayerController):
 
@@ -124,6 +131,7 @@ class KeyboardPlayerController(PlayerController):
 
         # Make ourselves be called again
         return task.cont
+
 
 class PlayerView(object):
     """

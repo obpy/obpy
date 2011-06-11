@@ -23,9 +23,9 @@ __author__ = "openblocks"
 __date__  = "$May 2, 2011 12:30:08 PM$"
 
 
-from panda3d.core import Vec3, VBase4, Quat
-from libs import odeWorldManager
-from libs import staticObject, dynamicObject
+from panda3d.core import Vec3, Quat
+from copperode import odeWorldManager
+from copperode import staticObject, dynamicObject
 
 import obengine.event
 import obengine.async

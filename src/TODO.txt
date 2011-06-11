@@ -1,10 +1,9 @@
-=============
+=====
 Todos
-=============
+=====
 
 * SCENE EDITOR!!!!!! (where to put the code?)
-* Update and expand README (move to Sphinx as well?)
-* The module header standard changed, every module/package (save for obengine.scenegraph)
-needs to be updated to reflect this
+* GUI framework
+* Update and expand README
 * There needs to be more thorugh documentation on the API level, this has paritally been started
 * Doctests need to be added, for regression testing (and documentation verfication) purposes

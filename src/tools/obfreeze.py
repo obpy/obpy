@@ -24,7 +24,6 @@
 __author__="openblocks"
 __date__ ="$Jun 7, 2011 9:57:13 PM$"
 
-import sys
 import os
 import optparse
 

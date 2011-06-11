@@ -1,4 +1,4 @@
-from system.odeWorldManager import staticObject
+from copperode.odeWorldManager import staticObject
 
 """
 A generic Area Trigger for ODE

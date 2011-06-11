@@ -509,7 +509,7 @@ class SceneNode(object):
             if sub_child:
                 return sub_child
 
-        if error_on_non_existent is True:
+        if exc_on_non_existent is True:
             raise NoSuchNameException(name)
 
         else:

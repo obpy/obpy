@@ -26,7 +26,43 @@ __date__  = "$Jun 1, 2011 7:39:52 PM$"
 
 import warnings
 import obengine.event
+import obengine.datatypes
 
+class Vector2D(object):
+
+    def __init__(self, x = 0, y = 0):
+
+        self.on_x_changed = obengine.event.Event()
+        self.on_y_changed = obengine.event.Event()
+
+        self._x = float(x)
+        self._y = float(y)
+
+    @obengine.datatypes.nested_property
+    def x():
+
+        def fget(self):
+            return self._x
+
+        def fset(self, value):
+
+            self._x = value
+            self.on_x_changed(self._x)
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def y():
+
+        def fget(self):
+            return self._y
+
+        def fset(self, value):
+
+            self._y = value
+            self.on_y_changed(self._y)
+
+        return locals()
 
 class Vector(object):
     """

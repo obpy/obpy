@@ -11,7 +11,7 @@ OpenBlox scene graph library (`obengine.scenegraph`)
 Overview
 ========
 
-`obengine.scenegraph` provides a simple, SQLite [1]_-based scene graph implementation.
+``obengine.scenegraph`` provides a simple, SQLite [1]_-based scene graph implementation.
 Before OpenBlox 0.7, the only "scene graph" available was `obengine.datatypes.AttrDict`, and that class
 had several shortcomings:
 

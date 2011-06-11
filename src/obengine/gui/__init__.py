@@ -1,5 +1,6 @@
 #
-# Legacy module - superceded by obengine.math.
+# Base package for OpenBlox's GUI code that is GUI toolkit independent.
+# Bindings to various GUI toolkits is provided by obplugin.core.gui.
 # See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
 # for this module.
 #
@@ -22,11 +23,13 @@
 #     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-__author__="openblocks"
-__date__ ="$Mar 3, 2011 3:30:17 PM$"
+__author__ = "openblocks"
+__date__  = "$Jun 9, 2011 12:43:52 AM$"
 
-import warnings
 
-warnings.warn('obengine.gfx.math is deprecated, use obengine.math instead', DeprecationWarning, stacklevel = 2)
+from widget import *
+from button import *
+from container import *
 
-from obengine.math import *
+
+class GuiException(Exception): pass
