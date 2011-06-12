@@ -66,6 +66,7 @@ class LabelPresenter(WidgetPresenter):
         WidgetPresenter.__init__(self, label_model, label_view)
 
         self.on_text_changed = self._model.on_text_changed
+        self._view.on_text_changed += self._update_text
 
     @obengine.datatypes.nested_property
     def text():
@@ -80,10 +81,28 @@ class LabelPresenter(WidgetPresenter):
 
         return locals()
 
+    def _update_text(self, new_text):
+        self.text = new_text
+
 
 class MockLabelView(MockWidgetView):
 
     def __init__(self, text, position = None):
 
         MockWidgetView.__init__(position)
-        self.text = text
+        self._text = text
+        
+        self.on_text_changed = obengine.event.Event()
+
+    @obengine.datatypes.nested_property
+    def text():
+
+        def fget(self):
+            return self._text
+
+        def fset(self, new_text):
+
+            self._text = new_text
+            self.on_text_changed(new_text)
+
+        return locals()
