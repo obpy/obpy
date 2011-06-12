@@ -25,15 +25,16 @@
 __author__ = "openblocks"
 __date__  = "$May 2, 2011 1:38:18 AM$"
 
+
 import sys
 import atexit
 from sys import _getframe as getframe
 import inspect
 
-__all__ = ['gendeps', 'init']
 
 collected_modules = []
 dependency_map = {}
+
 
 def gendeps(prefix = 'obengine', modname = None, excludes = None):
     """
@@ -153,7 +154,6 @@ def init():
                             
                             msg = 'Circular dependency between %s and %s' % (module_name, module_dependency)
                             print >> sys.stderr, msg
-
                             errors.append(module_name + module_dependency)
 
     # We just finished checking for circular dependencies, so now,

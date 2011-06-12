@@ -26,6 +26,7 @@ __author__ = "openblocks"
 __date__  = "$Aug 3, 2010 2:36:03 PM$"
 
 import os
+import getpass
 import sys
 import ConfigParser
 
@@ -59,7 +60,7 @@ class Config(datatypes.Borg):
         """
 
         WINDOWS_CFG_LOC = 'C:\\Program Files\\OpenBlox'
-        UNIX_CFG_LOC = os.path.join(os.getenv('HOME', '/home/' + os.getlogin()), 'OpenBlox')
+        UNIX_CFG_LOC = os.path.join(os.getenv('HOME', '/home/' + getpass.getuser()), 'OpenBlox')
 
         # If this is True, then we're running normally
         if '.zip' not in __file__:
