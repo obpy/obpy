@@ -31,7 +31,9 @@ import obengine.event
 import obengine.depman
 from obengine.gui import Widget, WidgetPresenter, MockWidgetView
 
+
 obengine.depman.gendeps()
+
 
 class Label(Widget):
     """Represents a simple label"""
@@ -61,8 +63,7 @@ class LabelPresenter(WidgetPresenter):
 
     def __init__(self, label_model, label_view):
 
-        self._model = label_model
-        self._view = label_view
+        WidgetPresenter.__init__(self, label_model, label_view)
 
         self.on_text_changed = self._model.on_text_changed
 

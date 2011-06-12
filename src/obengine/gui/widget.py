@@ -134,6 +134,7 @@ class WidgetPresenter(object):
     def _update_size(self, new_size):
         self._model.size = new_size
 
+
 class MockWidgetView(object):
 
     def __init__(self, position = None):

@@ -25,6 +25,7 @@
 __author__ = "openblocks"
 __date__  = "$Jun 9, 2011 8:00:27 PM$"
 
+
 import obengine.math
 import obengine.datatypes
 import obengine.event
@@ -38,7 +39,7 @@ PAD_SPACE = 0.5
 
 class Container(Widget):
     """Represents a basic container
-    This class provides the necessary high-level algorithms required to
+    This class provides the high-level algorithms required to
     implement a simple widget container.
     However, to use this class, you'll need to use a layout manager (which
     actually implements the widget partioning algorithim) first.

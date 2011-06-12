@@ -53,3 +53,6 @@ def interp_range(given_range, requested_range, num):
     result = requested_range_diff * percen + min_requested_range
 
     return result
+
+def sign(num):
+    return cmp(num, 0)

@@ -50,11 +50,12 @@ class Button(Widget):
         Button pressed!
     """
 
-    def __init__(self, text, position = None):
+    def __init__(self, text, position = None, icon = None):
 
         Widget.__init__(self, position)
 
         self._text = text
+        self._icon = icon
 
         self.on_click = obengine.event.Event()
         self.on_text_changed = obengine.event.Event()
@@ -71,6 +72,10 @@ class Button(Widget):
             self.on_text_changed(new_text)
 
         return locals()
+
+    @property
+    def icon(self):
+        return self.icon
 
 
 class ButtonPresenter(object):
@@ -114,6 +119,10 @@ class ButtonPresenter(object):
     @property
     def size(self):
         return self._view.size
+
+    @property
+    def icon(self):
+        return self._model.icon
 
 class MockButtonView(object):
     """A mock button view, for testing"""

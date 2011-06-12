@@ -38,10 +38,10 @@ dependency_map = {}
 def gendeps(prefix = 'obengine', modname = None, excludes = None):
     """
     Use this function to record your module's dependencies.
-    Call it like this at the start of your module::
-        depman.gendeps(prefix = your_root_packages_name)
+    Call it like this at the start of your module:
+        depman.gendeps()
 
-    If you want to exclude some modules for some reason, call it like this::
+    If you want to exclude some modules for some reason, call it like this:
         depman.gendeps(excludes=['some.excluded.module', 'some.other_excluded.module'])
 
     You can ignore the other parameters; they're there for recursive calling purposes only.
