@@ -157,7 +157,7 @@ for more information, and a tutorial.
 FAQ
 ----
 
-Under construction...
+See http://openblox.tuxfamily.org/FAQ.
 
 Further support
 ---------------
