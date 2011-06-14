@@ -37,7 +37,7 @@ def init():
     Call this function, after importing all the modules you need.
     """
 
-    import depman
+    import obengine.depman
 
-    depman.gendeps()
-    depman.init()
+    obengine.depman.gendeps()
+    obengine.depman.init()

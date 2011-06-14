@@ -31,7 +31,7 @@ obengine.depman.gendeps()
 
 
 def init():
-    plugin.require('core.audio')
+    obengine.plugin.require('core.audio')
 
 
 class SoundElement(obengine.element.Element):

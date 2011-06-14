@@ -1,6 +1,4 @@
-A simple test for obengine. Make sure we can import it!
+A simple test for obengine. Make sure we can import and initalize it!
 
 >>> import obengine
-
-NOTE: For some strange reason, doctest's interpereter state is maintained
-across tests (even if they're in different files). Because of this, we cannot call obengine.init().
+>>> obengine.init()
