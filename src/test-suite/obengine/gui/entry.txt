@@ -1,0 +1,47 @@
+First, let's check that we can import the entry widget model,
+and make sure it instantiates properly:
+
+>>> import obengine.gui
+>>> em = obengine.gui.Entry()
+>>> em.text == ''
+True
+
+
+Now, to change the text:
+
+>>> em.text = 'Changed!'
+>>> print em.text
+Changed!
+
+
+We can create the presenter and view now:
+
+>>> ev = obengine.gui.MockEntryView(em.text)
+>>> ep = obengine.gui.EntryPresenter(em, ev)
+
+
+Let's check to make sure that the presenter propagates text changes
+to the model and view:
+
+>>> ep.text = 'Changed again!'
+>>> print em.text
+Changed again!
+>>> print ev.text
+Changed again!
+
+
+We'll test out events now:
+
+>>> def test_submit():
+...     print 'The presenter was submitted, with text "%s"' % ep.text
+...
+>>> ep.on_submitted += test_submit
+>>> ep.submit()
+The presenter was submitted, with text "Changed again!"
+
+>>> def test_change(new_text):
+...     print 'The text was changed to "%s"' % new_text
+...
+>>> ep.on_text_changed += test_change
+>>> ep.text = 'Reverted!'
+The text was changed to "Reverted!"

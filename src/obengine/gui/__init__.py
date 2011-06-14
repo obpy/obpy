@@ -30,6 +30,7 @@ __date__  = "$Jun 9, 2011 12:43:52 AM$"
 from widget import *
 from button import *
 from container import *
-
+from label import *
+from entry import *
 
 class GuiException(Exception): pass
