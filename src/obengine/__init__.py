@@ -31,6 +31,22 @@ __date__  = "$Jul 12, 2010 7:59:47 PM$"
 ENGINE_VERSION = (0, 7, 0)
 
 
+def version_string():
+    """Returns a human-readable version of OpenBlox
+    This function returns a human-readable, period-seperated string
+    representing OpenBlox's current version.
+    """
+    return '.'.join(map(str, ENGINE_VERSION))
+
+
+def compatible_with(version_str):
+
+    if len(version_str) < 1:
+        raise InvalidVersionError(version_str)
+    
+    return map(int, version_str.split('.'))[0] == ENGINE_VERSION[0]
+
+
 def init():
     """
     Wrapper around obengine.depman.init().
@@ -41,3 +57,7 @@ def init():
 
     obengine.depman.gendeps()
     obengine.depman.init()
+
+
+class InvalidVersionError(Exception):
+    """Raised when an invalid version string is passed to obengine.compatible_with."""

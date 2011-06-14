@@ -2,3 +2,25 @@ A simple test for obengine. Make sure we can import and initalize it!
 
 >>> import obengine
 >>> obengine.init()
+
+Can we initalize it again?
+
+>>> obengine.init()
+
+Of course we can!
+
+
+Let's check the engine version:
+
+>>> print obengine.version_string()
+0.7.0
+
+Let's check for compatiblity with OpenBlox 0.6.2:
+
+>>> print obengine.compatible_with('0.6.2')
+True
+
+Are we compatible with 1.2.0 (no, it hasn't been released yet :):
+
+>>> print obengine.compatible_with('1.2.0')
+False
