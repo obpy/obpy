@@ -7,26 +7,36 @@ import os
 # Necessary to find the obengine package
 sys.path.append(os.path.join(os.pardir, os.pardir))
 
+
 import obengine
 import obengine.plugin
+
 
 def found_plugin(root_dir):
 	print 'found plugin %s' % root_dir
 
+
 def initialized_plugin(plugin):
 	print 'loaded plugin from file %s' % plugin.module.__file__
+
 
 def main():
 
    # Necessary to find the configuration file (example-specific; you don't have to do this unless you want to use a custom configuration file;
    # or your user doesn't have OpenBlox installed)
+   
    obengine.cfg.Config().load(os.path.join(os.pardir, os.pardir, 'obconf.cfg'))
 
    # Set up all the modules we've imported - even sets up implicit/nested dependencies!
    obengine.init()
 
+
    manager = obengine.plugin.PluginManager()
 
+   # Each PluginManager shares its event handlers (as well as all found plugins),
+   # which is how we bind some event handlers here, but they are called
+   # from obengine.plugin.require.
+   
    manager.on_plugin_found += found_plugin
    manager.on_plugin_initialized += initialized_plugin
 

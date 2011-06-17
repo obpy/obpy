@@ -38,7 +38,6 @@ class Button(Widget):
     """Represents a button.
     Example:
 
-        >>> from obengine.math import Vector2D
         >>> b = Button('Click me!')
         >>> print b.text
         Click me!
@@ -87,6 +86,7 @@ class ButtonPresenter(object):
 
         self.on_click = self._model.on_click
         self.on_position_changed = self._model.on_position_changed
+        self.on_text_changed = self._model.on_text_changed
 
         self._view.on_click += self.on_click
 
@@ -124,13 +124,15 @@ class ButtonPresenter(object):
     def icon(self):
         return self._model.icon
 
+
 class MockButtonView(object):
     """A mock button view, for testing"""
 
-    def __init__(self, text = '', position = None, size = None):
+    def __init__(self, text = '', position = None, icon = None, size = None):
 
         self.position = position or obengine.math.Vector2D()
         self.size = size or obengine.math.Vector2D()
 
         self.on_click = obengine.event.Event()
         self.text = text
+        self.icon = icon

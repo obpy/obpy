@@ -40,21 +40,21 @@ Main options
 Logging related
 ---------------
 
-log-level
-~~~~~~~~~
+``log-level``
+~~~~~~~~~~~~~
 
 This is the minimum severity (inclusive) that candidate log messages must have to actually *be* put into the log file.
 Valid values are:
 
- * *debug* - Logs anything and everything. Very useful if you need to debug some tough problem, 
+ * ``debug`` - Logs anything and everything. Very useful if you need to debug some tough problem,
              or are trying to find out why OpenBlox mysteriously crashes
- * *info* - Logs general messages. This is probably the next best option for normal users, after *warn*.
- * *warn* - The default log level. This is probably the best if you're not working directly on OpenBlox's code, i.e, you just make OpenBlox games.
- * *error* - Logs only errors to the log file. If you want a tidy log file, this is probably best.
- * *critical* - Logs only critical errors (i.e, crashes) to the log file. If you observe a crash, switch the log level to *debug*.
+ * ``info`` - Logs general messages. This is probably the next best option for normal users, after ``warn``.
+ * ``warn`` - The default log level. This is probably the best if you're not working directly on OpenBlox's code, i.e, you just make OpenBlox games.
+ * ``error`` - Logs only errors to the log file. If you want a tidy log file, this is probably best.
+ * ``critical`` - Logs only critical errors (i.e, crashes) to the log file. If you observe a crash, switch the log level to ``debug``.
 
-log-file
-~~~~~~~~
+``log-file``
+~~~~~~~~~~~~
 
 This is the log file to write to. By default, it's ``oblog.txt``.
 
@@ -70,8 +70,8 @@ then the file will be written there. Otherwise, the log file will be inserted in
 Graphics-related
 -----------------
 
-frame-rate
-~~~~~~~~~~~
+``frame-rate``
+~~~~~~~~~~~~~~
 
 This is an integer that specifies the rate at which the graphics (and the physics) will be updated.
 For example, if ``frame-rate`` is given a value of ``45``, than OpenBlox will refresh/update its graphics and physics 45 times a second.
@@ -80,8 +80,8 @@ For example, if ``frame-rate`` is given a value of ``45``, than OpenBlox will re
 
    For most computers, specifying a value over ``60`` will actually just set the frame rate to ``60``.
 
-use-shadows
-~~~~~~~~~~~
+``use-shadows``
+~~~~~~~~~~~~~~~
 
 .. note::
 
@@ -92,22 +92,22 @@ game you're playing has a lot of 3D models/bricks.
 
 Valid values are:
 
-* *yes* - Use shadows
-* *no* - Don't use shadows (the default)
+* ``yes`` - Use shadows
+* ``no`` - Don't use shadows (the default)
 
-show-frame-rate
-~~~~~~~~~~~~~~~
+``show-frame-rate``
+~~~~~~~~~~~~~~~~~~~
 
 This option specifies whether the frame rate should be displayed on-screen.
 If this is enabled, you'll see the frame rate in the top-right corner of your screen.
 
 Valid values are:
 
-* *yes* - Display the frame rate
-* *no* - Don't display the frame rate
+* ``yes`` - Display the frame rate
+* ``no`` - Don't display the frame rate
 
-resolution
-~~~~~~~~~~
+``resolution``
+~~~~~~~~~~~~~~
 
 You've probably already guessed this one. It specifies the window size and resolution.
 The format for the resolution is most likely similar to what you've seen before. The resolution on the **X** axis 

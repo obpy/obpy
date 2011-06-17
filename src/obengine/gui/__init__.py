@@ -27,10 +27,15 @@ __author__ = "openblocks"
 __date__  = "$Jun 9, 2011 12:43:52 AM$"
 
 
+class GuiException(Exception): pass
+
+# I know, wierd, but the class definition must be here for
+# our sub-modules to find it.
+
 from widget import *
 from button import *
 from container import *
 from label import *
 from entry import *
-
-class GuiException(Exception): pass
+from menu import *
+from widgetfactory import *

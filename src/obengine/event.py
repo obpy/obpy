@@ -64,14 +64,29 @@ class Event(object):
         >>> event('Hello,', 'World!')
         arg1: Hello, arg2: World!
 
+    You can temporarily disable an event, too:
+
+        >>> event.disable()
+        >>> event('Hello,', 'World!')
+        >>> event.enable()
+        >>> event('Hello,', 'World!')
+        arg1: Hello, arg2: World!
+        >>> event.enabled = False
+        >>> event('Hello,', 'World!')
+        >>> event.enabled = True
+        >>> event('Hello,', 'World!')
+        arg1: Hello, arg2: World!
+
     You can also clear all the handlers:
 
         >>> event.clear()
-        >>> event()
+        >>> event('Hello,', 'World!')
         >>>
     """
 
     def __init__(self):
+
+        self.enabled = True
         self.handlers = set()
 
     def add_handler(self, handler):
@@ -102,6 +117,9 @@ class Event(object):
         method passed on to them.
         """
 
+        if self.enabled is False:
+            return
+
         for handler in reversed(list(self.handlers)):
             handler(*args, **kwargs)
 
@@ -113,6 +131,12 @@ class Event(object):
 
     def clear(self):
         self.handlers = set()
+
+    def enable(self):
+        self.enabled = True
+
+    def disable(self):
+        self.enabled = False
 
     __iadd__ = add_handler
     __isub__ = remove_handler

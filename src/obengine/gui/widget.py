@@ -33,6 +33,9 @@ import obengine.depman
 obengine.depman.gendeps()
 
 
+TOP_LEVEL = -1
+
+
 class Widget(object):
     """Base class for all widgets
     This class meant to be used as a base class, not as-is.
@@ -43,10 +46,26 @@ class Widget(object):
         self._position = position or obengine.math.Vector2D()
         self._size = obengine.math.Vector2D()
         self._parent = None
+        self._showing = False
 
         self.on_position_changed = obengine.event.Event()
         self.on_parent_changed = obengine.event.Event()
         self.on_size_changed = obengine.event.Event()
+        self.on_hidden = obengine.event.Event()
+        self.on_shown = obengine.event.Event()
+        self.on_focus_gained = obengine.event.Event()
+        self.on_focus_lost = obengine.event.Event()
+
+        self.on_focus_gained += self._gain_focus
+        self.on_focus_lost += self._lose_focus
+
+    def show(self):
+        if self.showing is False:
+            self.showing = True
+
+    def hide(self):
+        if self.showing is True:
+            self.showing = False
 
     @obengine.datatypes.nested_property
     def size():
@@ -92,6 +111,16 @@ class Widget(object):
 
         return locals()
 
+    @property
+    def focused(self):
+        return self._focused
+
+    def _gain_focus(self):
+        self._focused = True
+
+    def _lose_focus(self):
+        self._focused = False
+
 
 class WidgetPresenter(object):
 
@@ -104,6 +133,8 @@ class WidgetPresenter(object):
         self.on_parent_changed = self._model.on_parent_changed
 
         self._view.on_size_changed += self._update_size
+        self.show = self._model.show
+        self.hide = self._model.hide
 
     @obengine.datatypes.nested_property
     def position():
@@ -128,6 +159,17 @@ class WidgetPresenter(object):
 
             self._view.parent = new_parent
             self._model.parent = new_parent
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def showing():
+
+        def fget(self):
+            return self._model.showing
+
+        def fset(self, show):
+            self._model.showing = show
 
         return locals()
 

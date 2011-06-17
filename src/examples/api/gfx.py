@@ -12,8 +12,7 @@ import obengine.gfx.math
 
 def main():
 
-    obengine.cfg.Config().load('obconf.cfg')
-    obengine.log.Logger().autoconfig()
+    obengine.cfg.Config().load(os.path.join(os.pardir, os.pardir, 'obconf.cfg'))
 
     obengine.init()
 
@@ -103,3 +102,6 @@ def main():
     scheduler.add(obengine.async.Task(change_hpr, 0.05))
 
     scheduler.loop()
+
+if __name__ == '__main__':
+    main()

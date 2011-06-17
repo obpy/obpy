@@ -75,6 +75,8 @@ class Container(Widget):
         self.children = set()
 
         self.on_position_changed += self._update_layout
+        self.on_hidden += self._hide_children
+        self.on_shown += self._show_children
 
     def add(self, widget):
 
@@ -94,9 +96,16 @@ class Container(Widget):
         self._layout_manager.adjust_widgets_after_remove(widget)
         self._layout_manager.adjust_size(self._size)
 
-
     def _update_layout(self, new_pos):
         self._layout_manager.update_widgets_after_move(new_pos)
+
+    def _show_children(self):
+        for child in self.children:
+            child.showing = True
+
+    def _hide_children(self):
+        for child in self.children:
+            child.showing = False
 
 
 class VerticalLayoutManager(object):
@@ -127,10 +136,10 @@ class VerticalLayoutManager(object):
             
     def adjust_widgets_after_remove(self, removed_widget):
 
-        new_widget_y = new_widget.position.y
+        removed_widget_y = removed_widget.position.y
 
         for child_widget in self._owning_container.children:
-            child_widget.position.y += new_widget_y
+            child_widget.position.y += removed_widget_y
 
     def adjust_widgets_after_move(self, new_pos):
 
@@ -173,10 +182,10 @@ class HorizontalLayoutManager(object):
 
     def adjust_widgets_after_remove(self, removed_widget):
 
-        new_widget_x = new_widget.position.x
+        removed_widget_x = removed_widget.position.x
 
         for child_widget in self._owning_container.children:
-            child_widget.position.x += new_widget_x
+            child_widget.position.x += removed_widget_x
 
     def adjust_widgets_after_move(self, new_pos):
 

@@ -12,15 +12,19 @@ import obengine
 import obengine.cfg
 import obengine.plugin
 
+
 def found_plugin(root_dir):
 	print 'found plugin %s' % root_dir
+
 
 def initialized_plugin(plugin):
 	print 'loaded plugin from file %s' % plugin.module.__file__
 
+
 def main():
 
-   # Necessary to find the configuration file (example-specific; you don't have to do this unless you want to use a custom configuration file;
+   # Necessary to find the configuration file (example-specific; you don't have
+   # to do this unless you want to use a custom configuration file;
    # or your user doesn't have OpenBlox installed)
    obengine.cfg.Config().load(os.path.join(os.pardir, os.pardir, 'obconf.cfg'))
    

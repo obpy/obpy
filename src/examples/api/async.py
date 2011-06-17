@@ -2,8 +2,8 @@ import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.join(os.pardir, os.pardir)))
-
 import obengine
+import obengine.cfg
 import obengine.async
 
 def a(task):
@@ -28,9 +28,12 @@ def d(task):
     print 'd', task.time
     return task.AGAIN
 
+
 if __name__ == '__main__':
 
+    obengine.cfg.Config().load(os.path.join(os.pardir, os.pardir, 'obconf.cfg'))
     obengine.init()
+    
     sched = obengine.async.Scheduler()
 	
     sched.add(obengine.async.PeriodicTask(a, 0.2, 1))

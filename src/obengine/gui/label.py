@@ -89,7 +89,7 @@ class MockLabelView(MockWidgetView):
 
     def __init__(self, text, position = None):
 
-        MockWidgetView.__init__(position)
+        MockWidgetView.__init__(self, position)
         self._text = text
         
         self.on_text_changed = obengine.event.Event()
