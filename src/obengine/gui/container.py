@@ -71,6 +71,7 @@ class Container(Widget):
 
         Widget.__init__(self, position)
 
+        self._size = obengine.math.Vector2D()
         self._layout_manager = layout_manager(self)
         self.children = set()
 
@@ -95,6 +96,10 @@ class Container(Widget):
 
         self._layout_manager.adjust_widgets_after_remove(widget)
         self._layout_manager.adjust_size(self._size)
+
+    @property
+    def size(self):
+        return self._size
 
     def _update_layout(self, new_pos):
         self._layout_manager.update_widgets_after_move(new_pos)

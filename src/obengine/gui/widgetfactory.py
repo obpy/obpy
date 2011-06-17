@@ -31,9 +31,9 @@ from obengine.gui import *
 
 class WidgetFactory(object):
     """A factory for making widgets.
+    Example:
         >>> w = WidgetFactory()
         >>> m = w.make('menu', 'A test menu!')
-
     """
 
     def __init__(self):
@@ -49,7 +49,7 @@ class WidgetFactory(object):
             factory_handler = self._widget_handlers[widget_type]
 
         except KeyError:
-            raise InvalidWidgetError(widget_type)
+            raise UnknownWidgetError(widget_type)
 
         return factory_handler(*args, **kwargs)
 
@@ -68,5 +68,5 @@ class WidgetFactory(object):
         return model
 
 
-class InvalidWidgetError(GuiException):
+class UnknownWidgetError(GuiException):
     pass

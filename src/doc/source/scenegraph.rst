@@ -68,7 +68,8 @@ Basic usage:
    Node 1
 
 Nodes can have names, but they must be unique *within their scope*, i.e,
-their parent can have no other children with the same name, if you want to be able to use `obengine.scenegraph.SceneNode.get_child_by_name`:
+their parent can have no other children with the same name, if you
+want to be able to use `obengine.scenegraph.SceneNode.get_child_by_name`:
 
    >>> n2 = SceneNode('Node 2')
    >>> n3 = SceneNode('Node 2')
@@ -84,7 +85,8 @@ But, if we try to use `obengine.scenegraph.SceneGraph.get_node_by_name`, what ha
       ...
    AmbiguousNameException: Node 2
 
-This occurred because the scene graph wasn't able to figure out which node with the name **Node 2** you wanted: **n1** or **n2**.
+This occurred because the scene graph wasn't able to figure out which node
+with the name ``Node 2`` you wanted: ``n1`` or ``n2``.
 
 Module reference
 ============================

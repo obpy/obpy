@@ -39,64 +39,61 @@ obengine.depman.gendeps()
 
 class Shutter(Container):
 
-    def __init__(self, layout_manager, position):
-        
+    def __init__(self, layout_manager, position = None):
         Container.__init__(self, layout_manager, position)
 
-        self._showing = False
+    def update(self, mouse_x, mouse_y):
 
-        self.on_hide = obengine.event.Event()
-        self.on_show = obengine.event.Event()
+        if self._check_in_range(mouse_x, self.position.x, self.size.x) is True:
+            if self._check_in_range(mouse_y, self.position.y, self.size.y) is True:
+                if self.showing is False:
 
-    def hide(self):
+                    self.show()
+                    return
 
-        self._showing = False
-        self.on_hide()
+        if self.showing is True:
+            self.hide()
 
-    def show(self):
-
-        self._showing = True
-        self.on_show()
+    def _check_in_range(self, mouse_pos, axis, size):
+        return abs(mouse_pos) in range(abs(axis), abs(axis + size) + 1)
 
 
 class ShutterPresenter(WidgetPresenter):
+    """Binds the shutter model and view together.
+    Example:
+        >>> from obengine.gui import VerticalLayoutManager
+        >>> s = Shutter(VerticalLayoutManager)
+        >>> msv = MockShutterView()
+        >>> sp = ShutterPresenter(s, msv)
+        >>> msv.on_mouse_move(0, 0)
+        >>> sp.showing
+        True
+        >>> msv.on_mouse_move(1, 0)
+        >>> sp.showing
+        False
+    """
 
     def __init__(self, shutter_model, shutter_view):
 
         WidgetPresenter.__init__(self, shutter_model, shutter_view)
 
-        self._view.on_mouse_move += self._update_model
-        self.on_hide = self._model.on_hide
-        self.on_show = self._model.on_show
+        self._view.on_mouse_move += self._model.update
+        self.on_hidden = self._model.on_hidden
+        self.on_shown = self._model.on_shown
 
-        self.on_hide += self._view.hide
-        self.on_show += self._view.show
+        self.on_hidden += self._view.hide
+        self.on_shown += self._view.show
 
     @property
     def showing(self):
-        return self._view.showing
-
-    def _update_model(self, mouse_x, mouse_y):
-
-        if self._check_in_range(mouse_x, self._model.position.x, self._model.size.x) is True:
-            if self._check_in_range(mouse_y, self._model.position.y, self._model.size.y) is True:
-                if self.showing is False:
-
-                    self.on_show()
-                    return
-
-        if self.showing is True:
-            self.on_hide()
-
-    def _check_in_range(self, mouse_pos, axis, size):
-        return abs(mouse_pos) in range(abs(axis), abs(axis + size) + 1)
+        return self._model.showing
 
 
 class MockShutterView(MockWidgetView):
 
     def __init__(self, position = None):
 
-        MockWidgetView.__init__(position)
+        MockWidgetView.__init__(self, position)
 
         self._showing = False
         self.on_mouse_move = obengine.event.Event()
