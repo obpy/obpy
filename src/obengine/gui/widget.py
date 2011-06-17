@@ -56,6 +56,9 @@ class Widget(object):
         self.on_focus_gained = obengine.event.Event()
         self.on_focus_lost = obengine.event.Event()
 
+        self.on_hidden += self._disable_events
+        self.on_shown += self._enable_events
+        
         self.on_focus_gained += self._gain_focus
         self.on_focus_lost += self._lose_focus
 
@@ -111,9 +114,38 @@ class Widget(object):
 
         return locals()
 
+    @obengine.datatypes.nested_property
+    def showing():
+
+        def fget(self):
+            return self._showing
+
+        def fset(self, showing):
+
+            old_showing = self.showing
+            self._showing = showing
+
+            if self._showing is True and old_showing is False:
+                self.on_shown()
+
+            elif self._showing is False and old_showing is True:
+                self.on_hidden()
+
+        return locals()
+
     @property
     def focused(self):
         return self._focused
+    
+    def _disable_events(self):
+        
+        self.on_focus_gained.disable()
+        self.on_focus_lost.disable()
+        
+    def _enable_events(self):
+        
+        self.on_focus_gained.enable()
+        self.on_focus_lost.enable()
 
     def _gain_focus(self):
         self._focused = True

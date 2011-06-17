@@ -108,7 +108,8 @@ class AsyncCall(object):
         self._finished = True
 
     def wait(self):
-        self.scheduler.step()
+        while self.finished is False:
+            self.scheduler.step()
 
     @property
     def finished(self):

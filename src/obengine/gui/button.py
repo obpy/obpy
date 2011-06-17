@@ -59,6 +59,9 @@ class Button(Widget):
         self.on_click = obengine.event.Event()
         self.on_text_changed = obengine.event.Event()
 
+        self.on_hidden += self.on_click.disable
+        self.on_shown += self.on_click.enable
+
     @obengine.datatypes.nested_property
     def text():
 

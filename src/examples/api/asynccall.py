@@ -28,11 +28,8 @@ def main():
     call2 = obengine.async.AsyncCall(tstcall2, 6)
     sched.add(call2)
 
-    while call.finished is False:
-        call.wait()
-
-    while call2.finished is False:
-        call2.wait()
+    call.wait()
+    call2.wait()
 
     print 'call2.result:', call2.result
 

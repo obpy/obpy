@@ -1,5 +1,7 @@
 #
 # This module provides a VFS implementation that exists in memory.
+# See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
+# for this module.
 #
 # Copyright (C) 2011 The OpenBlox Project
 #
@@ -22,6 +24,7 @@
 
 __author__ = "openblocks"
 
+
 import StringIO
 import basefs
 
@@ -33,56 +36,75 @@ class MemoryFS(basefs.BaseFS):
 
     def open(self, path, mode='r'):
 
+        # The algorithm we use to open the given path is quite simple:
+        # * For each directory in the given path:
+        #  * Check to make sure that that directory exists
+        #   * If it doesn't (and we're in write mode), create it
+        #   * If it doesn't exist (and we're in read mode), raise an error
+        #  * Change directories to that directory
+        # * Check to make sure the given filename exists inside the current directory!
+        # * Return the file, in an appropriate mode
+
+        # cur_node - our "current directory"
         cur_node = self.fs
+
+        # We assume the filename *is* the path (in case the file is located
+        # in the root directory
         filename = path
-      
+
         if path.count(basefs.SEPERATOR) > 0:
 
             components = path.split(basefs.SEPERATOR)
+
             filename = components.pop(-1)
             
             for index, node in enumerate(components):
+
+                # Does the directory we're examining contain this directory?
                 if not cur_node.has_key(node):
 
                     if mode == 'r':
                         raise IOError(path)
 
+                    # We're in write mode, so create the directory
                     if cur_node != self.fs:
                         self._mkdir(node, components[index - 1])
 
                     else:
                         self._mkdir(node)
 
+                # "Change directories" to this directory
                 cur_node = cur_node[node]
 
-        if not cur_node.has_key(filename) and mode == 'r':
+        # Does the current directory contain our file?
+        if cur_node.has_key(filename) is False and mode == 'r':
             raise IOError(path)
 
+        elif cur_node.has_key(filename):
+
+            # The sneaky user tried to read/write a directory!
+            if isinstance(cur_node[filename], dict):
+                raise IOError(path)
+
+        # Create a new, empty file if we're in write mode
         elif mode == 'w':
 
             cur_node[filename] = self._create_empty_file()
             return cur_node[filename]
 
-        elif cur_node.has_key(filename):
-
-            if isinstance(cur_node[filename], dict):
-                raise IOError(path)
-
+        # The default case (occurs when we're in read mode and the given path exists)
         return self._return_file(cur_node[filename])
-
-    def _create_empty_file(self):
-        return StringIO.StringIO('')
-
-    def _return_file(self, loc):
-        return StringIO.StringIO(loc.getvalue())
       
     def mkdir(self, path):
-        
+
+        # Do we need to create more than one directory?
         if path.count(basefs.SEPERATOR) > 0:
 
             components = path.split(basefs.SEPERATOR)
 
             for index, directory in enumerate(components):
+
+                # Make the directories, properly designating parents
 
                 if index == 0:
                     self._mkdir(directory)
@@ -98,7 +120,7 @@ class MemoryFS(basefs.BaseFS):
         try:
             del self.fs[path]
 
-        except:
+        except KeyError:
             raise IOError(path)
 
     def listdir(self, path):
@@ -109,7 +131,7 @@ class MemoryFS(basefs.BaseFS):
         try:
             return self.fs[path].keys()
 
-        except:
+        except KeyError:
             raise IOError(path)
 
     def _mkdir(self, path, parent=None):
@@ -118,7 +140,6 @@ class MemoryFS(basefs.BaseFS):
 
             if self.fs.has_key(path):
                 return
-         
             self.fs[path] = {}
 
         else:
@@ -127,3 +148,9 @@ class MemoryFS(basefs.BaseFS):
                 return
             
             self.fs[parent][path] = {}
+
+    def _create_empty_file(self):
+        return StringIO.StringIO('')
+
+    def _return_file(self, loc):
+        return StringIO.StringIO(loc.getvalue())

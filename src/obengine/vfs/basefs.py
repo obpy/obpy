@@ -1,5 +1,7 @@
 #
 # This module provides the base VFS implementation for OpenBlox.
+# See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
+# for this module.
 #
 # Copyright (C) 2011 The OpenBlox Project
 #
@@ -27,6 +29,9 @@ class BaseFS(object):
     """
     Base file system class. Do *not* create an instance of this class!
     """
+
+    def __init__(self):
+        raise NotImplementedError
 
     def open(self, path, mode='r'):
         raise NotImplementedError
@@ -97,7 +102,8 @@ class MountFS(BaseFS):
         if best_mount_point:
             return path[len(best_mount_point):], self.mount_points[best_mount_point]
 
-        raise NonExistentMountException(path)
+        raise NonExistentMountError(path)
 
 
-class NonExistentMountException(Exception): pass
+class FilesystemException(Exception): pass
+class NonExistentMountError(FilesystemException): pass

@@ -1,5 +1,7 @@
 #
 # This module provides a simple VFS-integrated registry.
+# See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
+# for this module.
 #
 # Copyright (C) 2011 The OpenBlox Project
 #
