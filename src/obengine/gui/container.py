@@ -34,7 +34,7 @@ from obengine.gui import Widget
 
 
 obengine.depman.gendeps()
-PAD_SPACE = 0.5
+DEFAULT_MARGIN = 0.5
 
 
 class Container(Widget):
@@ -52,27 +52,35 @@ class Container(Widget):
 
         >>> from obengine.gui import *
         >>> from obengine.math import Vector2D
-        >>> c = Container(HorizontalLayoutManager)
+
+        >>> c = Container(HorizontalLayoutManager, Vector2D(4, 4), 0.5)
+
         >>> button_view_1 = MockButtonView('Click me!', size = Vector2D(2, 5))
         >>> button_model_1 = Button('Click me!', Vector2D(0, 0))
         >>> button_presenter_1 = ButtonPresenter(button_model_1, button_view_1)
+
         >>> button_view_2 = MockButtonView('Click me, too!', size = Vector2D(3, 6))
         >>> button_model_2 = Button('Click me, too!', Vector2D(0, 0))
         >>> button_presenter_2 = ButtonPresenter(button_model_2, button_view_2)
+        
         >>> c.add(button_presenter_1)
         >>> c.add(button_presenter_2)
+
         >>> print button_presenter_1.position.x, button_presenter_1.position.y
-        -3.0 0.0
+        2.5 4.0
         >>> print button_presenter_2.position.x, button_presenter_2.position.y
-        0.0 0.0
+        5.5 4.0
     """
 
-    def __init__(self, layout_manager, position = None):
+    def __init__(self, layout_manager, position = None, margin = None):
 
         Widget.__init__(self, position)
 
         self._size = obengine.math.Vector2D()
         self._layout_manager = layout_manager(self)
+        self._margin = margin
+        if margin is None:
+            self._margin = DEFAULT_MARGIN
         self.children = set()
 
         self.on_position_changed += self._update_layout
@@ -86,7 +94,9 @@ class Container(Widget):
 
         self.children.add(widget)
 
-        self._layout_manager.adjust_widgets_after_add(widget)
+        if len(self.children) > 1:
+            self._layout_manager.adjust_widgets_after_add(widget)
+            
         self._layout_manager.adjust_size(self._size)
 
     def remove(self, widget):
@@ -100,6 +110,10 @@ class Container(Widget):
     @property
     def size(self):
         return self._size
+
+    @property
+    def margin(self):
+        return self._margin
 
     def _update_layout(self, new_pos):
         self._layout_manager.update_widgets_after_move(new_pos)
@@ -120,7 +134,10 @@ class VerticalLayoutManager(object):
         
     def find_space_for_widget(self, widget):
         
-        best_point = obengine.math.Vector2D(self._owning_container.position.x, 0)
+        best_point = obengine.math.Vector2D(
+        self._owning_container.position.x,
+        self._owning_container.position.y
+        )
         
         for child_widget in self._owning_container.children:
             best_point.y += child_widget.size.y / 2.0
@@ -128,23 +145,23 @@ class VerticalLayoutManager(object):
         if len(self._owning_container.children) > 0:
 
             best_point.y += widget.size.y / 2.0
-            best_point.y += PAD_SPACE
+            best_point.y += self._owning_container.margin
 
-        return best_point
+        return obengine.math.Vector2D(best_point.x, best_point.y)
         
     def adjust_widgets_after_add(self, new_widget):
 
-        new_widget_y = new_widget.position.y
+        new_widget_y = new_widget.size.y
 
         for child_widget in self._owning_container.children:
             child_widget.position.y -= new_widget_y
             
     def adjust_widgets_after_remove(self, removed_widget):
 
-        removed_widget_y = removed_widget.position.y
+        removed_widget_y = removed_widget.size.y
 
         for child_widget in self._owning_container.children:
-            child_widget.position.y += removed_widget_y
+            child_widget.position.y -= removed_widget_y
 
     def adjust_widgets_after_move(self, new_pos):
 
@@ -155,7 +172,7 @@ class VerticalLayoutManager(object):
             
     def adjust_size(self, size):
         
-        size.y = sum(map(lambda w: w.size.y + PAD_SPACE, self._owning_container.children))
+        size.y = sum(map(lambda w: w.size.y + self._owning_container.margin, self._owning_container.children))
         size.x = max(map(lambda w: w.size.x, self._owning_container.children))
 
 
@@ -166,28 +183,30 @@ class HorizontalLayoutManager(object):
 
     def find_space_for_widget(self, widget):
 
-        best_point = obengine.math.Vector2D(0, self._owning_container.position.y)
+        best_point = obengine.math.Vector2D(
+        self._owning_container.position.x,
+        self._owning_container.position.y)
 
         for child_widget in self._owning_container.children:
+
             best_point.x += child_widget.size.x / 2.0
+            best_point.x += self._owning_container.margin
 
         if len(self._owning_container.children) > 0:
-
             best_point.x += widget.size.x / 2.0
-            best_point.x += PAD_SPACE
 
         return best_point
 
     def adjust_widgets_after_add(self, new_widget):
 
-        new_widget_x = new_widget.position.x
+        new_widget_x = new_widget.size.x / 2
 
         for child_widget in self._owning_container.children:
             child_widget.position.x -= new_widget_x
 
     def adjust_widgets_after_remove(self, removed_widget):
 
-        removed_widget_x = removed_widget.position.x
+        removed_widget_x = removed_widget.size.x
 
         for child_widget in self._owning_container.children:
             child_widget.position.x += removed_widget_x
@@ -201,5 +220,9 @@ class HorizontalLayoutManager(object):
 
     def adjust_size(self, size):
 
-        size.x = sum(map(lambda w: w.size.x + PAD_SPACE, self._owning_container.children))
-        size.y = max(map(lambda w: w.size.y, self._owning_container.children))
+        size.x = sum(map(
+        lambda w: w.size.x + self._owning_container.margin,
+        self._owning_container.children))
+        size.y = max(map(
+        lambda w: w.size.y,
+        self._owning_container.children))

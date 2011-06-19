@@ -68,9 +68,14 @@ Arguments:
     * OS - specifies the OS to build for (optional; normally found automatically)
 """)
 
+sphinx_builder_conv = {
+'html' : '.html',
+'text' : '.txt'
+}
+
 for node in Glob(getsyspath('doc/source/*.rst')):
 
-    target = str(node).replace('.rst', '.html').replace(getsyspath('doc/source'), '/'.join([built_doc_dir, sphinx_builder]))
+    target = str(node).replace('.rst', sphinx_builder_conv[sphinx_builder]).replace(getsyspath('doc/source'), '/'.join([built_doc_dir, sphinx_builder]))
     builder = env.Sphinx(target, node)
 
     env.Alias('docs', builder)

@@ -42,6 +42,7 @@ class WidgetFactory(object):
 
         self._widget_handlers['button'] = self._make_button
         self._widget_handlers['menu'] = self._make_menu
+        self._widget_handlers['container'] = self._make_container
 
     def make(self, widget_type, *args, **kwargs):
 
@@ -60,6 +61,11 @@ class WidgetFactory(object):
         presenter = ButtonPresenter(model, view)
 
         return presenter
+
+    def _make_container(self, layout_manager = VerticalLayoutManager, position = None, margin = None):
+
+        container = Container(layout_manager, position, margin)
+        return container
 
     def _make_menu(self, text, position = None, **kwargs):
 

@@ -10,10 +10,34 @@ However, there are a few differences:
 
 If you have any questions concerning this document, send a message to OpenBlox (http://openblox.sf.net/users/openblox).
 
-Indentation
------------
+General
+-------
 
-Indentation is done with 4 spaces. Never, *ever*, use tabs.
+* Indentation is done with 4 spaces. Never, *ever*, use tabs.
+* Use UNIX-style newline endings for all files you create/modfiy.
+
+.. note::
+    The build-helper ``convert_newlines.py`` will automatically convert
+    all your newlines for you. To run it on Windows (assuming you're in
+    the ``build-helpers`` directory), type:
+
+    .. code-block:: sh
+
+        python convert_newlines.py
+        # If Python isn't contained in one of the directories specified in your
+        # %PATH% environment variable (when you install Python, this isn't the case)
+        # use this command, instead:
+        # C:\Python26\python convert_newlines.py
+
+    To run it on \*nix (i.e, Linux, Mac OSX, \*BSD) (again, assuming you're in the
+    ``build-helpers`` directory):
+
+    .. code-block:: sh
+
+        ./convert_newlines.py
+        # If the env program isn't installed inside /usr/bin on your system,
+        # use this command instead:
+        # python convert_newlines.py
 
 Comments
 ---------
@@ -53,7 +77,7 @@ Docstrings
 Variables
 ----------
 
-* Variables are named `like_this`(Constants, however, are named `LIKE_THIS`).
+* Variables are named ``like_this`` (Constants, however, are named ``LIKE_THIS``).
 * Variables are declared at the start of their owning module or class.
 * There are 2 blank lines between the last variable declaration, and the first coding construct, or method declaration(if the variable is global).
 
@@ -97,13 +121,13 @@ Examples::
          print 'between the last loop declaration, and'
          print 'the first non-loop line'
          
-Methods
---------
+Methods/Functions
+-----------------
 
-* Methods are named `like_this`.
-* Private methods begin with _.
+* Methods are named ``like_this``.
+* Private methods begin with ``_``.
 * Methods are fully documented, which means basic behavior, and each parameter is explained, as well as the expected type.
-* Documentation is written as a multi-line string, began and terminated with """.
+* Documentation is written as a multi-line string, began and terminated with ``"""``.
 * There is a space after every parameter's terminating , character. This also applies to method calls.
 
 Example::
@@ -120,11 +144,10 @@ Example::
 Classes
 --------
 
-* Classes are titled `LikeThis`.
+* Classes are titled ``LikeThis``.
 * If the class does not *need* to inherit from anything in partictular, it needs to inherit from object (to ensure compatability with Python 2.6/2.5).
-* The first method defined is *always* `__init__`.
-* `__init__` must always be documented.
-* Give your docstrings in
+* The first method defined is *always* ``__init__``.
+* ``__init__`` must always be documented.
 * Every method that is not private is given documentation.
 * Private methods can have doocumentation, but it's not required. Private methods, *at the very least*, have a comment at their beginning explaining how they are supposed to be used.
 * There is also a blank line between the last line of a method, and the def line of the next one.
@@ -210,10 +233,10 @@ Modules
 .. note::
 
     If you are writing a Python package, then source files located in your package
-    (save for __init__.py) need not have the Sphinx documentation link. This doesn't
+    (save for ``__init__.py``) need not have the Sphinx documentation link. This doesn't
     apply to the `obengine` package, however.
 
-* Modules are named `likethis`.
-* There are 2 blank lines between the terminating `#` of the header, and the first variable declaration.
+* Modules are named ``likethis``.
+* There are 2 blank lines between the terminating ``#`` of the header, and the first variable declaration.
 
 .. _reST: http://docutils.sf.net/rst.html
