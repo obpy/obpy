@@ -17,6 +17,7 @@ General
 * Use UNIX-style newline endings for all files you create/modfiy.
 
 .. note::
+
     The build-helper ``convert_newlines.py`` will automatically convert
     all your newlines for you. To run it on Windows (assuming you're in
     the ``build-helpers`` directory), type:
@@ -25,7 +26,7 @@ General
 
         python convert_newlines.py
         # If Python isn't contained in one of the directories specified in your
-        # %PATH% environment variable (when you install Python, this isn't the case)
+        # %PATH% environment variable (which is the case when you install Python)
         # use this command, instead:
         # C:\Python26\python convert_newlines.py
 
@@ -42,7 +43,7 @@ General
 Comments
 ---------
 
-* Regular comments (beginning with #) have a space after the hash, `# like this`.
+* Regular comments (beginning with #) have a space after the hash, ``# like this``.
 * If the comment is for a conditional construct, the comment is placed immediately proceeding the construct.
 * If the comment is for an assignment or a regular line of code (method call, class creation, etc...), the comment is placed immediately proceeding the code.
 * If the comment is a block comment (i.e, it spans several physical lines), then it should end with a period.
@@ -68,11 +69,42 @@ Docstrings
 
     """Quick one-liner summary (no ending period)
     In-depth explanation of whatever this docstring belongs to.
-    This includes explanation of parameters (and their expected type), return value, and possibly raised exceptions (where applicable).
+    This includes explanation of parameters (and their expected type), return value,
+    and possibly raised exceptions (where applicable).
     As you can see, each sentence has an ending period.
     """
 
-* If the docstring belongs to a function, method, or class, then it should have a small doctest suite (normally one or two is fine), to provided regression testing, and to provide runnable documentation.
+* If the docstring belongs to a function, method, or class, then it should have 
+  a small doctest suite (normally 2-4 complete tests [i.e, 2-4 tests of
+  that docstring's owner] are fine), to provided regression testing,
+  and to provide a form of runnable documentation.
+
+Unit testing
+------------
+
+A unit test is like the doctests inside a docstring (indeed, they look basically
+identical), but each unit test is in a seperate file, contained in the ``test-suite``
+directory.
+
+* All classes and functions in OpenBlox are *required* to have unit tests.
+* Each unit test's extension should be ``.txt``.
+* You should mirror the directory structure of OpenBlox's code when
+  you add a new unit test inside the ``test-suite`` directory. For example,
+  if you're writing a unit test for `obengine.cfg.Config`, then you should name
+  your unit test file ``test-suite/obengine/cfg.txt``.
+
+Example::
+
+    This is an example unit test comment. It is ignored by the test runner.
+    The next two lines are run by the test runner, as they both start with
+    ">>> ".
+    >>> import obengine.cfg
+    >>> cfg = obengine.cfg.Config()
+    >>> cfg is cfg
+    True
+
+    See? Just like a normal doctest.
+    This line is also ignored.
 
 Variables
 ----------

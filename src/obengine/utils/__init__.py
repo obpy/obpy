@@ -54,5 +54,6 @@ def interp_range(given_range, requested_range, num):
 
     return result
 
+
 def sign(num):
     return cmp(num, 0)

@@ -81,7 +81,7 @@ class Container(Widget):
         self._margin = margin
         if margin is None:
             self._margin = DEFAULT_MARGIN
-        self.children = set()
+        self.children = obengine.datatypes.orderedset()
 
         self.on_position_changed += self._update_layout
         self.on_hidden += self._hide_children
@@ -104,7 +104,9 @@ class Container(Widget):
         self.children.remove(widget)
         widget.parent = None
 
-        self._layout_manager.adjust_widgets_after_remove(widget)
+        if len(self.children) > 1:
+            self._layout_manager.adjust_widgets_after_remove(widget)
+            
         self._layout_manager.adjust_size(self._size)
 
     @property
@@ -141,20 +143,19 @@ class VerticalLayoutManager(object):
         
         for child_widget in self._owning_container.children:
             best_point.y += child_widget.size.y / 2.0
+            best_point.y += self._owning_container.margin
 
         if len(self._owning_container.children) > 0:
-
             best_point.y += widget.size.y / 2.0
-            best_point.y += self._owning_container.margin
 
         return obengine.math.Vector2D(best_point.x, best_point.y)
         
     def adjust_widgets_after_add(self, new_widget):
 
-        new_widget_y = new_widget.size.y
+        y_adjustment = self._owning_container.position.y - new_widget.position.y
 
         for child_widget in self._owning_container.children:
-            child_widget.position.y -= new_widget_y
+            child_widget.position.y -= y_adjustment + self._owning_container.margin * 2
             
     def adjust_widgets_after_remove(self, removed_widget):
 

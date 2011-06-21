@@ -1,8 +1,10 @@
 import os
 import subprocess
 
+
 def getsyspath(path):
     return path.replace('/', os.sep)
+
 
 platform = ARGUMENTS.get('OS', Platform())
 panda_version = ARGUMENTS.get('PANDA_VERSION', '1.7.2')
@@ -22,6 +24,7 @@ env = Environment()
 conf = Configure(env)
 
 env.Append(BUILDERS = {'Sphinx' : sphinx})
+
 
 def configure():
 
@@ -59,6 +62,7 @@ def configure():
         Exit(1)
 
     env = conf.Finish()
+
 
 Help("""
 Type 'scons' to build OpenBlox.

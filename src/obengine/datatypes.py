@@ -25,6 +25,9 @@
 __author__ = "openblocks"
 __date__  = "$May 4, 2011 8:08:03 PM$"
 
+
+import collections
+
 import event
 import depman
 
@@ -133,6 +136,7 @@ class EventDict(dict):
         dict.__delitem__(self, key)
         self.on_item_removed()
 
+
 class EventAttrDict(EventDict, AttrDict):
 
     def __init__(self, **kwargs):
@@ -140,12 +144,115 @@ class EventAttrDict(EventDict, AttrDict):
         EventDict.__init__(self, **kwargs)
         AttrDict.__init__(self, **kwargs)
 
+
+class orderedset(collections.MutableSet):
+    """Ordered set - like a set, but remembers insertion order
+    Based on Raymond Hettinger's MIT-licensed ASPN recipe(
+    http://code.activestate.com/recipes/576694/).
+    This class' source code is GPLed, but the original code, as stated above,
+    is under the MIT license (http://www.opensource.org/licenses/mit-license.php).
+
+    Example:
+
+        >>> o = orderedset('The quick brown fox...')
+        >>> o
+        orderedset(['T', 'h', 'e', ' ', 'q', 'u', 'i', 'c', 'k', 'b', 'r', 'o', 'w', 'n', 'f', 'x', '.'])
+        >>> o.add(5)
+        >>> o.add(2)
+        >>> o
+        orderedset(['T', 'h', 'e', ' ', 'q', 'u', 'i', 'c', 'k', 'b', 'r', 'o', 'w', 'n', 'f', 'x', '.', 5, 2])
+        >>> for item in o:
+        ...     print item,
+        ...
+        T h e   q u i c k b r o w n f x . 5 2
+    """
+    
+    KEY, PREV, NEXT = range(3)
+    
+    def __init__(self, iterable = None):
+        
+        self._end = end = []
+        end += [None, end, end]
+        self._map = {}
+        
+        if iterable is not None:
+            self |= iterable
+            
+    def add(self, key):
+        
+        if key not in self:
+            
+            end = self._end
+            curr_key = end[orderedset.PREV]
+            curr_key[orderedset.NEXT] = end[orderedset.PREV] = self._map[key] = [key, curr_key, end]
+            
+    def discard(self, key):
+        
+        if key in self:
+            
+            key, prev_key, next_key = self._map.pop(key)
+            prev_key[orderedset.NEXT] = next_key
+            next_key[orderedset.PREV] = prev_key
+            
+    def pop(self, last = True):
+        
+        if not self:
+            raise KeyError('orderedset is empty')
+        
+        key = next(reversed(self)) if last else next(iter(self))
+        self.discard(key)
+        return key
+        
+    def __len__(self):
+        return len(self._map)
+    
+    def __contains__(self, key):
+        return key in self._map
+    
+    def __reversed__(self):
+        
+        end = self._end
+        curr_key = end[orderedset.PREV]
+        
+        while curr_key is not end:
+            
+            yield curr_key[orderedset.KEY]
+            curr_key = curr_key[orderedset.PREV]
+
+    def __iter__(self):
+
+        end = self._end
+        curr_key = end[orderedset.NEXT]
+
+        while curr_key is not end:
+
+            yield curr_key[orderedset.KEY]
+            curr_key = curr_key[orderedset.NEXT]
+            
+    def __repr__(self):
+        
+        if not self:
+            return '%s()' % (self.__class__.__name__,)
+        
+        return '%s(%r)' % (self.__class__.__name__, list(self))
+    
+    def __eq__(self, other):
+        
+        if isinstance(other, self.__class__):
+            return len(self) == len(other) and list(self) == list(other)
+        
+        return set(self) == set(other)
+    
+    def __del__(self):
+        self.clear()
+
 def nested_property(func):
     
     func_locals = func()
     func_locals['doc'] = func.__doc__
     
     return property(**func_locals)
+
 
 def wrap_callable(func, before, after):
     
