@@ -45,8 +45,8 @@ def main():
    # Take a look - there's no obplugin directory anywhere.
    # So how can we import something that doesn't exist?
    # Through an import hook of course! Import hooks allow you
-   # to import packages and modules that don't even exist, or on/through mediums
-   # from which you normally can't import (like HTTP or FTP).
+   # to import packages and modules that don't even exist on the file system,
+   # or on/through mediums from which you normally can't import (like HTTP or FTP).
 
    import obplugin.core.scripting
 

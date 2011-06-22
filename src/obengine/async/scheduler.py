@@ -82,8 +82,7 @@ class Scheduler(object):
 
     def _copy_from_task_buffer(self):
 
-        for item in self.task_buffer:
-            self.queue.append(item)
+        self.queue += self.task_buffer
             
         self.task_buffer.clear()
 
