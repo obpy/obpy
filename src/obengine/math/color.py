@@ -120,3 +120,13 @@ class Color(object):
 
         elif index == 3:
             self.a = float(value)
+
+    def __repr__(self):
+
+        return '%s(%f, %f, %f, %f)' % (
+        self.__class__.__name__,
+        self.r,
+        self.g,
+        self.b,
+        self.a
+        )

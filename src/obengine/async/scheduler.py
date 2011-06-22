@@ -82,7 +82,9 @@ class Scheduler(object):
 
     def _copy_from_task_buffer(self):
 
-        self.queue.extend(self.task_buffer)
+        for item in self.task_buffer:
+            self.queue.append(item)
+            
         self.task_buffer.clear()
 
     def _priority_sort(self, task1, task2):

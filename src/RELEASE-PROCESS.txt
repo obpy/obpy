@@ -15,9 +15,9 @@ OpenBlox release process
 Pre-release
 ===========
 
-* Remove all ``.pyc`` files using ``remove_pycs.py``
 * Convert all Windows/MacOS newlines to UNIX newlines using ``convert_newlines.py``
 * Run unit test suite one last time
+* Remove all ``.pyc`` files using ``remove_pycs.py``s
 * Proofread developer and end-user documentation
 * 0.7 *only*: Tag current Mercurial revision with tag "sem_ver", to signify
   OpenBlox's version scheme officially switching to Semantic Versioning [1]_
@@ -28,7 +28,7 @@ Building
 
 .. note::
 
-    For OpenBlox <=0.7, OpenBlox can't really be "built", in the normal building
+    For OpenBlox <= 0.7, OpenBlox can't really be "built", in the normal building
     sense. It's just packaged in various forms, instead of being "built" (which
     kinda refers to a compilation step, which is unnecessary, as OpenBlox is
     written in Python).
@@ -38,7 +38,7 @@ Building
 * Build OpenBlox runtime
 * Build OpenBlox tools (OBPlay, OBPack, OBFreeze)
 * Build OpenBlox installers (Windows, Linux)
-* Build OpenBlox source archives (``.zip``, ``.tar.bz2``)
+* Build OpenBlox source archives (``.zip`` and ``.tar.bz2``)
 
 Uploading
 =========
@@ -53,6 +53,8 @@ Announcing
 ==========
 
 * Update default downloads on SourceForge
+* Update download links on the main OpenBlox site (http://openblox.sf.net)
+* Update download links on the OpenBlox wiki (http://openblox.tuxfamily.org)
 * Write new release article for the main OpenBlox site (http://openblox.sf.net)
 * Write new release article for the OpenBlox site at FreshMeat
   (http://freshmeat.net/projects/openblox-2)

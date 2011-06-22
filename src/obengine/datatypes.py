@@ -248,7 +248,7 @@ class orderedset(collections.MutableSet):
         self.clear()
 
 
-class heap(collections.MutableSequence):
+class heap(collections.Sequence):
     """OO wrapper around the standard heapq module
     This class provides an object-oriented wrapper around the
     standard heapq module.
@@ -287,26 +287,21 @@ class heap(collections.MutableSequence):
 
         raise ValueError('pop from empty heap')
 
-    def insert(self, index, item):
-
-        self._list.insert(index, item)
-        heapq.heapify(self._heap)
-
-    def reverse(self):
-        raise ValueError('heap cannot be reversed in-place')
+    def extend(self, iterable):
+        for item in iterable:
+            self.append(item)
 
     def __getitem__(self, index):
         return self._heap[index]
 
-    def __setitem__(self, index, value):
+    def __iadd__(self, iterable):
 
-        self._heap[index] = value
-        heapq.heapify(self._heap)
+        iterator = iter(iterable)
 
-    def __delitem__(self, index):
+        for item in iterator:
+            self.append(item)
 
-        del self._heap[index]
-        heapq.heapify(self._heap)
+        return self
 
     def __len__(self):
         return len(self._heap)

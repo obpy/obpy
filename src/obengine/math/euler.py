@@ -106,3 +106,12 @@ class EulerAngle(object):
 
         elif index == 2:
             self.r = float(value)
+
+    def __repr__(self):
+
+        return '%s(%f, %f, %f)' % (
+        self.__class__.__name__,
+        self.h,
+        self.p,
+        self.r,
+        )

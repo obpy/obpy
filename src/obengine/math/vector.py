@@ -64,6 +64,14 @@ class Vector2D(object):
 
         return locals()
 
+    def __repr__(self):
+
+        return '%s(%f, %f)' % (
+        self.__class__.__name__,
+        self.x,
+        self.y
+        )
+
 class Vector(object):
     """
     Simple vector class; things like dot-product
@@ -145,3 +153,12 @@ class Vector(object):
 
         elif index == 2:
             self.z = float(value)
+
+    def __repr__(self):
+
+        return '%s(%f, %f, %f)' % (
+        self.__class__.__name__,
+        self.x,
+        self.y,
+        self.z
+        )
