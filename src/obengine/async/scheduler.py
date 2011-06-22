@@ -24,6 +24,7 @@ __author__ = "openblocks"
 __date__  = "$May 4, 2011 11:24:00 AM$"
 
 
+import obengine.datatypes
 import obengine.depman
 obengine.depman.gendeps()
 
@@ -37,12 +38,11 @@ class Scheduler(object):
 
     def __init__(self):
 
-        self.queue = []
+        self.queue = obengine.datatypes.heap()
         self.task_buffer = set()
 
     def add(self, task):
-        """
-        Adds a task to the task buffer.
+        """Adds a task to the task buffer
         Arguments:
          * task - the task to add
         """
@@ -51,13 +51,13 @@ class Scheduler(object):
         self.task_buffer.add(task)
 
     def empty(self):
-        """
+        """Checks to see if this scheduler is empty
         Returns True if there are no more tasks to run, False otherwise.
         """
         return not self.queue and not self.task_buffer
 
     def loop(self):
-        """
+        """Loops this scheduler
         Runs forever, or at least until there are no more tasks to run :)
         """
 
@@ -72,19 +72,17 @@ class Scheduler(object):
     def step(self):
 
         if len(self.task_buffer) == 0 and len(self.queue) == 0:
-            raise TaskBufferEmptyException()
+            raise TaskBufferEmptyException
 
         elif len(self.queue) == 0:
             self._copy_from_task_buffer()
 
-        task = self.queue.pop(0)
+        task = self.queue.pop()
         task.execute()
 
     def _copy_from_task_buffer(self):
 
-        self.queue = list(self.task_buffer.copy())
-        self.queue.sort(cmp = self._priority_sort, reverse = True)
-
+        self.queue.extend(self.task_buffer)
         self.task_buffer.clear()
 
     def _priority_sort(self, task1, task2):

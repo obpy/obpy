@@ -152,7 +152,9 @@ def init():
                             # one that should only occur in a development
                             # environment, so let whoever's running us know!
                             
-                            msg = 'Circular dependency between %s and %s' % (module_name, module_dependency)
+                            msg = 'Circular dependency between %s and %s' % (
+                            module_name, module_dependency)
+
                             print >> sys.stderr, msg
                             errors.append(module_name + module_dependency)
 

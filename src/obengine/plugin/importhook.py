@@ -19,7 +19,6 @@
 #     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-
 __author__ = "openblocks"
 __date__ = "$May 2, 2011 9:09:42 AM$"
 
@@ -82,10 +81,11 @@ class PluginImportHook(object):
             return self.obplugin
 
         # Is this not the initial call to load_module, but no plugins match the given name?
-        elif fullname.startswith('obplugin') and fullname[len(PLUGIN_MODULE) + 1:] not in self.plugin_manager.provided_plugins():
+        elif fullname.startswith('obplugin'):
+            if fullname[len(PLUGIN_MODULE) + 1:] not in self.plugin_manager.provided_plugins():
 
-            # We're probably just looking at a category, so return our dummy module and try again
-            return self.obplugin
+                # We're probably just looking at a category, so return our dummy module and try again
+                return self.obplugin
 
         # There's a plugin that matches the given name!
         for plugin in self.plugin_manager.all_plugins():

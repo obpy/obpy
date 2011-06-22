@@ -53,6 +53,7 @@ class LoopingCall(object):
             self.task = obengine.async.task.Task(self.run_action, priority)
             
         self.execute = self.task.execute
+        self.__cmp__ = self.task.__cmp__
 
     def run_action(self, task):
 

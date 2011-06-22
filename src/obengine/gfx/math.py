@@ -3,7 +3,6 @@
 # See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
 # for this module.
 #
-#
 # Copyright (C) 2011 The OpenBlox Project
 #
 # This file is part of The OpenBlox Game Engine.

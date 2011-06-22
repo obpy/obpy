@@ -1,7 +1,5 @@
 # Plugin import hook example - shows how to use the plugin import hook
 
-################## IDENTICAL TO plugins.py ##################
-
 import sys
 import os
 
@@ -26,6 +24,7 @@ def main():
    # Necessary to find the configuration file (example-specific; you don't have
    # to do this unless you want to use a custom configuration file;
    # or your user doesn't have OpenBlox installed)
+
    obengine.cfg.Config().load(os.path.join(os.pardir, os.pardir, 'obconf.cfg'))
    
    obengine.init()
@@ -35,7 +34,7 @@ def main():
    manager.on_plugin_found += found_plugin
    manager.on_plugin_initialized += initialized_plugin
    
-   ################## IDENTICAL TO plugins.py ##################
+   ################## END OF STOCK EXAMPLE CODE ##################
 
    # Here's something new: We request that an implementation of core.scripting
    # be loaded and initialized, if it isn't already.

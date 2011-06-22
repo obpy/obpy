@@ -21,8 +21,8 @@
 #     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-__author__="openblocks"
-__date__ ="$Apr 27, 2011 2:38:29 PM$"
+__author__ = "openblocks"
+__date__  = "$Apr 27, 2011 2:38:29 PM$"
 
 
 from pluginmanager import *

@@ -27,6 +27,7 @@ __date__  = "$May 4, 2011 8:08:03 PM$"
 
 
 import collections
+import heapq
 
 import event
 import depman
@@ -245,6 +246,77 @@ class orderedset(collections.MutableSet):
     
     def __del__(self):
         self.clear()
+
+
+class heap(collections.MutableSequence):
+    """OO wrapper around the standard heapq module
+    This class provides an object-oriented wrapper around the
+    standard heapq module.
+
+    Example:
+
+        >>> h = heap([1, 2, 3, 4, 5])
+        >>> h
+        heap([1, 2, 3, 4, 5])
+        >>> h.append(3)
+        >>> h
+        heap([1, 2, 3, 4, 5, 3])
+        >>> h += [20, -1, 15, 0.2, 'Abc']
+        >>> h
+        heap([-1, 0.20000000000000001, 3, 2, 1, 3, 20, 4, 15, 5, 'Abc'])
+        >>> h.pop()
+        -1
+        >>> h.pop()
+        0.20000000000000001
+    """
+
+    def __init__(self, iterable = None):
+
+        self._heap = []
+
+        if iterable is not None:
+            self += iterable
+
+    def append(self, item):
+        heapq.heappush(self._heap, item)
+
+    def pop(self):
+
+        if len(self) > 0:
+            return heapq.heappop(self._heap)
+
+        raise ValueError('pop from empty heap')
+
+    def insert(self, index, item):
+
+        self._list.insert(index, item)
+        heapq.heapify(self._heap)
+
+    def reverse(self):
+        raise ValueError('heap cannot be reversed in-place')
+
+    def __getitem__(self, index):
+        return self._heap[index]
+
+    def __setitem__(self, index, value):
+
+        self._heap[index] = value
+        heapq.heapify(self._heap)
+
+    def __delitem__(self, index):
+
+        del self._heap[index]
+        heapq.heapify(self._heap)
+
+    def __len__(self):
+        return len(self._heap)
+
+    def __contains__(self, item):
+        return item in self._heap
+
+    def __repr__(self):
+        return '%s(%r)' % (self.__class__.__name__, self._heap)
+
 
 def nested_property(func):
     

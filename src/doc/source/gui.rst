@@ -64,8 +64,8 @@ Here is the general architecture for OpenBlox's GUI toolkit::
     |___________________________________|
 
 
-Using OpenBlox's GUI
-====================
+Using OpenBlox's GUI - an example
+=================================
 
 Here's a quick example to vertically align 3 buttons (using a container) automatically::
 
@@ -91,4 +91,5 @@ Here's a quick example to vertically align 3 buttons (using a container) automat
     The average position of the widgets in
     the container is *actually*  around ``(30, 30.1)``. This is due to
     floating-point errors in the partitioning algorithm.
+
 

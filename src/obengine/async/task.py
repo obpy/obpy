@@ -1,39 +1,43 @@
-"""
-Copyright (C) 2011 The OpenBlox Project
+#
+# This module provides several differently behaving asynchronous tasks.
+#
+# Copyright (C) 2011 The OpenBlox Project
+#
+# This file is part of The OpenBlox Game Engine.
+#
+#     The OpenBlox Game Engine is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     The OpenBlox Game Engine is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
+#
 
-This file is part of The OpenBlox Game Engine.
 
-    The OpenBlox Game Engine is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+__author__ = "openblocks"
+__date__  = "$May 4, 2011 11:24:29 AM$"
 
-    The OpenBlox Game Engine is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
-
-"""
-
-__author__="openblocks"
-__date__ ="$May 4, 2011 11:24:29 AM$"
 
 import time
 
 import obengine.depman
 obengine.depman.gendeps()
 
+
 class Task(object):
     """
-    Base task, for other tasks to inherit from.
-    This is still a useful class, if you want your task to run at the maximum possible speed
+    Base task class, for other task classes to inherit from.
+    This is still a useful class, if you want your task to run at
+    the maximum possible speed.
     """
 
-    AGAIN = 0
-    STOP = 1
+    AGAIN, STOP = range(2)
 
     def __init__(self, action, priority = 0, name = None, args = [], kwargs = {}):
         """
@@ -83,6 +87,13 @@ class Task(object):
 
     def _reschedule(self):
         self.scheduler.add(self)
+
+    def __cmp__(self, other):
+
+        if hasattr(other, 'priority'):
+            return -cmp(self.priority, other.priority)
+
+        return 0
 
 
 class PeriodicTask(Task):
