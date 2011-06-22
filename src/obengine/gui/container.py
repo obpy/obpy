@@ -55,11 +55,11 @@ class Container(Widget):
 
         >>> c = Container(HorizontalLayoutManager, Vector2D(4, 4), 0.5)
 
-        >>> button_view_1 = MockButtonView('Click me!', size = Vector2D(2, 5))
+        >>> button_view_1 = MockButtonView('Click me!')
         >>> button_model_1 = Button('Click me!', Vector2D(0, 0))
         >>> button_presenter_1 = ButtonPresenter(button_model_1, button_view_1)
 
-        >>> button_view_2 = MockButtonView('Click me, too!', size = Vector2D(3, 6))
+        >>> button_view_2 = MockButtonView('Click me, too!')
         >>> button_model_2 = Button('Click me, too!', Vector2D(0, 0))
         >>> button_presenter_2 = ButtonPresenter(button_model_2, button_view_2)
         
@@ -67,9 +67,9 @@ class Container(Widget):
         >>> c.add(button_presenter_2)
 
         >>> print button_presenter_1.position.x, button_presenter_1.position.y
-        2.5 4.0
+        0.5 4.0
         >>> print button_presenter_2.position.x, button_presenter_2.position.y
-        5.5 4.0
+        6.75 4.0
     """
 
     def __init__(self, layout_manager, position = None, margin = None):
@@ -81,7 +81,7 @@ class Container(Widget):
         self._margin = margin
         if margin is None:
             self._margin = DEFAULT_MARGIN
-        self.children = obengine.datatypes.orderedset()
+        self.children = set()
 
         self.on_position_changed += self._update_layout
         self.on_hidden += self._hide_children
@@ -135,6 +135,9 @@ class VerticalLayoutManager(object):
         self._owning_container = owning_container
         
     def find_space_for_widget(self, widget):
+
+        #if widget.text == 'Button 3':
+            #print 'Attempting to find space for button 3'
         
         best_point = obengine.math.Vector2D(
         self._owning_container.position.x,
@@ -142,20 +145,24 @@ class VerticalLayoutManager(object):
         )
         
         for child_widget in self._owning_container.children:
+
             best_point.y += child_widget.size.y / 2.0
             best_point.y += self._owning_container.margin
 
         if len(self._owning_container.children) > 0:
+
+            #if widget.text == 'Button 3':
+                #print 'Adding (len()-based)', widget.size.y / 2.0
             best_point.y += widget.size.y / 2.0
 
         return obengine.math.Vector2D(best_point.x, best_point.y)
         
     def adjust_widgets_after_add(self, new_widget):
 
-        y_adjustment = self._owning_container.position.y - new_widget.position.y
+        new_widget_y = new_widget.size.y
 
         for child_widget in self._owning_container.children:
-            child_widget.position.y -= y_adjustment + self._owning_container.margin * 2
+            child_widget.position.y -= new_widget_y
             
     def adjust_widgets_after_remove(self, removed_widget):
 

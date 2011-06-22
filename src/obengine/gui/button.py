@@ -131,11 +131,34 @@ class ButtonPresenter(object):
 class MockButtonView(object):
     """A mock button view, for testing"""
 
+    _TEXT_SCALE = 0.5
+    _VERTICAL_TEXT_SIZE = 0.5
+
     def __init__(self, text = '', position = None, icon = None, size = None):
 
         self.position = position or obengine.math.Vector2D()
-        self.size = size or obengine.math.Vector2D()
+        self._size = size or obengine.math.Vector2D()
 
         self.on_click = obengine.event.Event()
         self.text = text
         self.icon = icon
+
+    @obengine.datatypes.nested_property
+    def text():
+
+        def fget(self):
+            return self._text
+
+        def fset(self, new_text):
+
+            self._text = new_text
+            
+            self._size = obengine.math.Vector2D(
+            len(self.text) * MockButtonView._TEXT_SCALE,
+            MockButtonView._VERTICAL_TEXT_SIZE)
+
+        return locals()
+
+    @property
+    def size(self):
+        return self._size

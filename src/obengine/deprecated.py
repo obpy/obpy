@@ -45,4 +45,5 @@ def deprecated(func):
 
         return func(*args, **kwargs)
 
+    warning_wrapper.__name__ = func.__name__
     return warning_wrapper

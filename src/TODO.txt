@@ -15,7 +15,7 @@ Bloxworks
 ---------
 
 Since this is the main new feature in OpenBlox 0.7, implementing BloxWorks is an
-extremely high priority task.
+*extremely* high priority task.
 There are some considerations, namely:
 
 * Where to keep the source code. SourceForge supports
@@ -40,8 +40,8 @@ User Documentation
 ------------------
 
 There's very little in the way of end-user documentation. Most of the existing
-documentation is contained in the OpenBlox wiki (and some of it will be obsolete
-with the coming of OpenBlox 0.7).
+documentation is contained in the OpenBlox wiki (and some of it will be
+obsolete/erroneous with the coming of OpenBlox 0.7).
 
 Some things to consider concerning end-user documentation are:
 
@@ -66,3 +66,31 @@ Although, most of the code that isn't already covered by unit tests has been
 sucessfully tested in the field (being actually deployed and used,
 and little to no bug reports coming back), so this can wait until OpenBlox 0.7.1/2,
 if it has to.
+
+Mac OSX installer
+-----------------
+
+Currently, to install OpenBlox on Mac OSX, you have to have some knowledge of
+the terminal (due to InstallJammer not working on Mac OSX). Until an
+OSX maintainer comes on board for OpenBlox (or an alternative installer generator
+popping up), this will probably stay this way for a while.
+
+OBPlay
+------
+
+With BloxWorks using OpenBlox's custom, on-screen GUI toolkit, OBPlay's use of
+wxPython is... wierd, not to mention wastful of space (the wxPython installer
+packs an extra 11MB onto the Windows installer). It should be re-written using
+OpenBlox's GUI toolkit.
+
+Granted, this is more an aesthetic issue than anything
+else, and thus can remain as-is, if push comes to shove.
+
+Low priority
+============
+
+OBFreeze
+--------
+
+This *is* an exciting feature, but it's currently not necessary, so it can wait
+until OpenBlox 0.7.1/2/3 or even OpenBlox 0.8, if it has to.

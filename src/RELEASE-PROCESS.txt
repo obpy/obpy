@@ -1,0 +1,70 @@
+========================
+OpenBlox release process
+========================
+
+.. In case you're wondering about all this funny markup, this document (like all
+   the others in this directory) is written
+   using reST (http://docutils.sourceforge.net/rst.html) - a simple, non-intrusive
+   text markup specification.
+
+.. note::
+
+    You won't be able to perform some of these instructions unless you're
+    the OpenBlox project lead :)
+
+Pre-release
+===========
+
+* Remove all ``.pyc`` files using ``remove_pycs.py``
+* Convert all Windows/MacOS newlines to UNIX newlines using ``convert_newlines.py``
+* Run unit test suite one last time
+* Proofread developer and end-user documentation
+* 0.7 *only*: Tag current Mercurial revision with tag "sem_ver", to signify
+  OpenBlox's version scheme officially switching to Semantic Versioning [1]_
+* Tag current Mercurial revision with current version's version number
+
+Building
+========
+
+.. note::
+
+    For OpenBlox <=0.7, OpenBlox can't really be "built", in the normal building
+    sense. It's just packaged in various forms, instead of being "built" (which
+    kinda refers to a compilation step, which is unnecessary, as OpenBlox is
+    written in Python).
+
+* Build documentation (developer and end-user)
+* Build documentation archives (``.zip``)
+* Build OpenBlox runtime
+* Build OpenBlox tools (OBPlay, OBPack, OBFreeze)
+* Build OpenBlox installers (Windows, Linux)
+* Build OpenBlox source archives (``.zip``, ``.tar.bz2``)
+
+Uploading
+=========
+
+* Upload runtime to SourceForge
+* Upload installers to SourceForge
+* Upload source archives to SourceForge
+* Upload documentation to TuxFamily
+* Upload documentation archive to SourceForge
+
+Announcing
+==========
+
+* Update default downloads on SourceForge
+* Write new release article for the main OpenBlox site (http://openblox.sf.net)
+* Write new release article for the OpenBlox site at FreshMeat
+  (http://freshmeat.net/projects/openblox-2)
+* Write new release article for the OpenBlox SourceForge page
+  (http://sourceforge.net/projects/openblox)
+
+Post-release
+============
+
+* Add new bug-tracker tag for the new version
+
+
+.. rubric:: Footnotes
+
+.. [1] http://semver.org

@@ -80,17 +80,15 @@ Here's a quick example to vertically align 3 buttons (using a container) automat
     >>> container.add(button2)
     >>> container.add(button3)
     >>> print 'button1.position:', button1.position.x, button1.position.y
-    button1.position: 30.0 29.5
+    button1.position: 30.0 29.0
     >>> print 'button2.position:', button2.position.x, button2.position.y
     button2.position: 30.0 30.0
     >>> print 'button3.position:', button3.position.x, button3.position.y
-    button3.position: 30.0 31.0
+    button3.position: 30.0 31.25
 
 .. note::
 
     The average position of the widgets in
-    the container is *actually* ``(30, 30.5)``. This is due to the fact that
-    the widget
+    the container is *actually*  around ``(30, 30.1)``. This is due to
+    floating-point errors in the partitioning algorithm.
 
-    Since this code is using the mock/"invisible" GUI backend, all widgets
-    have a size of ``(0, 0)``.
