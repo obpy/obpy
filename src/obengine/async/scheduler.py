@@ -30,10 +30,10 @@ obengine.depman.gendeps()
 
 
 class Scheduler(object):
-    """
-    Asynchronous task scheduler.
-    NOTE: If you're using a non-dummy renderer, then everything that has a lower priority
-    than the rendering task will run at the renderer's frame rate.
+    """Asynchronous task scheduler
+    NOTE: If you're using a non-dummy graphics renderer, then everything that
+    has a lower priority than the rendering task will run
+    at the graphics renderer's frame rate.
     """
 
     def __init__(self):

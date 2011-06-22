@@ -35,15 +35,22 @@ def init():
 
     config_src = obengine.cfg.Config()
 
-    a_key = config_src.get_str('a_key', 'core.hardware')
-    b_key = config_src.get_str('b_key', 'core.hardware')
-    x_key = config_src.get_str('x_key', 'core.hardware')
-    y_key = config_src.get_str('y_key', 'core.hardware')
+    a_key = config_src.get_str('a_key', 'core.hardware', '').lower()
+    b_key = config_src.get_str('b_key', 'core.hardware', '').lower()
+    x_key = config_src.get_str('x_key', 'core.hardware', '').lower()
+    y_key = config_src.get_str('y_key', 'core.hardware', '').lower()
 
-    KeyEvent._key_conv[KeyEvent.A_KEY] = a_key
-    KeyEvent._key_conv[KeyEvent.B_KEY] = b_key
-    KeyEvent._key_conv[KeyEvent.X_KEY] = x_key
-    KeyEvent._key_conv[KeyEvent.Y_KEY] = y_key
+    if a_key != '':
+        KeyEvent._key_conv[KeyEvent.A_KEY] = a_key
+
+    if b_key != '':
+        KeyEvent._key_conv[KeyEvent.B_KEY] = b_key
+        
+    if x_key != '':
+        KeyEvent._key_conv[KeyEvent.X_KEY] = x_key
+
+    if y_key != '':
+        KeyEvent._key_conv[KeyEvent.Y_KEY] = y_key
 
 
 class KeyEvent(obengine.event.Event):
@@ -55,11 +62,11 @@ class KeyEvent(obengine.event.Event):
 
     _key_conv = {
 
-    A_KEY : 'q',
-    B_KEY : 'w',
+    A_KEY : 'a',
+    B_KEY : 's',
 
-    X_KEY : 's',
-    Y_KEY : 'd'
+    X_KEY : 'x',
+    Y_KEY : 'c'
 
     }
 

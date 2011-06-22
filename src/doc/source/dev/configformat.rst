@@ -21,16 +21,22 @@ as that is the customary name for the configuration file), here is the default c
 
       [core]
 
-      log-level = warn
+      log-level = debug
       log-file = oblog.txt
-      
+
       [core.gfx]
-      
+
       frame-rate = 45
       show-frame-rate = yes
       use-shadows = no
-      
       resolution = 1024x768
+
+      [core.hardware]
+
+      a_key = a
+      b_key = s
+      x_key = x
+      y_key = c
 
 You can probably understand most (if not all) of this already, without any explanation whatsoever.
 
@@ -83,12 +89,14 @@ For example, if ``frame-rate`` is given a value of ``45``, than OpenBlox will re
 ``use-shadows``
 ~~~~~~~~~~~~~~~
 
-.. note::
+.. warning::
 
-   This will seriously slow down OpenBlox if you're using an Intel graphics card, without actually displaying any shadows.
+   This will seriously slow down OpenBlox if you're using an Intel graphics card,
+   without actually displaying any shadows.
 
-This option specifies whether bricks (and other 3D objects) should cast shadows. Be warned, this can seriously slow down your frame rate if the
-game you're playing has a lot of 3D models/bricks.
+This option specifies whether bricks (and other 3D objects) should cast shadows.
+Be warned, this can seriously slow down your frame rate if the game you're playing
+has a lot of 3D models/bricks.
 
 Valid values are:
 
@@ -110,14 +118,27 @@ Valid values are:
 ~~~~~~~~~~~~~~
 
 You've probably already guessed this one. It specifies the window size and resolution.
-The format for the resolution is most likely similar to what you've seen before. The resolution on the **X** axis 
-is the first value (on the left side of the lowercase ``x``),
-and the resolution for the **Y** axis is on the right (on the right side of the lowercase ``x``).
+The format for the resolution is most likely similar to what you've seen before.
+
+The resolution on the **X** axis is the first value (on the left side
+of the lowercase ``x``), and the resolution for the **Y** axis is on
+the right (on the right side of the lowercase ``x``).
 
 By default, this is ``1024x768``.
 
 .. note::
- Be sure to pick a resolution that your graphics card can handle!
+    Be sure to pick a resolution that your graphics card can handle!
+
+Key-related
+-----------
+
+``a_key``, ``b_key``, ``x_key``, and ``y_key``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+These four options tell OpenBlox which *virtual key* [1]_ is bound to which
+physical key on your keyboard.
+
+Valid values for these options are any letter key on your keyboard.
 
 Basic syntax
 ============
@@ -147,7 +168,15 @@ The ``obconf.cfg`` file format basically looks like this:
       variable = value2
 
 Common gotchas
---------------
+==============
 
 * Variable names *cannot* have spaces
 * Section names *must not* include either ``[`` or ``]``
+
+
+.. rubric:: Footnotes
+
+.. [1] A *virtual key* is a facility OpenBlox provides
+       so games can receive keyboard-like input on many different operating systems
+       (including iOS and Android), without having to know which keys each gamer
+       prefers to use (or if the device they're playing on has any real keys at all!)

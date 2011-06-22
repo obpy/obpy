@@ -63,6 +63,14 @@ def configure():
 
     env = conf.Finish()
 
+def RecursiveGlob(startdir, pattern):
+
+    files = Glob(startdir + pattern)
+
+    if files:
+        files += RecursiveGlob(startdir, '*/' + pattern)
+
+    return files
 
 Help("""
 Type 'scons' to build OpenBlox.
@@ -77,7 +85,7 @@ sphinx_builder_conv = {
 'text' : '.txt'
 }
 
-for node in Glob(getsyspath('doc/source/*.rst')):
+for node in RecursiveGlob(getsyspath('doc/source/'), '*.rst'):
 
     target = str(node).replace('.rst', sphinx_builder_conv[sphinx_builder]).replace(getsyspath('doc/source'), '/'.join([built_doc_dir, sphinx_builder]))
     builder = env.Sphinx(target, node)

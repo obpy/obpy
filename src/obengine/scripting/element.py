@@ -55,7 +55,6 @@ class ScriptElement(Element):
         from thread import start_new_thread
 
         self.world = scene_graph.world
-
         start_new_thread(self.run, ())
 
 

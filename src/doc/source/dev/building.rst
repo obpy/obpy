@@ -15,25 +15,33 @@ Building OpenBlox
     UNIX-like terminal (i.e, Linux, Mac OSX). Windows commands could be slightly
     different.
 
-Bottom-line prerequisites:
+**Bottom-line prerequisites**:
 
 * Python 2.6 - download from http://python.org
 * SCons (any version should work) - download from http://scons.org
 
-Optional requirements:
+Yes, you read that correctly. OpenBlox's core only depends upon Python itself!
+However, to get some of the basic functionality (like 3D rendering, sound, physics,
+and Lua scripting), you might need to install one of the below libraries.
+
+**Optional requirements**:
 
 * Panda3D 1.7.1 or higher (required for 3D rendering, audio, and physics) - download from http://panda3d.org
+* Lupa 0.18 or higher (Mac OSX only, required for Lua scripting) - download from
+  http://pypi.python.org/pypi/lupa
+
 
 .. note::
 
     Running ``scons configure`` in the directory you extracted the OpenBlox
-    source code to will check that you have the Panda3D libraries installed
+    source code to will check that you have the Panda3D libraries installed.
 
 Before you run any of the below steps, you must first install the above software.
 Next, using your operating system's command line/shell, change directories to
 where you extracted the OpenBlox source code.
 
-Now, to make sure you've installed all the above software, execute these commands (in your command line/shell):
+Now, to make sure you've installed all the above software,
+execute these commands (in your command line/shell):
 
 .. code-block:: sh
 
@@ -85,3 +93,5 @@ just removed all built files with ``scons -c``).
 
 Building OpenBlox's distributable packages
 ==========================================
+
+TODO

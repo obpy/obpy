@@ -2,13 +2,10 @@
 The OpenBlox coding standard
 ============================
 
-This is the OpenBlox coding standard, which closely follows Python PEP 8 (http://www.python.org/dev/peps/pep-0008/).
-However, there are a few differences:
-
- * Usage of blank lines is encouraged
- * Docstrings are *required* to use reST
-
-If you have any questions concerning this document, send a message to OpenBlox (http://openblox.sf.net/users/openblox).
+This is the OpenBlox coding standard, which
+closely follows Python PEP 8 (http://www.python.org/dev/peps/pep-0008/).
+If you have any questions concerning this document, send
+a message to OpenBlox (http://openblox.sf.net/users/openblox).
 
 General
 -------
@@ -165,7 +162,7 @@ Methods/Functions
 Example::
 
     def do_x(a, b, c):
-        """Does x.
+        """Does x
         Prints a, the first element of b, and the second element of c,
         all on a single line.
         """

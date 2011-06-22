@@ -6,13 +6,23 @@
 Welcome to The OpenBlox Game Engine's documentation!
 ====================================================
 
-Contents:
+:doc:`End-user documentation <end-user/index` - go here if you're an end-user
+of OpenBlox (i.e, you play and make OpenBlox games)
+
+:doc:`Developer documentation <dev/index>` - go here if you're an OpenBlox
+developer (you work on OpenBlox itself)
+
+**Quick links**
 
 .. toctree::
-   :maxdepth: 1
-   :glob:
+   :maxdepth: 2
+   
+   introduction
+   end-user/gettingstarted
 
-   *
+   
+* `Main OpenBlox web site <http://openblox.sourceforge.net>`_
+* `OpenBlox wiki <http://openblox.tuxfamily.org>`_
 
 Indices and tables
 ==================
