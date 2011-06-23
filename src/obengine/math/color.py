@@ -123,7 +123,7 @@ class Color(object):
 
     def __repr__(self):
 
-        return '%s(%f, %f, %f, %f)' % (
+        return '%s(%s, %s, %s, %s)' % (
         self.__class__.__name__,
         self.r,
         self.g,

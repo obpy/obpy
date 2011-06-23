@@ -148,10 +148,10 @@ class EventAttrDict(EventDict, AttrDict):
 
 class orderedset(collections.MutableSet):
     """Ordered set - like a set, but remembers insertion order
-    Based on Raymond Hettinger's MIT-licensed ASPN recipe(
+    Based on Raymond Hettinger's ASPN recipe (
     http://code.activestate.com/recipes/576694/).
-    This class' source code is GPLed, but the original code, as stated above,
-    is under the MIT license (http://www.opensource.org/licenses/mit-license.php).
+    This class' source code is GPLed, but the ASPN recipe is licensed differently;
+    see the recipe for details.
 
     Example:
 

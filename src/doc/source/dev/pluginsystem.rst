@@ -12,7 +12,7 @@ plugins for:
 * 3D/2D rendering
 * Physics
 * Audio
-* Keyboard and mouse support
+* Keyboard support
 * GUI widgets
 
 Plugins are written as normal Python modules or packages, so there's basically no

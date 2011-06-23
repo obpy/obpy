@@ -27,5 +27,5 @@ How can the above be accomplished?
 .. rubric:: Footnotes
 
 .. [1] See http://en.wikipedia.org/wiki/Free_Software and/or
-       http://www.fsf.org/about/what-is-free-software.
-.. [2] http://lua.org.
+       http://www.fsf.org/about/what-is-free-software
+.. [2] http://lua.org

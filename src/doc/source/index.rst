@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to The OpenBlox Game Engine's documentation!
+Welcome to OpenBlox's documentation!
 ====================================================
 
 :doc:`End-user documentation <end-user/index` - go here if you're an end-user

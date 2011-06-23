@@ -109,7 +109,7 @@ class EulerAngle(object):
 
     def __repr__(self):
 
-        return '%s(%f, %f, %f)' % (
+        return '%s(%s, %s, %s)' % (
         self.__class__.__name__,
         self.h,
         self.p,

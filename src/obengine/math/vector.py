@@ -66,7 +66,7 @@ class Vector2D(object):
 
     def __repr__(self):
 
-        return '%s(%f, %f)' % (
+        return '%s(%s, %s)' % (
         self.__class__.__name__,
         self.x,
         self.y
@@ -156,7 +156,7 @@ class Vector(object):
 
     def __repr__(self):
 
-        return '%s(%f, %f, %f)' % (
+        return '%s(%s, %s, %s)' % (
         self.__class__.__name__,
         self.x,
         self.y,
