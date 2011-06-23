@@ -37,5 +37,6 @@ from button import *
 from container import *
 from label import *
 from entry import *
+from radio import *
 from menu import *
 from widgetfactory import *
