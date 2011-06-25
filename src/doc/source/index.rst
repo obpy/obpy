@@ -6,19 +6,30 @@
 Welcome to OpenBlox's documentation!
 ====================================================
 
-:doc:`End-user documentation <end-user/index` - go here if you're an end-user
-of OpenBlox (i.e, you play and make OpenBlox games)
+This is the primary source of documentation for `OpenBlox <http://openblox.sourceforge.net>`_ |release|,
+last updated |today|.
 
-:doc:`Developer documentation <dev/index>` - go here if you're an OpenBlox
+**Parts of the documentation**
+
+:doc:`End-user documentation <end-user/index` - go here if you're an end-user
+of OpenBlox (i.e, you play OpenBlox games)
+
+:doc:`Game developer documentation <game-dev/index` - go here if you're an OpenBlox
+game developer (you make OpenBlox games)
+
+:doc:`Core developer documentation <core-dev/index>` - go here if you're an OpenBlox
 developer (you work on OpenBlox itself)
 
 **Quick links**
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    
    introduction
-   end-user/gettingstarted
+   gettingstarted
+   end-user/index
+   game-dev/index
+   core-dev/index
 
    
 * `Main OpenBlox web site <http://openblox.sourceforge.net>`_

@@ -48,8 +48,7 @@ def compatible_with(version_str):
 
 
 def init():
-    """
-    Wrapper around obengine.depman.init().
+    """Wrapper around obengine.depman.init()
     Call this function, after importing all the modules you need.
     """
 

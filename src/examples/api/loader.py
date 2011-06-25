@@ -1,9 +1,8 @@
 import sys
 import os
+import functools
 
 sys.path.append(os.path.abspath(os.path.join(os.pardir, os.pardir)))
-
-import functools
 
 import obengine.world
 import obengine.async
@@ -17,6 +16,8 @@ def loaded_cb(world):
     print world.element.nodes
 
 def main():
+
+    obengine.cfg.Config().load(os.path.join(os.pardir, os.pardir, 'obconf.cfg'))
 
     obengine.init()
 

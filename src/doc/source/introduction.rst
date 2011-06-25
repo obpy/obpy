@@ -24,6 +24,12 @@ How can the above be accomplished?
 * OpenBlox is Free (as in freedom, and as in price) software [2]_, so
   naturally it doesn't cost anything
 
+**Places you may want to go from here**
+
+* :doc:`Getting started with OpenBlox </gettingstarted>`
+* `The OpenBlox web site <http://openblox.sourceforge.net>`_
+* `The OpenBlox wiki <http://openblox.tuxfamily.org>`_
+
 .. rubric:: Footnotes
 
 .. [1] See http://en.wikipedia.org/wiki/Free_Software and/or

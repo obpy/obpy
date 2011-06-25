@@ -49,12 +49,12 @@ Let's go over each of those variables:
 
 * ``name`` - The name of your plugin. This can be anything you want, but it should be descriptive
 * ``module`` - This specifies the Python module/package the OpenBlox plugin manager
-    should import to expose your plugin to it's users. It will be imported (and exposed) just
-    like a normal Python module/package, so if it doesn't implement any virtual
-    plugins [1]_, make sure it's a valid Python name!
-*  ``provides`` - This tells the OpenBlox plugin manager what virtual plugins [1]_
-   your plugin provides. If your plugin provides more than one virtual plugin,
-   they should be seperated by commas.
+  should import to expose your plugin to it's users. It will be imported (and exposed) just
+  like a normal Python module/package, so if it doesn't implement any virtual
+  plugins [1]_, make sure it's a valid Python name!
+* ``provides`` - This tells the OpenBlox plugin manager what virtual plugins [1]_
+  your plugin provides. If your plugin provides more than one virtual plugin,
+  their names should be seperated by commas.
 
 We have to actually write your plugin's code now. Type the following into a file
 called ``my_plugin.py``, located inside the ``my-plugin`` directory you made earlier:
@@ -83,12 +83,12 @@ Now, start up your Python interpreter. Make sure the current working directory
 is the directory you installed OpenBlox in (i.e, when you list the current working
 directory's contents, there should be an ``obengine`` directory).
 
-Next, type this code into your interpreter (ignore the comments and whitespace,
+Next, type this code into your interpreter (ignore the comments and empty lines,
 they're just there to help you understand what you're doing):
 
 .. code-block:: python
 
-    # Import OpenBlox, and OpenBlox's plugin code
+    # Import OpenBlox, and OpenBlox's plugin system
 
     import obengine
     import obengine.plugin
@@ -124,5 +124,6 @@ The output from the above script should be::
 
 .. [1] A *virtual plugin* is a plugin that doesn't explicitly exist, i.e, it
        is merely an agreed-upon interface, nothing more. An actual plugin can
-       claim to *provide* a virtual plugin, and when that virtual plugin is
-       required by some code, that actual plugin is loaded in its place.
+       claim to *provide* a virtual plugin (i.e, implement that virtual plugin's
+       interface), and when that virtual plugin is required by some code, then
+       that actual plugin is loaded in its place.

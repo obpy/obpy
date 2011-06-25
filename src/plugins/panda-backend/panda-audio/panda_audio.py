@@ -26,6 +26,7 @@ __date__  = "$May 24, 2011 3:27:05 PM$"
 
 from panda3d.core import Filename, AudioSound
 
+
 import obengine.vfs
 import obengine.event
 import obengine.async
@@ -49,7 +50,8 @@ class Sound(object):
         self.on_loaded = obengine.event.Event()
 
     def load(self):
-        self._window.scheduler.add(obengine.async.Task(self._actual_load, priority = Sound.LOAD_PRIORITY))
+        self._window.scheduler.add(
+        obengine.async.Task(self._actual_load, priority = Sound.LOAD_PRIORITY))
 
     @property
     def playing(self):
@@ -83,7 +85,6 @@ class Sound(object):
     @volume.setter
     def volume(self, new_volume):
         self._sound.setVolume(new_volume / 100.0)
-
 
     def _actual_load(self, _):
 

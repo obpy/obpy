@@ -26,15 +26,13 @@
 __author__="openblocks"
 __date__ ="$Feb 22, 2011 5:11:32 PM$"
 
-
 import obengine.depman
+import obengine.datatypes
+
 obengine.depman.gendeps()
 
-
 class Event(object):
-    """
-    Basic event manager.
-
+    """Basic event manager
     Use __iadd__ or add_handler to add a handler for an Event instance.
     Next, use __call__ or fire to trigger all bound handlers.
     You can also use __isub__ or remove_handler to remove a bound handler.
@@ -87,7 +85,7 @@ class Event(object):
     def __init__(self):
 
         self.enabled = True
-        self.handlers = set()
+        self.handlers = obengine.datatypes.orderedset()
 
     def add_handler(self, handler):
 
@@ -120,7 +118,7 @@ class Event(object):
         if self.enabled is False:
             return
 
-        for handler in reversed(list(self.handlers)):
+        for handler in list(self.handlers):
             handler(*args, **kwargs)
 
     def handler_count(self):

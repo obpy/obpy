@@ -35,23 +35,32 @@ The benefits of using node IDs to access your nodes are:
 
 There are 2 main weaknesses with NIDs:
 
-* The main problem with NIDs is that since each NID is automatically generated, you must hold a reference to the owning scene node to retrieve its NID (or you can look up its NID in BloxWorks)
-* They aren't very expressive - constants that stand for NIDs are about as good as it gets with respect to readability
+* The main problem with NIDs is that since each NID is automatically generated,
+  you must hold a reference to the owning scene node to
+  retrieve its NID (or you can look up its NID in BloxWorks)
+* They aren't very expressive - constants
+  that stand for NIDs are about as good as it gets with respect to readability
 
-Because of these shortcomings, each scene node also has a user-defined name, which can also be used to access a scene node.
+Because of these shortcomings, each scene node also has a user-defined name, which
+can also be used to access a scene node.
 The advantages of using scene node names are:
 
 * They are *extremely* expressive and easy to remember
-* You already know the node's name, since you defined it; this is related to the first advantage
+* You already know the node's name, since you defined it; this is
+  related to the first advantage
 
 However, node names also have some problems:
 
-* Since it's a possibility that more than 1 node can have the same name (especially at the root level), node names cannot be used to access a node where there is more than 1 node with the same name
-* Searching for nodes using names with `obengine.scenegraph.SceneNode.get_child_by_id` takes O(N) time
+* Since it's a possibility that more than 1 node can have
+  the same name (especially at the root level), node names cannot be used to
+  access a node where there is more than 1 node with the same name
+* Searching for nodes using names
+  with `obengine.scenegraph.SceneNode.get_child_by_name` takes O(N) time
 
 It is up to you to decide which identification method better suits your purposes. The best strategy right now looks like this:
 
-* Use NIDs for nodes (especially bricks, scripts, and the like) that you'll never access from a Lua script
+* Use NIDs for nodes (especially bricks, scripts, and the like) that
+  you'll never access from a Lua script
 * Use a unique name for each node you want to access from a Lua script
 
 Examples

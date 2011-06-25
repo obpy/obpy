@@ -57,7 +57,7 @@ def main():
    scripting_engine.execute('function hello() print("Hello from Lua!"); end')
    scripting_engine.method.hello()
 
-   # The output from this script should be the following if you're on *nix or Mac OSX:
+   # The output from this script should be the following if you're on Linux or Mac OSX:
 
    # found plugin ../../plugins/lupa-scripting
    # loaded plugin from file ../../plugins/lupa-scripting/lupa_backend.pyc

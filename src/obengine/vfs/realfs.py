@@ -19,12 +19,15 @@
 #     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
 __author__ = "openblocks"
+
 
 import os
 import shutil
 
 import basefs
+
 
 class RealFS(basefs.BaseFS):
 
@@ -32,22 +35,70 @@ class RealFS(basefs.BaseFS):
         self.real_loc = real_loc
 
     def open(self, path, mode='r'):
-        return open(self._actual_path(path), mode)
+
+        self._check_path(path)
+
+        try:
+            return open(self._actual_path(path), mode)
+
+        except IOError, message:
+
+            if mode == 'r':
+                raise basefs.ReadError(message)
+
+            elif mode == 'w':
+                raise basefs.WriteError(message)
 
     def listdir(self, path=''):
-        return os.listdir(self._actual_path(path))
+
+        self._check_path(path)
+
+        try:
+            return os.listdir(self._actual_path(path))
+
+        except OSError, message:
+            raise basefs.FilesystemException(message)
 
     def mkdir(self, path):
-        os.mkdir(self._actual_path(path))
+
+        self._check_path(path)
+
+        try:
+            os.mkdir(self._actual_path(path))
+
+        except OSError, message:
+            raise basefs.FilesystemException(message)
 
     def rmdir(self, path):
-        shutil.rmtree(self._actual_path(path))
+
+        self._check_path(path)
+
+        try:
+            shutil.rmtree(self._actual_path(path))
+
+        except OSError, message:
+            raise basefs.FilesystemException(message)
 
     def remove(self, path):
-        os.remove(self._actual_path(path))
+
+        self._check_path(path)
+
+        try:
+            os.remove(self._actual_path(path))
+
+        except OSError, message:
+            raise basefs.FilesystemException(message)
 
     def getsyspath(self, path):
         return self._actual_path(path)
 
+    def _check_path(self, path):
+
+        if path == '':
+            return
+
+        if os.path.normpath(self._actual_path(path)).startswith(self.real_loc) is False:
+            raise basefs.BadPathException('%s is outside of root directory %s' % (path, self.real_loc))
+
     def _actual_path(self, path):
-        return os.sep.join([self.real_loc, path.replace(basefs.SEPERATOR, os.sep)[1:]])
+        return os.sep.join([self.real_loc, path.replace(basefs.SEPERATOR, os.sep)])

@@ -8,18 +8,21 @@ Todos
     as soon as TuxFamily upgrades their web servers to support Trac 0.12 (which
     should be during the next week or so).
 
-High priority (release-stoppers)
-================================
+High priority
+=============
+
+Unimplemented high-priority features are *always* release-stoppers, i.e, they
+must be implemented before OpenBlox can be released.
 
 Bloxworks
 ---------
 
-Since this is the main new feature in OpenBlox 0.7, implementing BloxWorks is an
+Since this is the main new "feature" in OpenBlox 0.7, implementing BloxWorks is an
 *extremely* high priority task.
 There are some considerations, namely:
 
 * Where to keep the source code. SourceForge supports
-  multiple repos per project,so maybe there?
+  multiple code repos per project,so maybe there?
 * The OpenBlox GUI framework isn't completed yet, and
   Bloxworks relies a *lot* upon a GUI
 
@@ -32,7 +35,8 @@ as good as its documentation.
 Some specific things that need to be changed/added/removed are:
 
 * The FAQ just points to the OpenBlox wiki (though this might should just stay as-is)
-* There are still a few OpenBlox 0.6.2 references lurking around in it
+* There are still a few OpenBlox 0.6.2 references lurking around in it, those
+  should be appropriately changed or removed
 * Lupa and Panda3D have both gone through at least one release since the
   README was last updated; the README needs to be updated to reflect this
 
@@ -53,6 +57,10 @@ Some things to consider concerning end-user documentation are:
 
 Medium priority
 ===============
+
+Medium priority features will *probably* be implemented before OpenBlox can
+be released, but if there's isn't enough time, then they will wait until
+the next release.
 
 Testing
 --------
@@ -75,11 +83,11 @@ the terminal (due to InstallJammer not working on Mac OSX). Until an
 OSX maintainer comes on board for OpenBlox (or an alternative installer generator
 popping up), this will probably stay this way for a while.
 
-OBPlay
-------
+OBPlay and OBPack
+-----------------
 
-With BloxWorks using OpenBlox's custom, on-screen GUI toolkit, OBPlay's use of
-wxPython is... wierd, not to mention wastful of space (the wxPython installer
+With BloxWorks using OpenBlox's custom, on-screen GUI toolkit, OBPlay and OBPack's
+use of wxPython is... wierd, not to mention wastful of space (the wxPython installer
 packs an extra 11MB onto the Windows installer). It should be re-written using
 OpenBlox's GUI toolkit.
 
@@ -88,6 +96,9 @@ else, and thus can remain as-is, if push comes to shove.
 
 Low priority
 ============
+
+Low priority features are just like medium-priority features, except that they're
+*always* implemented after all the medium-priority features.
 
 OBFreeze
 --------

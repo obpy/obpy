@@ -56,20 +56,20 @@ class Container(Widget):
         >>> c = Container(HorizontalLayoutManager, Vector2D(4, 4), 0.5)
 
         >>> button_view_1 = MockButtonView('Click me!')
-        >>> button_model_1 = Button('Click me!', Vector2D(0, 0))
+        >>> button_model_1 = Button('Click me!')
         >>> button_presenter_1 = ButtonPresenter(button_model_1, button_view_1)
 
         >>> button_view_2 = MockButtonView('Click me, too!')
-        >>> button_model_2 = Button('Click me, too!', Vector2D(0, 0))
+        >>> button_model_2 = Button('Click me, too!')
         >>> button_presenter_2 = ButtonPresenter(button_model_2, button_view_2)
         
         >>> c.add(button_presenter_1)
         >>> c.add(button_presenter_2)
 
-        >>> print button_presenter_1.position.x, button_presenter_1.position.y
-        0.5 4.0
-        >>> print button_presenter_2.position.x, button_presenter_2.position.y
-        6.75 4.0
+        >>> print button_presenter_1.position
+        Vector2D(0.5, 4.0)
+        >>> print button_presenter_2.position
+        Vector2D(6.75, 4.0)
     """
 
     def __init__(self, layout_manager, position = None, margin = None):
@@ -136,9 +136,6 @@ class VerticalLayoutManager(object):
         
     def find_space_for_widget(self, widget):
 
-        #if widget.text == 'Button 3':
-            #print 'Attempting to find space for button 3'
-        
         best_point = obengine.math.Vector2D(
         self._owning_container.position.x,
         self._owning_container.position.y
@@ -150,9 +147,6 @@ class VerticalLayoutManager(object):
             best_point.y += self._owning_container.margin
 
         if len(self._owning_container.children) > 0:
-
-            #if widget.text == 'Button 3':
-                #print 'Adding (len()-based)', widget.size.y / 2.0
             best_point.y += widget.size.y / 2.0
 
         return obengine.math.Vector2D(best_point.x, best_point.y)

@@ -106,4 +106,7 @@ class MountFS(BaseFS):
 
 
 class FilesystemException(Exception): pass
+class BadPathException(FilesystemException): pass
+class ReadError(FilesystemException): pass
+class WriteError(FilesystemException): pass
 class NonExistentMountError(FilesystemException): pass

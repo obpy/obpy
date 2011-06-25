@@ -29,10 +29,10 @@ __date__  = "$May 4, 2011 8:08:03 PM$"
 import collections
 import heapq
 
-import event
-import depman
+import obengine.event
+import obengine.depman
 
-depman.gendeps()
+obengine.depman.gendeps()
 
 class AttrDict(dict):
     """
@@ -99,10 +99,10 @@ class EventDict(dict):
 
         dict.__init__(self, **kwargs)
 
-        self.on_item_added = event.Event()
-        self.on_item_retrieved = event.Event()
-        self.on_item_changed = event.Event()
-        self.on_item_removed = event.Event()
+        self.on_item_added = obengine.event.Event()
+        self.on_item_retrieved = obengine.event.Event()
+        self.on_item_changed = obengine.event.Event()
+        self.on_item_removed = obengine.event.Event()
 
     def __getitem__(self, key):
 
@@ -114,13 +114,9 @@ class EventDict(dict):
     def __setitem__(self, key, value):
 
         item_changed = False
-        item_added = False
 
         if self.has_key(key):
             item_changed = True
-
-        else:
-            item_added = True
 
         dict.__setitem__(self, key, value)
 

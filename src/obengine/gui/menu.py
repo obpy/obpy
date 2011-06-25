@@ -1,5 +1,6 @@
 #
-# This module implements a simple menu.
+# This module implements a simple menu. Note that at the time of this writing,
+# nested menus aren't supported.
 # See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
 # for this module.
 #

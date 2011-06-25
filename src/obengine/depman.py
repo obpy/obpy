@@ -35,6 +35,8 @@ import inspect
 collected_modules = []
 dependency_map = {}
 
+def gendeps2(prefix = 'obengine', excludes = None):
+    pass
 
 def gendeps(prefix = 'obengine', modname = None, excludes = None):
     """
@@ -59,12 +61,10 @@ def gendeps(prefix = 'obengine', modname = None, excludes = None):
     # Have we visited a module that we aren't supposed to?
     if not name.startswith(package):
         return
-
-    # Have we already covered this module?
+    
     if name in collected_modules:
         return
 
-    # Have we been instructed not to consider this module:
     if name in excludes:
         return
 
@@ -102,7 +102,7 @@ def gendeps(prefix = 'obengine', modname = None, excludes = None):
         if dependency_name.startswith(package) and dependency_name != name:
             
             # Quick check to make sure we don't add ourselves!
-            if dependency_name not in ['depman', 'modulefinder']:
+            if dependency_name not in ('depman', 'modulefinder'):
 
                 # This is a valid dependency, so go ahead and record it
 
@@ -133,19 +133,15 @@ def init():
 
         # Run over all of said module's dependencies
         for module_dependency in module_dependencies:
-
-            # And here's here all the magic comes to a focus:
+            # And here's where all the magic comes to a focus:
             # We check to see if the module we're currently examining
             # is in the dependency map of one of its dependencies.
             # If it is, then that means we have a circular dependency.
             if module_name in dependency_map.get(module_dependency, []):
-
                 # Let's check to make sure we haven't already sent a warning
                 # about this
                 if module_dependency != module_name:
-
                     if module_dependency + module_name not in errors:
-                        
                         if module_name + module_dependency not in errors:
 
                             # A circular dependency is a serious error,
@@ -179,29 +175,30 @@ def init():
         # Another neat trick. atexit seems to store functions to be called on program
         # exit as a list, and every atexit.register call invokes list.append.
         # So, this means functions are called on a first-come, first-served
-        # basis: the sooner they're call atexit.register, the sooner atexit.register
-        # calls them, which perfectly coincides with the way we store collected
-        # modules!
+        # (i.e, FIFO) basis: the sooner they're call atexit.register,
+        # the sooner atexit.register calls them, which perfectly coincides with
+        # the way we store collected modules!
         
         elif hasattr(module, 'deinit'):
             atexit.register(module.deinit)
 
 
 def find_modules(module):
-    """Find modules that `module` depends upon
-    Returns a list of module names that `module` depends on.
+    """Find modules that module depends upon
+    Returns a list of module names that module depends on.
     """
 
     dependent_modules = set()
 
-    for variable in vars(module).itervalues():
+    for var_name, variable in vars(module).iteritems():
 
-        module = inspect.getmodule(variable)
+        module_dependency = inspect.getmodule(variable)
 
-        if module is not None:
-            dependent_modules.add(module.__name__)
-
+        if module_dependency is not None:
+            dependent_modules.add(module_dependency.__name__)
+                
     return list(dependent_modules)
+
 
 def _cmp_modules(module1, module2):
     """Compares two modules
@@ -226,3 +223,4 @@ def _cmp_modules(module1, module2):
     # They don't depend on each other - either one goes
     else:
         return 0
+    

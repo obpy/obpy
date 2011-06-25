@@ -49,14 +49,23 @@ def main():
    # Load the physics plugin
    obengine.plugin.require('core.physics')
 
-   # The output if you're on *nix should look like the following:
+   # The output if you're on *nix (Linux, Mac OSX, etc...) should look like the following:
    #
-   # found plugin <some path>plugins/lupa-scripting
-   # loaded plugin from file <some path>plugins/lupa-scripting/lupa_backend.pyc
+   # found plugin <some path>/plugins/lupa-scripting
+   # loaded plugin from file <some path>/plugins/lupa-scripting/lupa_backend.pyc
    # found plugin <some path>/plugins/panda-backend/panda-graphics
    # loaded plugin from file <some path>/plugins/panda-backend/panda-graphics/panda_graphics.pyc
    # found plugin <some path>/plugins/panda-backend/panda-physics
    # loaded plugin from file <some path>/plugins/panda-backend/panda-physics/panda_physics.pyc
+
+   # The output if you're on Windows should look like the following:
+   #
+   # found plugin <some path>\plugins\lupa-scripting
+   # loaded plugin from file <some path>\plugins\lupa-scripting\lupa_backend.pyc
+   # found plugin <some path>\plugins\panda-backend\panda-graphics
+   # loaded plugin from file <some path>\plugins\panda-backend\panda-graphics\panda_graphics.pyc
+   # found plugin <some path>\plugins\panda-backend\panda-physics
+   # loaded plugin from file <some path>\plugins\panda-backend\panda-physics\panda_physics.pyc
 
 if __name__ == '__main__':
    main()
