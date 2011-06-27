@@ -35,14 +35,16 @@ import depman
 
 depman.gendeps()
 
-__all__ = ['Config', 'CFG_FILE']
 
+__all__ = ['Config', 'CFG_FILE']
 CFG_FILE = 'obconf.cfg'
+
 
 def init():
 
     if Config.options == {} and os.path.exists(CFG_FILE):
         Config().load(CFG_FILE)
+
 
 class Config(datatypes.Borg):
     """Provides basic configuration utilites.

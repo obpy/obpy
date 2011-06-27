@@ -2,6 +2,9 @@
 The OpenBlox GUI toolkit
 ========================
 
+.. module:: obengine.gui
+.. versionadded:: 0.7
+
 Design overview
 ===============
 

@@ -12,7 +12,6 @@ Some examples of OpenBlox modules that use the event system are:
 
     * `obengine.gui` (the OpenBlox GUI)
     * `obengine.plugin` (the OpenBlox plugin system)
-    *
 
 Here's a quick example on how to make your own event:
 

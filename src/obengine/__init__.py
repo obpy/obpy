@@ -53,8 +53,6 @@ def init():
     """
 
     import obengine.depman
-
-    obengine.depman.gendeps()
     obengine.depman.init()
 
 

@@ -2,20 +2,31 @@
 The OpenBlox configuration format
 =================================
 
-Overview
+.. versionadded:: 0.6
+
+.. versionchanged:: 0.7
+    Removed ``required`` and ``optional`` sections; added the following sections:
+    
+    * ``core``
+    * ``core.gfx``
+    * ``core.hardware``
+
+History
 =========
 
 This format came into existence due to the fact that OpenBlox needed a way to let non-programmers
 easily modify the performance and (to a lesser extent) the behavior of OpenBlox.
 
-So, the OpenBlox configuration format was created, with syntax borrowed from the familiar Windows ``.ini`` configuration
-format.
+So, the OpenBlox configuration format was created, with syntax borrowed
+from the familiar Windows ``.ini`` configuration format.
 
 How the average config file looks
 =================================
 
-To give you a taste of the simplicity of the OpenBlox configuration format (hereon referred to as "the obconf.cfg format", 
-as that is the customary name for the configuration file), here is the default configuration file that ships with OpenBlox:
+To give you a taste of the simplicity of the OpenBlox
+configuration format (hereon referred to as "the obconf.cfg format", 
+as that is the customary name for the configuration file), here is the default
+configuration file that ships with OpenBlox:
 
    .. code-block:: ini
 

@@ -97,8 +97,13 @@ class PluginManager(object):
         Finds a plugin, with a given name.
         Arguments:
          * name - name of the plugin to find
+
         Returns:
-        The root directory of the plugin with the given name; None, if no such plugin was found.
+        The root directory of the plugin with the given name; None, if no
+        such plugin was found.
+
+        Raises:
+        PluginNotFoundException if no plugin implementing name was found.
         """
 
 
@@ -113,10 +118,14 @@ class PluginManager(object):
 
     def load_plugin(self, root_dir):
         """
-        Loads a plugin. The name is slightly misleading, as the plugin is not acutally initalized,
-        just put in the initialization queue.
+        Loads a plugin. The name is slightly misleading, as the plugin is not
+        actually initalized, just put in the initialization queue.
+
         Arguments:
-        * root_dir - the root directory of the plugin to load
+         * root_dir - the root directory of the plugin to load
+
+        Returns:
+        The loaded plugin.
         """
 
         self._logger.debug('Loading plugin from directory %s' % root_dir)
