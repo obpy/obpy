@@ -30,6 +30,7 @@ import sys
 import atexit
 from sys import _getframe as getframe
 
+
 __all__ = ['gendeps', 'init']
 collected_modules = []
 
@@ -37,9 +38,18 @@ collected_modules = []
 def gendeps(modname = None):
     """
     Use this function to record your module's dependencies.
-    Call it like this at the start of your module:
-        depman.gendeps()
+    Call it like this at the start of your module (after all your imports -
+    this is crucial):
+        obengine.depman.gendeps()
     """
+
+    # This may not seem like much, but the reason why this algorithm works
+    # is very simple:
+    # Each module that supports obengine.depman has a call to this method (gendeps)
+    # AFTER all of its imports. This way, modules lower down "the import chain"
+    # will have their gendeps call evaluated before the more dependent modules.
+    # This results in the least-dependent modules being added to collected_modules
+    # before the more-dependent modules.
 
     name = modname or getframe(1).f_globals['__name__']
     collected_modules.append(name)
@@ -64,7 +74,6 @@ def init():
         
         if hasattr(module, 'init'):
             module.init()
-
         
         # Another neat trick. atexit seems to store functions to be called on program
         # exit as a list, and every atexit.register call invokes list.append.

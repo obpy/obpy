@@ -96,24 +96,21 @@ class MemoryFS(basefs.BaseFS):
         return self._return_file(cur_node[filename])
       
     def mkdir(self, path):
+        
+        components = path.split(basefs.SEPERATOR)
+        cur_node = self.fs
 
-        # Do we need to create more than one directory?
-        if path.count(basefs.SEPERATOR) > 0:
+        while components:
 
-            components = path.split(basefs.SEPERATOR)
+            directory = components.pop(0)
 
-            for index, directory in enumerate(components):
+            if cur_node.has_key(directory):
+                continue
 
-                # Make the directories, properly designating parents
-
-                if index == 0:
-                    self._mkdir(directory)
-
-                else:
-                    self._mkdir(directory, components[index - 1])
-
-        else:
-            self._mkdir(path)
+            else:
+                cur_node[directory] = {}
+                
+            cur_node = cur_node[directory]
 
     def rmdir(self, path):
         
@@ -123,31 +120,22 @@ class MemoryFS(basefs.BaseFS):
         except KeyError:
             raise IOError(path)
 
-    def listdir(self, path):
+    def listdir(self, path = basefs.SEPERATOR):
 
-        if path == '':
+        if path == basefs.SEPERATOR:
             return self.fs.keys()
          
         try:
-            return self.fs[path].keys()
 
-        except KeyError:
-            raise IOError(path)
+            cur_node = self.fs
 
-    def _mkdir(self, path, parent=None):
-   
-        if parent == None:
+            for directory in path.split(basefs.SEPERATOR):
+                cur_node = cur_node[directory]
 
-            if self.fs.has_key(path):
-                return
-            self.fs[path] = {}
+            return cur_node.keys()
 
-        else:
-
-            if self.fs.has_key(parent) and self.fs[parent].has_key(path):
-                return
-            
-            self.fs[parent][path] = {}
+        except KeyError, AttributeError:
+            raise basefs.BadPathException(path)
 
     def _create_empty_file(self):
         return StringIO.StringIO('')

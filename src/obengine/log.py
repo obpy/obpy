@@ -33,12 +33,12 @@ import os
 from sys import _getframe as getframe
 import logging
 
-import cfg
-import datatypes
-import depman
-import deprecated
+import obengine.cfg
+import obengine.datatypes
+import obengine.depman
+import obengine.deprecated
 
-depman.gendeps()
+obengine.depman.gendeps()
 
 
 def init():
@@ -47,7 +47,7 @@ def init():
         Logger().autoconfig()
 
 
-class Logger(datatypes.Borg):
+class Logger(obengine.datatypes.Borg):
 
     log_levels = {
     'debug' : logging.DEBUG,
@@ -61,7 +61,7 @@ class Logger(datatypes.Borg):
     format_str = '%(levelname)s:%(name)s:%(asctime)s: %(message)s'
 
     def __init__(self):
-        self.config_src = cfg.Config()
+        self.config_src = obengine.cfg.Config()
 
     def autoconfig(self):
 
@@ -124,27 +124,27 @@ class Logger(datatypes.Borg):
         return logger
 
 
-@deprecated.deprecated
+@obengine.deprecated.deprecated
 def debug(string):
     Logger().debug(string)
 
 
-@deprecated.deprecated
+@obengine.deprecated.deprecated
 def info(string):
     Logger().info(string)
 
 
-@deprecated.deprecated
+@obengine.deprecated.deprecated
 def warn(string):
     Logger().warn(string)
 
 
-@deprecated.deprecated
+@obengine.deprecated.deprecated
 def error(string):
     Logger().error(string)
 
 
-@deprecated.deprecated
+@obengine.deprecated.deprecated
 def critical(string):
     Logger().critical(string)
 

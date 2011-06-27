@@ -28,11 +28,11 @@ __author__ = "openblocks"
 __date__  = "$Jul 13, 2010 6:13:05 PM$"
 
 
-import event
-import scenegraph
+import obengine.event
+import obengine.scenegraph
 
 
-class Element(scenegraph.SceneNode):
+class Element(obengine.scenegraph.SceneNode):
     """
     The base class for all elements(i.e, scripts, bricks, etc...).
     You shouldn't make an instance of this class.
@@ -40,8 +40,8 @@ class Element(scenegraph.SceneNode):
 
     def __init__(self, name, parent = None):
 
-        scenegraph.SceneNode.__init__(self, name, parent)
-        self.on_world_loaded = event.Event()
+        obengine.scenegraph.SceneNode.__init__(self, name, parent)
+        self.on_world_loaded = obengine.event.Event()
 
 class BrickElement(Element):
     
