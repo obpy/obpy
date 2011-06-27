@@ -1,9 +1,9 @@
-=================================
-The OpenBlox configuration format
-=================================
+==================================
+The OpenBlox configuration system
+==================================
 
+.. module:: obengine.cfg
 .. versionadded:: 0.6
-
 .. versionchanged:: 0.7
     Removed ``required`` and ``optional`` sections; added the following sections:
     
@@ -12,10 +12,11 @@ The OpenBlox configuration format
     * ``core.hardware``
 
 History
-=========
+=======
 
-This format came into existence due to the fact that OpenBlox needed a way to let non-programmers
-easily modify the performance and (to a lesser extent) the behavior of OpenBlox.
+This configuration format came into existence due to the fact that OpenBlox needed
+a way to let non-programmers easily modify the performance
+and (to a lesser extent) the behavior of OpenBlox.
 
 So, the OpenBlox configuration format was created, with syntax borrowed
 from the familiar Windows ``.ini`` configuration format.
@@ -49,7 +50,8 @@ configuration file that ships with OpenBlox:
       x_key = x
       y_key = c
 
-You can probably understand most (if not all) of this already, without any explanation whatsoever.
+You can probably understand most (if not all) of this already,
+without any explanation whatsoever.
 
 Main options
 =============
@@ -63,12 +65,12 @@ Logging related
 This is the minimum severity (inclusive) that candidate log messages must have to actually *be* put into the log file.
 Valid values are:
 
- * ``debug`` - Logs anything and everything. Very useful if you need to debug some tough problem,
+ * *debug* - Logs anything and everything. Very useful if you need to debug some tough problem,
              or are trying to find out why OpenBlox mysteriously crashes
- * ``info`` - Logs general messages. This is probably the next best option for normal users, after ``warn``.
- * ``warn`` - The default log level. This is probably the best if you're not working directly on OpenBlox's code, i.e, you just make OpenBlox games.
- * ``error`` - Logs only errors to the log file. If you want a tidy log file, this is probably best.
- * ``critical`` - Logs only critical errors (i.e, crashes) to the log file. If you observe a crash, switch the log level to ``debug``.
+ * *info* - Logs general messages. This is probably the next best option for normal users, after ``warn``.
+ * *warn* - The default log level. This is probably the best if you're not working directly on OpenBlox's code, i.e, you just make OpenBlox games.
+ * *error* - Logs only errors to the log file. If you want a tidy log file, this is probably best.
+ * *critical* - Logs only critical errors (i.e, crashes) to the log file. If you observe a crash, switch the log level to ``debug``.
 
 ``log-file``
 ~~~~~~~~~~~~
@@ -78,8 +80,10 @@ This is the log file to write to. By default, it's ``oblog.txt``.
 .. note::
    This is a filename, so make sure it's a valid filename for your OS!
 
-If this is an absolute path (i.e, on Windows, it starts with a drive letter, like ``C:``, or on Unix [like Linux and Mac OSX], it starts with `/`), 
-then the file will be written there. Otherwise, the log file will be inserted in one of 2 directories:
+If this is an absolute path (i.e, on Windows, it starts with a drive letter,
+like ``C:``, or on Unix [like Linux and Mac OSX], it starts with `/`), 
+then the file will be written there.
+Otherwise, the log file will be inserted in one of 2 directories:
 
 * ``%APPDATA%\OpenBlox\``, if you're running Windows
 * ``$HOME/OpenBlox/``, if you're running Unix (Linux or Mac OSX)
@@ -91,11 +95,13 @@ Graphics-related
 ~~~~~~~~~~~~~~
 
 This is an integer that specifies the rate at which the graphics (and the physics) will be updated.
-For example, if ``frame-rate`` is given a value of ``45``, than OpenBlox will refresh/update its graphics and physics 45 times a second.
+For example, if *frame-rate* is given a value of ``45``, than OpenBlox will
+refresh/update its graphics and physics 45 times a second.
 
 .. note::
 
-   For most computers, specifying a value over ``60`` will actually just set the frame rate to ``60``.
+   For most computers, specifying a value over 60 will actually
+   just set the frame rate to 60.
 
 ``use-shadows``
 ~~~~~~~~~~~~~~~
@@ -111,8 +117,8 @@ has a lot of 3D models/bricks.
 
 Valid values are:
 
-* ``yes`` - Use shadows
-* ``no`` - Don't use shadows (the default)
+* *yes* - Use shadows
+* *no* - Don't use shadows (the default)
 
 ``show-frame-rate``
 ~~~~~~~~~~~~~~~~~~~
@@ -122,8 +128,8 @@ If this is enabled, you'll see the frame rate in the top-right corner of your sc
 
 Valid values are:
 
-* ``yes`` - Display the frame rate
-* ``no`` - Don't display the frame rate
+* *yes* - Display the frame rate
+* *no* - Don't display the frame rate
 
 ``resolution``
 ~~~~~~~~~~~~~~
@@ -181,9 +187,62 @@ The ``obconf.cfg`` file format basically looks like this:
 Common gotchas
 ==============
 
-* Variable names *cannot* have spaces
-* Section names *must not* include either ``[`` or ``]``
+* Variable names cannot have spaces
+* Section names cannot include either ``[`` or ``]``
 
+API Reference
+=============
+
+.. exception:: NoSuchOptionError
+
+    Raised when a requested configuration variable isn't found.
+    
+.. exception:: NoSuchSectionError
+
+    Raised when a requested section isn't found.
+
+.. class:: Config
+
+    A Borg [2]_ class.
+
+    .. method:: load(filename)
+
+        Loads all the configuration variables located in *filename*.
+
+        :param filename: The name of the configuration file to load
+        :type filename: `str`
+
+    .. method:: get_var(name [, section='core', default=None])
+
+        Retrieves configuration variable *name* out of *section*.
+
+        :param name: The configuration variable to retrieve
+        :type name: `str`
+        :param section: The section the configuration variable is stored in
+        :type section: `str`
+        :param default: The default value to return, if the requested variable
+                        doesn't exist.
+
+        :returns: The value of the configuration variable named *name*
+        :raises: `NoSuchOptionError` if the given section exists, but the
+                 variable doesn't; `NoSuchSectionError` if the given section
+                 doesn't exist.
+
+        .. note::
+
+            If *default* is not `None`, then *default* is returned, instead
+            of an exception being raised.
+
+    .. method:: add_var(name, val [, section='core'])
+
+        Adds a configuration variable named *name*, with a value of *val* under
+        *section*.
+
+        :param name: The name of the configuration variable to add
+        :type name: `str`
+        :param val: The value of the new configuration variable
+        :param section: The section to put the new configuration variable under
+        :type section: `str`
 
 .. rubric:: Footnotes
 
@@ -191,3 +250,5 @@ Common gotchas
        so games can receive keyboard-like input on many different operating systems
        (including iOS and Android), without having to know which keys each gamer
        prefers to use (or if the device they're playing on has any real keys at all!)
+
+.. [2] http://code.activestate.com/recipes/66531-singleton-we-dont-need-no-stinkin-singleton-the-bo/

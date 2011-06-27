@@ -26,14 +26,12 @@ __author__ = "openblocks"
 __date__  = "$Aug 3, 2010 2:36:03 PM$"
 
 import os
-import getpass
-import sys
 import ConfigParser
 
-import datatypes
-import depman
+import obengine.datatypes
+import obengine.depman
 
-depman.gendeps()
+obengine.depman.gendeps()
 
 
 __all__ = ['Config', 'CFG_FILE']
@@ -46,7 +44,7 @@ def init():
         Config().load(CFG_FILE)
 
 
-class Config(datatypes.Borg):
+class Config(obengine.datatypes.Borg):
     """Provides basic configuration utilites.
     This is a Monostate/Borg class - sections and option values are
     maintained across class instances.
@@ -60,22 +58,6 @@ class Config(datatypes.Borg):
         * filename - absolute path to the configuration file to be loaded.
         It must be in INI format (*not* with the extended Windows syntax).
         """
-
-        WINDOWS_CFG_LOC = 'C:\\Program Files\\OpenBlox'
-        UNIX_CFG_LOC = os.path.join(os.getenv('HOME', '/home/' + getpass.getuser()), 'OpenBlox')
-
-        # If this is True, then we're running normally
-        if '.zip' not in __file__:
-            basedir = __file__[:len(__file__) - len(os.path.join('obengine', 'cfg.py')) - 1]
-
-        # We're running inside a .zip archive, probably for BloxWorks
-        else:
-
-            if sys.platform == 'win32':
-                basedir = WINDOWS_CFG_LOC
-
-            else:
-                basedir = UNIX_CFG_LOC
 
         self.parser = ConfigParser.ConfigParser()
         self._root_dir = os.path.abspath(os.path.dirname(filename))
@@ -102,10 +84,10 @@ class Config(datatypes.Borg):
 
     def get_var(self, name, section = 'core', default = None):
         """Retrieves a configuration variable
-        Retrieves ``name`` out of ``section``, if it exists.
-        Otherwise, if ``name`` is not inside ``section``, then
+        Retrieves `name` out of section, if it exists.
+        Otherwise, if`name` is not inside section, then
         NoOptionError is raised.
-        If ``section`` doesn't exist, then NoSectionError is raised.
+        If section doesn't exist, then NoSectionError is raised.
 
         You probably want to use one of the other, higher-level methods instead,
         unless you've somehow managed to store a custom data type :)
@@ -119,17 +101,17 @@ class Config(datatypes.Borg):
             try:
                 val = self.parser.get(section, name)
 
-            except ConfigParser.NoOptionError:
+            except ConfigParser.NoSuchOptionError:
 
                 if default is None:
-                    raise NoOptionError(name)
+                    raise NoSuchOptionError(name)
 
                 return default
 
             except ConfigParser.NoSectionError:
 
                 if default is None:
-                    raise NoSectionError(section)
+                    raise NoSuchSectionError(section)
 
                 return default
 
@@ -139,30 +121,30 @@ class Config(datatypes.Borg):
                 return val
 
     def get_str(self, name, section = 'core', default = None):
-        """Returns configuration variable ``name``, stringified
-        See Logger.get_var for more documentation.
+        """Returns configuration variable `name`, stringified
+        See Config.get_var for more documentation.
         """
         return str(self.get_var(name, section, default))
 
     def get_int(self, name, section = 'core', default = None):
-        """Returns configuration variable ``name`` as an integer
-        See Logger.get_var for more documentation.
+        """Returns configuration variable `name` as an integer
+        See Config.get_var for more documentation.
         """
         return int(self.get_var(name, section, default))
 
     def get_float(self, name, section = 'core', default = None):
-        """Returns configuration variable ``name`` as a float
-        See Logger.get_var for more documentation.
+        """Returns configuration variable `name` as a float
+        See Config.get_var for more documentation.
         """
         return float(self.get_var(name, section, default))
 
     def get_bool(self, name, section = 'core', default = None):
-        """Returns configuration variable ``name`` as a boolean
-        If the variable marked by ``name``'s value is "yes", then ``True`` is returned.
-        Otherwise, if variable ``name``'s value is "no", then False is returned.
+        """Returns configuration variable `name` as a boolean
+        If the variable marked by `name`'s value is "yes", then True is returned.
+        Otherwise, if variable `name`'s value is "no", then False is returned.
         If it is neither, ValueError is raised.
         
-        See Logger.get_var for more documentation.
+        See Config.get_var for more documentation.
         """
 
         conv_dict = {'yes' : True, 'no' : False}
@@ -174,5 +156,5 @@ class Config(datatypes.Borg):
             raise ValueError('Config variable %s in section %s was not a valid boolean' % (name, section))
 
 class ConfigException(Exception): pass
-class NoOptionError(ConfigException): pass
-class NoSectionError(ConfigException): pass
+class NoSuchOptionError(ConfigException): pass
+class NoSuchSectionError(ConfigException): pass
