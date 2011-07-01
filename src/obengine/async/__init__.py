@@ -1,6 +1,6 @@
 #
 # This is the base package for all of OpenBlox's asynchronous-releated utilites.
-# See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
+# See build/docs/html/core-dev/async.html for the primary source of documentation
 # for this module.
 #
 # Copyright (C) 2011 The OpenBlox Project

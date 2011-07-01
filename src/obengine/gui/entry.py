@@ -30,44 +30,26 @@ __date__  = "$Jun 14, 2011 2:26:44 AM$"
 import obengine.event
 import obengine.datatypes
 import obengine.depman
-from obengine.gui import Widget, WidgetPresenter, MockWidgetView
-
-
+from obengine.gui import TextWidget, TextWidgetPresenter, MockTextWidgetView
 obengine.depman.gendeps()
 
-class Entry(Widget):
+
+class Entry(TextWidget):
 
     def __init__(self, initial_text = '', position = None):
 
-        Widget.__init__(self, position)
-
-        self._text = initial_text
-
-        self.on_text_changed = obengine.event.Event()
+        TextWidget.__init__(self, initial_text, position)
         self.on_submitted = obengine.event.Event()
-
-    @obengine.datatypes.nested_property
-    def text():
-
-        def fget(self):
-            return self._text
-
-        def fset(self, new_text):
-
-            self._text = new_text
-            self.on_text_changed(self.text)
-
-        return locals()
 
     def submit(self):
         self.on_submitted()
 
 
-class EntryPresenter(WidgetPresenter):
+class EntryPresenter(TextWidgetPresenter):
 
     def __init__(self, entry_model, entry_view):
 
-        WidgetPresenter.__init__(self, entry_model, entry_view)
+        TextWidgetPresenter.__init__(self, entry_model, entry_view)
 
         self._view.on_submitted += self._model.submit
         self._view.on_text_changed += self._update_model_text
@@ -78,50 +60,16 @@ class EntryPresenter(WidgetPresenter):
     def submit(self):
         self._view.submit()
 
-    @obengine.datatypes.nested_property
-    def text():
-
-        def fget(self):
-            return self._model.text
-
-        def fset(self, new_text):
-
-            # Why don't we update our model's text
-            # here, too? Because in __init__, we bound our _update_model_text
-            # handler, that automatically updates our model's text whenever
-            # our view's text changes.
-
-            self._view.text = new_text
-
-        return locals()
-
     def _update_model_text(self, new_text):
         self._model.text = new_text
 
 
-class MockEntryView(MockWidgetView):
+class MockEntryView(MockTextWidgetView):
 
     def __init__(self, initial_text = '', position = None):
-
-        MockWidgetView.__init__(self, position)
-
-        self._text = initial_text
-
+        
+        MockTextWidgetView.__init__(self, initial_text, position)
         self.on_submitted = obengine.event.Event()
-        self.on_text_changed = obengine.event.Event()
 
     def submit(self):
         self.on_submitted()
-
-    @obengine.datatypes.nested_property
-    def text():
-
-        def fget(self):
-            return self._text
-
-        def fset(self, new_text):
-
-            self._text = new_text
-            self.on_text_changed(self.text)
-
-        return locals()

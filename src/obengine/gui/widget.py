@@ -30,6 +30,7 @@ import obengine.datatypes
 import obengine.event
 import obengine.math
 import obengine.depman
+
 obengine.depman.gendeps()
 
 
@@ -151,6 +152,40 @@ class Widget(object):
         self._focused = False
 
 
+class ClickableWidget(Widget):
+
+    def __init__(self, position = None):
+
+        Widget.__init__(self, position)
+
+        self.on_click = obengine.event.Event()
+        self.on_hidden += self.on_click.disable
+        self.on_shown += self.on_click.enable
+
+
+class TextWidget(Widget):
+
+    def __init__(self, text, position):
+
+        Widget.__init__(self, position)
+
+        self._text = text
+        self.on_text_changed = obengine.event.Event()
+
+    @obengine.datatypes.nested_property
+    def text():
+
+        def fget(self):
+            return self._text
+
+        def fset(self, new_text):
+
+            self._text = new_text
+            self.on_text_changed(new_text)
+
+        return locals()
+
+
 class WidgetPresenter(object):
 
     def __init__(self, widget_model, widget_view):
@@ -167,8 +202,8 @@ class WidgetPresenter(object):
         self.on_hidden = self._model.on_hidden
 
         self._view.on_size_changed += self._update_size
-        self._view.on_focus_gained = self._model.on_focus_gained
-        self._view.on_focus_lost = self._model.on_focus_lost
+        self._view.on_focus_gained += self._model.on_focus_gained
+        self._view.on_focus_lost += self._model.on_focus_lost
         self.show = self._model.show
         self.hide = self._model.hide
 
@@ -182,6 +217,14 @@ class WidgetPresenter(object):
 
             self._model.position = new_pos
             self._view.position = new_pos
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def size():
+
+        def fget(self):
+            return self._view.size
 
         return locals()
 
@@ -211,6 +254,37 @@ class WidgetPresenter(object):
 
     def _update_size(self, new_size):
         self._model.size = new_size
+
+
+class ClickableWidgetPresenter(WidgetPresenter):
+
+    def __init__(self, widget_model, widget_view):
+
+        WidgetPresenter.__init__(self, widget_model, widget_view)
+
+        self.on_click = self._model.on_click
+        self._view.on_click += self.on_click
+
+
+class TextWidgetPresenter(WidgetPresenter):
+
+    def __init__(self, widget_model, widget_view):
+
+        WidgetPresenter.__init__(self, widget_model, widget_view)
+        self.on_text_changed = self._model.on_text_changed
+
+    @obengine.datatypes.nested_property
+    def text():
+
+        def fget(self):
+            return self._model.text
+
+        def fset(self, new_text):
+
+            self._view.text = new_text
+            self._model.text = new_text
+
+        return locals()
 
 
 class MockWidgetView(object):
@@ -271,6 +345,40 @@ class MockWidgetView(object):
             else:
                 self._position = new_pos
 
-            self.on_position_changed(self._position)
+        return locals()
+
+
+class MockClickableWidgetView(MockWidgetView):
+
+    def __init__(self, position = None):
+
+        MockWidgetView.__init__(self, position)
+        self.on_click = obengine.event.Event()
+
+
+class MockTextWidgetView(MockWidgetView):
+
+    _TEXT_SCALE = 0.5
+    _VERTICAL_TEXT_SIZE = 0.5
+
+    def __init__(self, text = '', position = None):
+
+        MockWidgetView.__init__(self, position)
+
+        self.on_text_changed = obengine.event.Event()
+        self.text = text
+
+    @obengine.datatypes.nested_property
+    def text():
+
+        def fget(self):
+            return self._text
+
+        def fset(self, new_text):
+
+            self._text = new_text
+            self._size = obengine.math.Vector2D(
+            len(self.text) * MockTextWidgetView._TEXT_SCALE,
+            MockTextWidgetView._VERTICAL_TEXT_SIZE)
 
         return locals()

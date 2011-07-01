@@ -66,11 +66,7 @@ def init():
         # Get the actual module, instead of the name
         module = sys.modules[module]
 
-        # Initalize this module.
-        # Since we iterate over modules closer to their
-        # respective package's root, we know packages higher up the
-        # package tree are properly initalized.
-        # Pretty neat, huh?
+        # Initalize this module, if it needs to be
         
         if hasattr(module, 'init'):
             module.init()
@@ -78,7 +74,7 @@ def init():
         # Another neat trick. atexit seems to store functions to be called on program
         # exit as a list, and every atexit.register call invokes list.append.
         # So, this means functions are called on a first-come, first-served
-        # (i.e, FIFO) basis: the sooner they're call atexit.register,
+        # (i.e, FIFO) basis: the sooner they're given to atexit.register,
         # the sooner atexit.register calls them, which perfectly coincides with
         # the way we store collected modules!
         

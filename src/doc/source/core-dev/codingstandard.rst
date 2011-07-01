@@ -7,8 +7,12 @@ closely follows Python PEP 8 (http://www.python.org/dev/peps/pep-0008/).
 If you have any questions concerning this document, send
 a message to OpenBlox (http://openblox.sf.net/users/openblox).
 
+.. note::
+
+    If you haven't already, read the :doc:`OpenBlox CLA (Contributor License Agreement) </core-dev/cla>`.
+
 General
--------
+=======
 
 * Indentation is done with 4 spaces. Never, *ever*, use tabs.
 * Use UNIX-style newline endings for all files you create/modfiy.
@@ -38,7 +42,7 @@ General
         # python convert_newlines.py
 
 Comments
----------
+========
 
 * Regular comments (beginning with #) have a space after the hash, ``# like this``.
 * If the comment is for a conditional construct, the comment is placed immediately proceeding the construct.
@@ -57,7 +61,7 @@ Examples::
     complicated_method(f, o, o, b, a, r, s, p, a, m, e, g, g, s)
 
 Docstrings
------------
+==========
 
 * Every module, function, and public class method should have a docstring.
 * Docstrings should be written with normal text.
@@ -77,7 +81,7 @@ Docstrings
   and to provide a form of runnable documentation.
 
 Unit testing
-------------
+============
 
 A unit test is like the doctests inside a docstring (indeed, they look basically
 identical), but each unit test is in a seperate file, contained in the ``test-suite``
@@ -104,7 +108,7 @@ Example::
     This line is also ignored.
 
 Variables
-----------
+=========
 
 * Variables are named ``like_this`` (Constants, however, are named ``LIKE_THIS``).
 * Variables are declared at the start of their owning module or class.
@@ -151,7 +155,7 @@ Examples::
          print 'the first non-loop line'
          
 Methods/Functions
------------------
+=================
 
 * Methods are named ``like_this``.
 * Private methods begin with ``_``.
@@ -171,7 +175,7 @@ Example::
 
 
 Classes
---------
+=======
 
 * Classes are titled ``LikeThis``.
 * If the class does not *need* to inherit from anything in partictular, it needs to inherit from object (to ensure compatability with Python 2.6/2.5).
@@ -209,7 +213,7 @@ Example::
             print a
 
 Modules
---------
+=======
 
 * Modules have this header, at their beginning::
 

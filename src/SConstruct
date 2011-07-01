@@ -62,6 +62,8 @@ def configure():
         Exit(1)
 
     env = conf.Finish()
+    print '''Configuration finished successfully! Type 'scons runtime' to build
+the OpenBlox runtime!'''
 
 def RecursiveGlob(startdir, pattern):
 

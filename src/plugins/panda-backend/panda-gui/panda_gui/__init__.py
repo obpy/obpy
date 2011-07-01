@@ -1,5 +1,5 @@
 #
-# This module implements a simple text label.
+# Base package for the Panda3D/DirectGUI renderer for obengine.gui.
 # See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
 # for this module.
 #
@@ -23,30 +23,24 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 10, 2011 4:44:38 PM$"
+__date__  = "$Jun 29, 2011 11:55:13 AM$"
 
 
-import obengine.datatypes
-import obengine.event
-import obengine.depman
-from obengine.gui import TextWidget, TextWidgetPresenter, MockTextWidgetView
-obengine.depman.gendeps()
+# By default, Panda3D/DirectGUI's 2d rendering coords. are 2.0x2.6, so we'll
+# use this tuple scale it to 100x100 (as per the OpenBlox GUI specs)
+
+ASPECT2D_SCALE = (1.0 / 38.46, 1, 1.0 / 50)
 
 
-class Label(TextWidget):
-    """Represents a simple label"""
+def init():
 
-    def __init__(self, text, position = None):
-        TextWidget.__init__(self, text, position)
+    # The aspect2d "ghost" variable comes from Panda3D's ShowBase class,
+    # which sticks the render window's 2D rendering scene node in __builtin__, under
+    # the name aspect2d.
+    # Note that this necessitates first loading the Panda3D graphics plugin
+    # AND an instance of obplugin.panda_graphics.Window be instantiated
+    # in order for this plugin to work.
 
+    aspect2d.setScale(*ASPECT2D_SCALE)
 
-class LabelPresenter(TextWidgetPresenter):
-
-    def __init__(self, label_model, label_view):
-        TextWidgetPresenter.__init__(self, label_model, label_view)
-
-
-class MockLabelView(MockTextWidgetView):
-
-    def __init__(self, text, position = None):
-        MockTextWidgetView.__init__(self, text, position)
+from button import *

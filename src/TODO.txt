@@ -75,14 +75,6 @@ sucessfully tested in the field (being actually deployed and used,
 and little to no bug reports coming back), so this can wait until OpenBlox 0.7.1/2,
 if it has to.
 
-Mac OSX installer
------------------
-
-Currently, to install OpenBlox on Mac OSX, you have to have some knowledge of
-the terminal (due to InstallJammer not working on Mac OSX). Until an
-OSX maintainer comes on board for OpenBlox (or an alternative installer generator
-popping up), this will probably stay this way for a while.
-
 OBPlay and OBPack
 -----------------
 
@@ -105,3 +97,11 @@ OBFreeze
 
 This *is* an exciting feature, but it's currently not necessary, so it can wait
 until OpenBlox 0.7.1/2/3 or even OpenBlox 0.8, if it has to.
+
+Mac OSX installer
+-----------------
+
+Currently, to install OpenBlox on Mac OSX, you have to have some knowledge of
+the terminal (due to InstallJammer not working on Mac OSX). Until an
+OSX maintainer comes on board for OpenBlox (or an alternative installer generator
+popping up), this will probably stay this way for a while.

@@ -64,7 +64,7 @@ class MemoryFS(basefs.BaseFS):
                 if not cur_node.has_key(node):
 
                     if mode == 'r':
-                        raise IOError(path)
+                        raise basefs.ReadError(path)
 
                     # We're in write mode, so create the directory
                     if cur_node != self.fs:
@@ -78,13 +78,13 @@ class MemoryFS(basefs.BaseFS):
 
         # Does the current directory contain our file?
         if cur_node.has_key(filename) is False and mode == 'r':
-            raise IOError(path)
+            raise basefs.ReadError(path)
 
         elif cur_node.has_key(filename):
 
             # The sneaky user tried to read/write a directory!
             if isinstance(cur_node[filename], dict):
-                raise IOError(path)
+                raise basefs.BadPathException(path)
 
         # Create a new, empty file if we're in write mode
         elif mode == 'w':
@@ -118,7 +118,7 @@ class MemoryFS(basefs.BaseFS):
             del self.fs[path]
 
         except KeyError:
-            raise IOError(path)
+            raise basefs.BadPathException(path)
 
     def listdir(self, path = basefs.SEPERATOR):
 

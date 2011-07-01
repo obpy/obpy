@@ -29,12 +29,14 @@ __date__  = "$Jun 9, 2011 12:58:53 AM$"
 import obengine.math
 import obengine.datatypes
 import obengine.event
-from obengine.gui import Widget
+from obengine.gui import ClickableWidget, TextWidget
+from obengine.gui import ClickableWidgetPresenter, TextWidgetPresenter
+from obengine.gui import MockClickableWidgetView, MockTextWidgetView
 import obengine.depman
 obengine.depman.gendeps()
 
 
-class Button(Widget):
+class Button(ClickableWidget, TextWidget):
     """Represents a button.
     Example:
 
@@ -51,114 +53,34 @@ class Button(Widget):
 
     def __init__(self, text, position = None, icon = None):
 
-        Widget.__init__(self, position)
+        ClickableWidget.__init__(self, position)
+        TextWidget.__init__(self, text, position)
 
-        self._text = text
         self._icon = icon
-
-        self.on_click = obengine.event.Event()
-        self.on_text_changed = obengine.event.Event()
-
-        self.on_hidden += self.on_click.disable
-        self.on_shown += self.on_click.enable
-
-    @obengine.datatypes.nested_property
-    def text():
-
-        def fget(self):
-            return self._text
-
-        def fset(self, new_text):
-
-            self._text = new_text
-            self.on_text_changed(new_text)
-
-        return locals()
 
     @property
     def icon(self):
         return self.icon
 
 
-class ButtonPresenter(object):
+class ButtonPresenter(ClickableWidgetPresenter, TextWidgetPresenter):
 
     def __init__(self, button_model, button_view):
 
-        self._model = button_model
-        self._view = button_view
-
-        self.on_click = self._model.on_click
-        self.on_position_changed = self._model.on_position_changed
-        self.on_text_changed = self._model.on_text_changed
-
-        self._view.on_click += self.on_click
-
-    @obengine.datatypes.nested_property
-    def position():
-
-        def fget(self):
-            return self._model.position
-
-        def fset(self, new_pos):
-
-            self._model.position = new_pos
-            self._view.position = new_pos
-
-        return locals()
-
-    @obengine.datatypes.nested_property
-    def text():
-
-        def fget(self):
-            return self._model.text
-
-        def fset(self, new_text):
-
-            self._model.text = new_text
-            self._view.text = new_text
-
-        return locals()
-
-    @property
-    def size(self):
-        return self._view.size
+        ClickableWidgetPresenter.__init__(self, button_model, button_view)
+        TextWidgetPresenter.__init__(self, button_model, button_view)
 
     @property
     def icon(self):
         return self._model.icon
 
 
-class MockButtonView(object):
+class MockButtonView(MockClickableWidgetView, MockTextWidgetView):
     """A mock button view, for testing"""
 
-    _TEXT_SCALE = 0.5
-    _VERTICAL_TEXT_SIZE = 0.5
+    def __init__(self, text = '', position = None, icon = None):
 
-    def __init__(self, text = '', position = None, icon = None, size = None):
+        MockClickableWidgetView.__init__(self, position)
+        MockTextWidgetView.__init__(self, text, position)
 
-        self.position = position or obengine.math.Vector2D()
-        self._size = size or obengine.math.Vector2D()
-
-        self.on_click = obengine.event.Event()
-        self.text = text
         self.icon = icon
-
-    @obengine.datatypes.nested_property
-    def text():
-
-        def fget(self):
-            return self._text
-
-        def fset(self, new_text):
-
-            self._text = new_text
-            
-            self._size = obengine.math.Vector2D(
-            len(self.text) * MockButtonView._TEXT_SCALE,
-            MockButtonView._VERTICAL_TEXT_SIZE)
-
-        return locals()
-
-    @property
-    def size(self):
-        return self._size

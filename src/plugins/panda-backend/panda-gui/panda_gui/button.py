@@ -1,5 +1,7 @@
 #
-# This plugin provides a Panda3D-based GUI rendering backend.
+# <module description>
+# See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
+# for this module.
 #
 # Copyright (C) 2011 The OpenBlox Project
 #
@@ -20,4 +22,14 @@
 #
 
 
-__author__ = 'openblocks'
+__author__ = "openblocks"
+__date__  = "$Jun 30, 2011 12:06:54 AM$"
+
+
+import obengine.event
+
+
+class ButtonView(object):
+
+    def __init__(self):
+        pass

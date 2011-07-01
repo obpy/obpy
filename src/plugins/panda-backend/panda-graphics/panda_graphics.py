@@ -102,13 +102,7 @@ class Model(PandaResource):
         the model is ready to be used.
         """
 
-        if async is True:
-            self.window.panda_window.loader.loadModel(self.panda_model_path, callback = self._set_load_okay)
-
-        else:
-
-            model = self.window.panda_window.loader.loadModel(self.panda_model_path)
-            self._set_load_okay(model)
+        self.window.panda_window.loader.loadModel(self.panda_model_path, callback = self._set_load_okay)
 
     @property
     def showing(self):
