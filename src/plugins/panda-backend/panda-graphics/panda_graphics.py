@@ -27,49 +27,20 @@ __date__  = "$May 2, 2011 5:37:04 PM$"
 from panda3d.core import *
 from direct.showbase.ShowBase import ShowBase
 
-import obengine.depman
 import obengine.cfg
 import obengine.log
 import obengine.event
 import obengine.async
 import obengine.vfs
+import obengine.plugin
 import obengine.gfx.math
-
-obengine.depman.gendeps()
-COLOR_SCALER = 255.0
-
-
-class PandaResource(object):
-    """
-    Base resource class containing various OpenBlox-to-Panda3D conversion utilities.
-    It also provides a common, guaranteed interface for all Panda3D resources.
-    """
-
-    def __init__(self):
-        self.on_loaded = obengine.event.Event()
-
-    def panda_path(self, path):
-
-        if obengine.vfs.SEPERATOR in path:
-            return Filename.fromOsSpecific(obengine.vfs.getsyspath(path))
-        
-        else:
-            return path
-
-    def convert_color(self, color):
-        return Vec4(*map(lambda i : i / COLOR_SCALER, [color.r, color.g, color.b, color.a]))
-
-    def convert_vector(self, vector):
-        return Vec3(vector.x, vector.y, vector.z)
-
-    def convert_euler_angle(self, angle):
-        return [angle.h, angle.p, angle.r]
+from obplugin.panda_utils import PandaResource, COLOR_SCALER
 
 
 class Model(PandaResource):
     """
     Represents a Panda3D model.
-    NOTE: UV textures loaded at runtime are currently NOT supported!
+    NOTE: Textures loaded at runtime are currently NOT supported!
     
     """
 
@@ -390,6 +361,7 @@ class Light(PandaResource):
         if self._casting_shadows == True:
             obengine.utils.warn('Tried to turn on shadows for an ambient light')
 
+
 class Window(object):
 
     RENDER_PRIORITY = 10
@@ -429,7 +401,6 @@ class Window(object):
         self.panda_window.render.setShaderAuto()
 
         getModelPath().appendPath(self.search_path)
-
         self.on_loaded()
 
         return task.STOP

@@ -34,19 +34,22 @@ class Plugin(object):
     though there could be other uses.
     """
 
-    def __init__(self, name, root_module, root_dir, provides):
+    def __init__(self, name, root_module, root_dir, provides, requires = []):
         """
         Arguments:
          * name - the name of this plugin
          * root_module - the Python module to import; it must be inside root_dir
          * root_dir - the path (absolute or relative) to the directory containing the plugin's plugin.ini file
-         * provides - the list of facilites (virtual plugins) that this plugin provides.
+         * provides - the list of facilites (virtual plugins) that this plugin provides
+         * requires - the list of plugins (possibly virtual) that this plugin
+                      requires to run
         """
 
         self.name = name
         self.root_module = root_module
         self.root_dir = root_dir
         self.provides = provides
+        self.requires = requires
 
     def load(self):
         """

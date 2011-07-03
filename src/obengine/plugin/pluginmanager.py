@@ -132,6 +132,10 @@ class PluginManager(object):
         self.on_plugin_found(root_dir)
 
         plugin = self._parse_plugin_dir(root_dir)
+
+        for requirement in plugin.requires:
+            require(requirement)
+            
         plugin.load()
 
         self.add_plugin(plugin)
@@ -140,7 +144,7 @@ class PluginManager(object):
     def initialize_plugin(self, plugin):
         
         self._logger.debug('Initalizing plugin %s' % plugin.name)
-        
+
         plugin.init()
         self.on_plugin_initialized(plugin)
 
@@ -185,16 +189,21 @@ class PluginManager(object):
 
         name = parser.get('core', 'name')
         module = parser.get('core', 'module')
-        provides = self._get_optional_split_option(parser, 'core', 'provides', ['none'], ',')
+        provides = self._get_optional_split_option(parser, 'core', 'provides')
+        provides.append(module)
+        requires = self._get_optional_split_option(parser, 'core', 'requires')
 
-        plugin = Plugin(name, module, root_dir, provides)
+        plugin = Plugin(name, module, root_dir, provides, requires)
         return plugin
 
     def _get_optional_option(self, config_parser, section, option, default = None):
         return config_parser.has_option(section, option) and config_parser.get(section, option) or default
 
-    def _get_optional_split_option(self, config_parser, section, option, default = None, splitter = ' '):
+    def _get_optional_split_option(self, config_parser, section, option, default = None, splitter = ','):
 
+        if default is None:
+            default = []
+            
         val = self._get_optional_option(config_parser, section, option, default)
 
         if val != default:

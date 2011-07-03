@@ -23,7 +23,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 30, 2011 12:06:54 AM$"
+__date__  = "$Jul 2, 2011 3:20:40 PM$"
 
 
 import direct.gui.DirectGui
@@ -35,37 +35,27 @@ import obengine.event
 import widget
 
 
-class ButtonView(widget.WidgetView):
+class EntryView(widget.WidgetView):
 
-    def __init__(self, text = '', position = None, icon = None):
+    _font = loader.loadFont('cmtt12')
 
-        self.on_click = obengine.event.Event()
-        
-        self._widget = direct.gui.DirectGui.DirectButton(
+    def __init__(self, text = '', position = None, length = 15):
+
+        self.on_submitted = obengine.event.Event()
+        self._widget = direct.gui.DirectGui.DirectEntry(
         scale = widget.WidgetView.WIDGET_SCALE,
-        image = icon,
-        textMayChange = True,
-        command = self.on_click
+        entryFont = EntryView._font,
+        width = length / 2 + (1, 0.5)[length % 2 == 0],
+        command = self.on_submitted,
+        initialText = text
         )
 
         widget.WidgetView.__init__(self, position)
-        self.text = text
-        
+
     @obengine.datatypes.nested_property
     def text():
 
         def fget(self):
-            return self._widget['text']
-
-        def fset(self, new_text):
-
-            old_size = self.size
-            self._widget['text'] = new_text
-            self._widget.setText()
-            self._widget.resetFrameSize()
-            new_size = self.size
-
-            if old_size.x != new_size.x or old_size.y != new_size.y:
-                self.on_size_changed(new_size)
+            return self._widget.get(plain = True)
 
         return locals()

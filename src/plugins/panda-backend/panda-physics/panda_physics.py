@@ -23,41 +23,15 @@ __author__ = "openblocks"
 __date__  = "$May 2, 2011 12:30:08 PM$"
 
 
-from panda3d.core import Vec3, Quat
 from copperode import odeWorldManager
 from copperode import staticObject, dynamicObject
 
 import obengine.event
 import obengine.async
+import obengine.plugin
 import obengine.gfx.math
 import obengine.log
-import obengine.depman
-
-obengine.depman.gendeps()
-
-
-class PandaConverter(object):
-
-    @staticmethod
-    def convert_vector(vector):
-        return Vec3(vector.x, vector.y, vector.z)
-
-    @staticmethod
-    def convert_angle(angle):
-
-        q = Quat()
-        q.setHpr(Vec3(angle.h, angle.p, angle.r))
-        return q
-
-    @staticmethod
-    def convert_vec3(vector):
-        return obengine.gfx.math.Vector(vector.getX(), vector.getY(), vector.getZ())
-
-    @staticmethod
-    def convert_quat(quat):
-
-        vec = Vec3(quat)
-        return PandaConverter.convert_vec3(vec)
+from obplugin.panda_utils import PandaConverter
 
 
 class World(object):

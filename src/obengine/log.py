@@ -150,4 +150,4 @@ def critical(string):
 
 
 def _get_calling_package():
-    return getframe(2).f_globals.get('__name__', 'root')
+    return getframe(3).f_globals.get('__name__', 'root')

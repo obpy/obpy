@@ -1,5 +1,7 @@
+# To change this template, choose Tools | Templates
+# and open the template in the editor.
 #
-# Base package for the Panda3D/DirectGUI renderer for obengine.gui.
+# <module description>
 # See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
 # for this module.
 #
@@ -23,9 +25,23 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 29, 2011 11:55:13 AM$"
+__date__  = "$Jul 1, 2011 1:03:59 PM$"
 
 
-from button import *
-from label import *
-from entry import *
+import obengine.math
+import obplugin.panda_utils
+
+
+def panda_to_openblox_pos(position):
+    # This method is currently broken!
+
+    coords = map(lambda c: c * 100.0, position)
+    return obengine.math.Vector2D(*coords)
+
+
+def openblox_to_panda_pos(position):
+
+    vector = obengine.math.Vector2D(position.x, position.y)
+    vector.x /= 100.0
+    vector.y /= 100.0
+    return obplugin.panda_utils.PandaConverter.convert_vector2d(vector)

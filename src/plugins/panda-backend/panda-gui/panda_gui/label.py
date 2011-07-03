@@ -1,3 +1,4 @@
+
 #
 # <module description>
 # See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
@@ -23,7 +24,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 30, 2011 12:06:54 AM$"
+__date__  = "$Jul 1, 2011 4:07:21 PM$"
 
 
 import direct.gui.DirectGui
@@ -35,22 +36,19 @@ import obengine.event
 import widget
 
 
-class ButtonView(widget.WidgetView):
+class LabelView(widget.WidgetView):
 
-    def __init__(self, text = '', position = None, icon = None):
+    def __init__(self, text = '', position = None):
 
-        self.on_click = obengine.event.Event()
-        
-        self._widget = direct.gui.DirectGui.DirectButton(
+        self._widget = direct.gui.DirectGui.DirectLabel(
         scale = widget.WidgetView.WIDGET_SCALE,
-        image = icon,
-        textMayChange = True,
-        command = self.on_click
+        frameColor = (0, 0, 0, 0),
+        textMayChange = True
         )
 
         widget.WidgetView.__init__(self, position)
         self.text = text
-        
+
     @obengine.datatypes.nested_property
     def text():
 

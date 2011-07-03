@@ -1,5 +1,5 @@
 #
-# <module description>
+# This module provides the base logic for rendering GUI widgets with Panda3D/DirectGUI.
 # See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
 # for this module.
 #
@@ -23,49 +23,53 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 30, 2011 12:06:54 AM$"
+__date__  = "$Jul 1, 2011 2:57:27 PM$"
 
 
-import direct.gui.DirectGui
-import direct.gui.DirectGuiGlobals
+import uuid
 
 import obengine.math
 import obengine.datatypes
 import obengine.event
-import widget
+import utils
 
 
-class ButtonView(widget.WidgetView):
+class WidgetView(object):
 
-    def __init__(self, text = '', position = None, icon = None):
+    WIDGET_SCALE = 0.05
 
-        self.on_click = obengine.event.Event()
-        
-        self._widget = direct.gui.DirectGui.DirectButton(
-        scale = widget.WidgetView.WIDGET_SCALE,
-        image = icon,
-        textMayChange = True,
-        command = self.on_click
-        )
+    def __init__(self, position = None):
 
-        widget.WidgetView.__init__(self, position)
-        self.text = text
-        
+        self.on_size_changed = obengine.event.Event()
+        self.position = position or obengine.math.Vector2D()
+        base.taskMgr.add(self._update_pos, 'widget_pos' + str(uuid.uuid1()))
+
     @obengine.datatypes.nested_property
-    def text():
+    def position():
 
         def fget(self):
-            return self._widget['text']
+            return self._position
 
-        def fset(self, new_text):
+        def fset(self, new_pos):
 
-            old_size = self.size
-            self._widget['text'] = new_text
-            self._widget.setText()
-            self._widget.resetFrameSize()
-            new_size = self.size
-
-            if old_size.x != new_size.x or old_size.y != new_size.y:
-                self.on_size_changed(new_size)
+            self._position = new_pos
+            panda_vector = utils.openblox_to_panda_pos(new_pos)
+            self._widget.setPos(render2d, panda_vector)
 
         return locals()
+
+    @obengine.datatypes.nested_property
+    def size():
+
+        def fget(self):
+
+            width = (self._widget.getWidth()) / 2
+            height = (self._widget.getHeight()) / 2
+
+            return obengine.math.Vector2D(width, height)
+
+        return locals()
+
+    def _update_pos(self, task):
+        self.position = self.position
+        return task.cont
