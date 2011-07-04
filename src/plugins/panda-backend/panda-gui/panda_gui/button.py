@@ -25,7 +25,7 @@
 __author__ = "openblocks"
 __date__  = "$Jun 30, 2011 12:06:54 AM$"
 
-
+from panda3d.core import TransparencyAttrib
 import direct.gui.DirectGui
 import direct.gui.DirectGuiGlobals
 
@@ -35,37 +35,22 @@ import obengine.event
 import widget
 
 
-class ButtonView(widget.WidgetView):
+class ButtonView(widget.TextWidgetView):
 
     def __init__(self, text = '', position = None, icon = None):
 
         self.on_click = obengine.event.Event()
         
         self._widget = direct.gui.DirectGui.DirectButton(
-        scale = widget.WidgetView.WIDGET_SCALE,
+        scale = widget.WIDGET_SCALE,
         image = icon,
+        image_pos = (-2.5, 0, 0.1),
+        relief = direct.gui.DirectGuiGlobals.FLAT,
+        #frameVisibleScale = (1.2, 1.2),
         textMayChange = True,
         command = self.on_click
         )
-
-        widget.WidgetView.__init__(self, position)
-        self.text = text
+        for state in range(0, 4):
+            self._widget.component('image' + str(state)).setTransparency(TransparencyAttrib.MAlpha)
         
-    @obengine.datatypes.nested_property
-    def text():
-
-        def fget(self):
-            return self._widget['text']
-
-        def fset(self, new_text):
-
-            old_size = self.size
-            self._widget['text'] = new_text
-            self._widget.setText()
-            self._widget.resetFrameSize()
-            new_size = self.size
-
-            if old_size.x != new_size.x or old_size.y != new_size.y:
-                self.on_size_changed(new_size)
-
-        return locals()
+        widget.TextWidgetView.__init__(self, text, position)

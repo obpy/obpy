@@ -1,4 +1,3 @@
-
 #
 # <module description>
 # See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
@@ -36,34 +35,14 @@ import obengine.event
 import widget
 
 
-class LabelView(widget.WidgetView):
+class LabelView(widget.TextWidgetView):
 
     def __init__(self, text = '', position = None):
 
         self._widget = direct.gui.DirectGui.DirectLabel(
-        scale = widget.WidgetView.WIDGET_SCALE,
+        scale = widget.WIDGET_SCALE,
         frameColor = (0, 0, 0, 0),
         textMayChange = True
         )
 
-        widget.WidgetView.__init__(self, position)
-        self.text = text
-
-    @obengine.datatypes.nested_property
-    def text():
-
-        def fget(self):
-            return self._widget['text']
-
-        def fset(self, new_text):
-
-            old_size = self.size
-            self._widget['text'] = new_text
-            self._widget.setText()
-            self._widget.resetFrameSize()
-            new_size = self.size
-
-            if old_size.x != new_size.x or old_size.y != new_size.y:
-                self.on_size_changed(new_size)
-
-        return locals()
+        widget.TextWidgetView.__init__(self, text, position)

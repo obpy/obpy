@@ -16,9 +16,14 @@ def draw_button(sched):
     import obplugin.core.gui
 
     def clicked():
-        lv.text = 'Button Clicked!'
 
-    bv = obplugin.core.gui.ButtonView('Button', obengine.math.Vector2D(30, 0))
+        print 'Before text change:', lv.size
+        lv.text = 'Button Clicked!'
+        print 'After text change:', lv.size
+        print 'bv.size:', bv.size
+        print 'ev.size:', ev.size
+
+    bv = obplugin.core.gui.ButtonView('Button', obengine.math.Vector2D(30, 0), '../../data/sky1.png')
     bv.on_click += clicked
 
     lv = obplugin.core.gui.LabelView('Label')

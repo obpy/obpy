@@ -34,9 +34,11 @@ import obengine.event
 import utils
 
 
-class WidgetView(object):
+WIDGET_SCALE = 0.05
+PANDA_TO_OPENBLOX_SCALE = 100.0
 
-    WIDGET_SCALE = 0.05
+
+class WidgetView(object):
 
     def __init__(self, position = None):
 
@@ -63,8 +65,8 @@ class WidgetView(object):
 
         def fget(self):
 
-            width = (self._widget.getWidth()) / 2
-            height = (self._widget.getHeight()) / 2
+            width = (self._widget.getWidth()) * WIDGET_SCALE * PANDA_TO_OPENBLOX_SCALE
+            height = (self._widget.getHeight()) * WIDGET_SCALE * PANDA_TO_OPENBLOX_SCALE
 
             return obengine.math.Vector2D(width, height)
 
@@ -73,3 +75,30 @@ class WidgetView(object):
     def _update_pos(self, task):
         self.position = self.position
         return task.cont
+
+
+class TextWidgetView(WidgetView):
+
+    def __init__(self, text = '', position = None):
+
+        WidgetView.__init__(self, position)
+        self.text = text
+
+    @obengine.datatypes.nested_property
+    def text():
+
+        def fget(self):
+            return self._widget['text']
+
+        def fset(self, new_text):
+
+            old_size = self.size
+            self._widget['text'] = new_text
+            self._widget.setText()
+            self._widget.resetFrameSize()
+            new_size = self.size
+
+            if old_size.x != new_size.x or old_size.y != new_size.y:
+                self.on_size_changed(new_size)
+
+        return locals()

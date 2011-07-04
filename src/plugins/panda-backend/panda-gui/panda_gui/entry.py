@@ -43,7 +43,7 @@ class EntryView(widget.WidgetView):
 
         self.on_submitted = obengine.event.Event()
         self._widget = direct.gui.DirectGui.DirectEntry(
-        scale = widget.WidgetView.WIDGET_SCALE,
+        scale = widget.WIDGET_SCALE,
         entryFont = EntryView._font,
         width = length / 2 + (1, 0.5)[length % 2 == 0],
         command = self.on_submitted,
