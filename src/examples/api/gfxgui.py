@@ -12,7 +12,6 @@ import obengine.plugin
 
 def draw_button(sched):
 
-    obengine.plugin.require('core.gui')
     import obplugin.core.gui
 
     def clicked():
@@ -35,6 +34,7 @@ def main():
     obengine.cfg.Config().load(os.path.join(os.pardir, os.pardir, 'obconf.cfg'))
     obengine.init()
     obengine.plugin.require('core.graphics')
+    obengine.plugin.require('core.gui')
 
     import obplugin.core.graphics
 
