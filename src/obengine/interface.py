@@ -22,10 +22,13 @@
 #     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
 __author__ = "openblocks"
 __date__  = "$Apr 14, 2011 3:33:49 AM$"
 
+
 import inspect
+
 
 def _implements(obj, interface):
 
@@ -50,6 +53,7 @@ def _implements(obj, interface):
 
         if interface_method_argspec != obj_method_argspec:
             raise InterfaceMethodError, interface_method
+
 
 def implements(*args):
     """
@@ -88,7 +92,7 @@ def implements(*args):
         >>> implements(TestClass, TestInterface3)
         False
 
-    As you can see, `implements` checks not only for defined attributes, it checks
+    As you can see, implements checks not only for defined attributes, it checks
     method signatures as well.
 
     You can also check for compliance with multiple interfaces at once:
@@ -98,8 +102,8 @@ def implements(*args):
         >>> implements(TestClass, TestInterface1, TestInterface3)
         False
 
-    `implements` will return `True` if *and only if* the class in question implements
-    *all* of the requested interfaces. Otherwise, `implements` will return `False`.
+    implements will return True if and only if the class in question implements
+    all of the requested interfaces. Otherwise, implements will return False.
     """
 
     args = list(args)
@@ -117,6 +121,50 @@ def implements(*args):
 
     else:
         return True
+
+
+def class_implements(*interfaces):
+    """
+    A decorator generator that checks at parse-time whether a class implements
+    a given set of interfaces.
+
+    NOTE: Returned decorators are supposed to operate on classes. Class decorators
+    are only implemented in Python 2.6 and up.
+
+    Example:
+
+        >>> class TestInterface(object):
+        ...     def method1(self):
+        ...         pass
+        ...     def method2(self, argument):
+        ...         pass
+        ...
+        >>> @class_implements(TestInterface)
+        ... class TestImplementation(object):
+        ...     def method1(self):
+        ...         pass
+        ...     def method2(self, argument):
+        ...         pass
+        ...
+        >>> @class_implements(TestInterface)
+        ... class TestImplementation2(object):
+        ...     def method1(self):
+        ...         pass
+        ...
+        Traceback (most recent call last):
+            ...
+        InterfaceOmissionError: method2
+    """
+
+    def interface_checker(cls):
+
+        for interface in interfaces:
+            _implements(cls, interface)
+
+        return cls
+
+    return interface_checker
+
 
 class InterfaceException(Exception): pass
 class InterfaceOmissionError(InterfaceException): pass

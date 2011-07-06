@@ -23,60 +23,65 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 30, 2011 12:06:54 AM$"
+__date__  = "$Jul 5, 2011 12:58:23 PM$"
 
 
 import panda3d.core
-from panda3d.core import TransparencyAttrib
 
 import direct.gui
 import direct.gui.DirectGui
 import direct.gui.DirectGuiGlobals
 
-import obengine.vfs
+import obengine.gui
 import obengine.datatypes
 import obengine.event
 import widget
 
 
-class ButtonView(widget.TextWidgetView):
+class CheckboxView(widget.TextWidgetView):
 
-    def __init__(self, text = '', position = None, icon = None):
+    def __init__(self, text = '', position = None, state = None):
 
+        state = state or obengine.gui.Checkbox.NOT_CHECKED
         self.on_click = obengine.event.Event()
-        
-        self._widget = direct.gui.DirectGui.DirectButton(
+
+        self._widget = direct.gui.DirectGui.DirectCheckButton(
         scale = widget.WIDGET_SCALE,
         text_align = panda3d.core.TextNode.ACenter,
         #relief = direct.gui.DirectGuiGlobals.FLAT,
         textMayChange = True,
-        command = self.on_click,
+        command = self._fire_click_event,
         )
-        self.icon = icon
+
+        self.state = state
         widget.TextWidgetView.__init__(self, text, position)
 
     @obengine.datatypes.nested_property
-    def icon():
+    def state():
 
         def fget(self):
-            return self._widget['image']
 
-        def fset(self, new_image):
+            panda_to_openblox_state = {
+            True : obengine.gui.Checkbox.NOT_CHECKED,
+            False : obengine.gui.Checkbox.CHECKED
+            }
 
-            old_size = self.size
-            self._widget['image'] = new_image
+            return panda_to_openblox_state[self._widget['indicatorValue']]
+        
+        def fset(self, new_state):
+            
+            openblox_to_panda_state = {
+            obengine.gui.Checkbox.NOT_CHECKED : True,
+            obengine.gui.Checkbox.CHECKED : False
+            }
 
-            if new_image is not None:
+            if new_state not in openblox_to_panda_state:
+                raise ValueError('Invalid checkbox state')
 
-                self._widget['image_pos'] = (-2.5, 0, 0)
-
-                for state in range(0, 4):
-                    self._widget.component('image' + str(state)).setTransparency(TransparencyAttrib.MAlpha)
-
-            else:
-                self._widget['image_pos'] = (0, 0, 0)
-
-            self._widget.setImage()
-            self._check_size(old_size)
+            self._widget['indicatorValue'] = openblox_to_panda_state[new_state]
+            self._widget.setIndicatorValue()
 
         return locals()
+
+    def _fire_click_event(self, _):
+        self.on_click()

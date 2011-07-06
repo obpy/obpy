@@ -27,5 +27,7 @@ __date__  = "$Jun 29, 2011 11:55:13 AM$"
 
 
 from button import *
+from radio import *
+from checkbox import *
 from label import *
 from entry import *

@@ -5,6 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.pardir, os.pardir)))
 import panda3d.core
 
 import obengine
+import obengine.gui
 import obengine.math
 import obengine.async
 import obengine.plugin
@@ -15,18 +16,21 @@ def draw_button(sched):
     import obplugin.core.gui
 
     def clicked():
-
-        print 'Before text change:', lv.size
         lv.text = 'Button Clicked!'
-        print 'After text change:', lv.size
-        print 'bv.size:', bv.size
-        print 'ev.size:', ev.size
 
-    bv = obplugin.core.gui.ButtonView('Button', obengine.math.Vector2D(30, 0), '../../data/sky1.png')
-    bv.on_click += clicked
+    container = obengine.gui.Container(obengine.gui.VerticalLayoutManager, margin = 0)
 
+    bv = obplugin.core.gui.ButtonView('Bigger Button!')
     lv = obplugin.core.gui.LabelView('Label')
-    ev = obplugin.core.gui.EntryView(position = obengine.math.Vector2D(-70, 0))
+    ev = obplugin.core.gui.EntryView('Initial text')
+    rv = obplugin.core.gui.RadioView('Radio')
+    cbv = obplugin.core.gui.CheckboxView('Checkbox')
+
+    container.add(bv)
+    container.add(lv)
+    container.add(ev)
+    container.add(rv)
+    container.add(cbv)
 
 
 def main():
@@ -46,6 +50,7 @@ def main():
 
     window.load()
     scheduler.loop()
+
 
 if __name__ == '__main__':
     main()

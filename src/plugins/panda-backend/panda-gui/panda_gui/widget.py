@@ -44,6 +44,7 @@ class WidgetView(object):
 
         self.on_size_changed = obengine.event.Event()
         self.position = position or obengine.math.Vector2D()
+
         base.taskMgr.add(self._update_pos, 'widget_pos' + str(uuid.uuid1()))
 
     @obengine.datatypes.nested_property
@@ -65,8 +66,15 @@ class WidgetView(object):
 
         def fget(self):
 
-            width = (self._widget.getWidth()) * WIDGET_SCALE * PANDA_TO_OPENBLOX_SCALE
-            height = (self._widget.getHeight()) * WIDGET_SCALE * PANDA_TO_OPENBLOX_SCALE
+            scale = self._widget.getScale()
+
+            width = self._widget.getWidth()
+            width *= WIDGET_SCALE
+            width *= PANDA_TO_OPENBLOX_SCALE
+
+            height = self._widget.getHeight()
+            height *= WIDGET_SCALE
+            height *= PANDA_TO_OPENBLOX_SCALE
 
             return obengine.math.Vector2D(width, height)
 
@@ -75,6 +83,13 @@ class WidgetView(object):
     def _update_pos(self, task):
         self.position = self.position
         return task.cont
+
+    def _check_size(self, old_size):
+
+        new_size = self.size
+
+        if old_size.x != new_size.x or old_size.y != new_size.y:
+            self.on_size_changed(new_size)
 
 
 class TextWidgetView(WidgetView):
@@ -93,12 +108,12 @@ class TextWidgetView(WidgetView):
         def fset(self, new_text):
 
             old_size = self.size
+
             self._widget['text'] = new_text
             self._widget.setText()
             self._widget.resetFrameSize()
-            new_size = self.size
 
-            if old_size.x != new_size.x or old_size.y != new_size.y:
-                self.on_size_changed(new_size)
+            self._check_size(old_size)
+            
 
         return locals()

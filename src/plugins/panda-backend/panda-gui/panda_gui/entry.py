@@ -26,6 +26,8 @@ __author__ = "openblocks"
 __date__  = "$Jul 2, 2011 3:20:40 PM$"
 
 
+import panda3d.core
+
 import direct.gui.DirectGui
 import direct.gui.DirectGuiGlobals
 
@@ -37,14 +39,15 @@ import widget
 
 class EntryView(widget.WidgetView):
 
-    _font = loader.loadFont('cmtt12')
-
     def __init__(self, text = '', position = None, length = 15):
+
+        font = loader.loadFont('cmtt12')
 
         self.on_submitted = obengine.event.Event()
         self._widget = direct.gui.DirectGui.DirectEntry(
         scale = widget.WIDGET_SCALE,
-        entryFont = EntryView._font,
+        text_align = panda3d.core.TextNode.ACenter,
+        entryFont = font,
         width = length / 2 + (1, 0.5)[length % 2 == 0],
         command = self.on_submitted,
         initialText = text

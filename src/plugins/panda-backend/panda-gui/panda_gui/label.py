@@ -26,6 +26,8 @@ __author__ = "openblocks"
 __date__  = "$Jul 1, 2011 4:07:21 PM$"
 
 
+import panda3d.core
+
 import direct.gui.DirectGui
 import direct.gui.DirectGuiGlobals
 
@@ -42,6 +44,7 @@ class LabelView(widget.TextWidgetView):
         self._widget = direct.gui.DirectGui.DirectLabel(
         scale = widget.WIDGET_SCALE,
         frameColor = (0, 0, 0, 0),
+        text_align = panda3d.core.TextNode.ACenter,
         textMayChange = True
         )
 

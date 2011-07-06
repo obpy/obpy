@@ -1,6 +1,6 @@
 #
-# Base OpenBlox package. All OpenBlox code (save for BloxWorks) is located under
-# this package.
+# This is the base OpenBlox package. All core OpenBlox code (save for BloxWorks)
+# is located under this package.
 # See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
 # for this module.
 #

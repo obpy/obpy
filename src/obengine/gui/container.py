@@ -35,7 +35,7 @@ from obengine.gui import Widget
 
 
 obengine.depman.gendeps()
-DEFAULT_MARGIN = 0.5
+DEFAULT_MARGIN = 5.0
 
 
 class Container(Widget):
@@ -82,7 +82,7 @@ class Container(Widget):
         self._margin = margin
         if margin is None:
             self._margin = DEFAULT_MARGIN
-        self.children = set()
+        self.children = obengine.datatypes.orderedset()
 
         self.on_position_changed += self._update_layout
         self.on_hidden += self._hide_children
@@ -141,14 +141,18 @@ class VerticalLayoutManager(object):
         self._owning_container.position.x,
         self._owning_container.position.y
         )
-        
-        for child_widget in self._owning_container.children:
-
-            best_point.y += child_widget.size.y / 2.0
-            best_point.y += self._owning_container.margin
 
         if len(self._owning_container.children) > 0:
+
+            print 'in if'
+
+            indexable_children = list(self._owning_container.children)
+            best_point.y = indexable_children[-1].position.y
+            best_point.y += indexable_children[-1].size.y / 2.0
             best_point.y += widget.size.y / 2.0
+            best_point.y += self._owning_container.margin
+
+        print 'Best point:', best_point
 
         return obengine.math.Vector2D(best_point.x, best_point.y)
         
@@ -157,7 +161,7 @@ class VerticalLayoutManager(object):
         new_widget_y = new_widget.size.y
 
         for child_widget in self._owning_container.children:
-            child_widget.position.y -= new_widget_y
+            pass #child_widget.position.y -= new_widget_y
             
     def adjust_widgets_after_remove(self, removed_widget):
 

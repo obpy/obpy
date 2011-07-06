@@ -1,5 +1,5 @@
 #
-# <module description>
+# This module implements the rendering code for a radio button.
 # See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
 # for this module.
 #
@@ -23,60 +23,60 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 30, 2011 12:06:54 AM$"
+__date__  = "$Jul 4, 2011 2:26:23 PM$"
 
 
 import panda3d.core
-from panda3d.core import TransparencyAttrib
 
-import direct.gui
 import direct.gui.DirectGui
 import direct.gui.DirectGuiGlobals
 
-import obengine.vfs
 import obengine.datatypes
 import obengine.event
+import obengine.gui
 import widget
 
 
-class ButtonView(widget.TextWidgetView):
+class RadioView(widget.TextWidgetView):
 
-    def __init__(self, text = '', position = None, icon = None):
-
-        self.on_click = obengine.event.Event()
+    def __init__(self, text = '', state = None, position = None):
         
-        self._widget = direct.gui.DirectGui.DirectButton(
+        self.on_click = obengine.event.Event()
+
+        self._widget = direct.gui.DirectGui.DirectRadioButton(
         scale = widget.WIDGET_SCALE,
         text_align = panda3d.core.TextNode.ACenter,
         #relief = direct.gui.DirectGuiGlobals.FLAT,
         textMayChange = True,
-        command = self.on_click,
+        command = self.on_click
         )
-        self.icon = icon
+
+        self.state = state or obengine.gui.Radio.DISABLED
         widget.TextWidgetView.__init__(self, text, position)
 
     @obengine.datatypes.nested_property
-    def icon():
+    def state():
 
         def fget(self):
-            return self._widget['image']
 
-        def fset(self, new_image):
+            panda_to_openblox_state = {
+            0 : obengine.gui.Radio.DISABLED,
+            1 : obengine.gui.Radio.ENABLED
+            }
 
-            old_size = self.size
-            self._widget['image'] = new_image
+            return  panda_to_openblox_state[self._widget['state']]
 
-            if new_image is not None:
+        def fset(self, new_state):
 
-                self._widget['image_pos'] = (-2.5, 0, 0)
+            openblox_to_panda_state = {
+            obengine.gui.Radio.DISABLED : 0,
+            obengine.gui.Radio.ENABLED : 1
+            }
 
-                for state in range(0, 4):
-                    self._widget.component('image' + str(state)).setTransparency(TransparencyAttrib.MAlpha)
+            if new_state not in openblox_to_panda_state:
+                raise ValueError('Invalid radio button state')
 
-            else:
-                self._widget['image_pos'] = (0, 0, 0)
-
-            self._widget.setImage()
-            self._check_size(old_size)
+            self._widget['indicatorValue'] = openblox_to_panda_state[new_state]
+            self._widget.setIndicatorValue()
 
         return locals()

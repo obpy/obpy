@@ -34,6 +34,7 @@ class GuiException(Exception): pass
 
 from widget import *
 from button import *
+from checkbox import *
 from container import *
 from label import *
 from entry import *
