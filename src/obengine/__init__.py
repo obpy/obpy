@@ -43,8 +43,13 @@ def compatible_with(version_str):
 
     if len(version_str) < 1:
         raise InvalidVersionError(version_str)
+
+    other_version = map(int, version_str.split('.'))
     
-    return map(int, version_str.split('.'))[0] == ENGINE_VERSION[0]
+    major_version_compatible = other_version[0] == ENGINE_VERSION[0]
+    minor_version_compatible = other_version[1] <= ENGINE_VERSION[1]
+
+    return major_version_compatible and minor_version_compatible
 
 
 def init():
