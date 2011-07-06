@@ -46,6 +46,7 @@ class EntryView(widget.WidgetView):
         self.on_submitted = obengine.event.Event()
         self._widget = direct.gui.DirectGui.DirectEntry(
         scale = widget.WIDGET_SCALE,
+        relief = direct.gui.DirectGuiGlobals.SUNKEN,
         text_align = panda3d.core.TextNode.ACenter,
         entryFont = font,
         width = length / 2 + (1, 0.5)[length % 2 == 0],

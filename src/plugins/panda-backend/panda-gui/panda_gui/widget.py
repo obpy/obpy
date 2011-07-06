@@ -36,6 +36,7 @@ import utils
 
 WIDGET_SCALE = 0.05
 PANDA_TO_OPENBLOX_SCALE = 100.0
+WIDTH_ADJUSTMENT = 5.5
 
 
 class WidgetView(object):
@@ -71,6 +72,7 @@ class WidgetView(object):
             width = self._widget.getWidth()
             width *= WIDGET_SCALE
             width *= PANDA_TO_OPENBLOX_SCALE
+            width -= WIDTH_ADJUSTMENT
 
             height = self._widget.getHeight()
             height *= WIDGET_SCALE

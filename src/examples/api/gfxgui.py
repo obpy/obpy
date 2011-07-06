@@ -18,18 +18,21 @@ def draw_button(sched):
     def clicked():
         lv.text = 'Button Clicked!'
 
-    container = obengine.gui.Container(obengine.gui.VerticalLayoutManager, margin = 0)
+    container = obengine.gui.Container(obengine.gui.HorizontalLayoutManager)
 
     bv = obplugin.core.gui.ButtonView('Bigger Button!')
-    lv = obplugin.core.gui.LabelView('Label')
-    ev = obplugin.core.gui.EntryView('Initial text')
-    rv = obplugin.core.gui.RadioView('Radio')
-    cbv = obplugin.core.gui.CheckboxView('Checkbox')
-
     container.add(bv)
+
+    lv = obplugin.core.gui.LabelView('Label')
     container.add(lv)
+
+    ev = obplugin.core.gui.EntryView('Initial text')
     container.add(ev)
+
+    rv = obplugin.core.gui.RadioView('Radio')
     container.add(rv)
+    
+    cbv = obplugin.core.gui.CheckboxView('Checkbox')
     container.add(cbv)
 
 

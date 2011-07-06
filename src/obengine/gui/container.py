@@ -144,31 +144,27 @@ class VerticalLayoutManager(object):
 
         if len(self._owning_container.children) > 0:
 
-            print 'in if'
-
-            indexable_children = list(self._owning_container.children)
-            best_point.y = indexable_children[-1].position.y
-            best_point.y += indexable_children[-1].size.y / 2.0
+            last_added_child = list(self._owning_container.children)[-1]
+            best_point.x = last_added_child.position.y
+            best_point.x += last_added_child.size.y / 2.0
             best_point.y += widget.size.y / 2.0
             best_point.y += self._owning_container.margin
 
-        print 'Best point:', best_point
-
-        return obengine.math.Vector2D(best_point.x, best_point.y)
+        return best_point
         
     def adjust_widgets_after_add(self, new_widget):
 
-        new_widget_y = new_widget.size.y
+        new_widget_y = new_widget.size.y / 2.0
 
         for child_widget in self._owning_container.children:
-            pass #child_widget.position.y -= new_widget_y
+            child_widget.position.y -= new_widget_y
             
     def adjust_widgets_after_remove(self, removed_widget):
 
         removed_widget_y = removed_widget.size.y
 
         for child_widget in self._owning_container.children:
-            child_widget.position.y -= removed_widget_y
+            child_widget.position.y += removed_widget_y
 
     def adjust_widgets_after_move(self, new_pos):
 
@@ -194,19 +190,19 @@ class HorizontalLayoutManager(object):
         self._owning_container.position.x,
         self._owning_container.position.y)
 
-        for child_widget in self._owning_container.children:
-
-            best_point.x += child_widget.size.x / 2.0
-            best_point.x += self._owning_container.margin
-
         if len(self._owning_container.children) > 0:
+
+            last_added_child = list(self._owning_container.children)[-1]
+            best_point.x = last_added_child.position.x
+            best_point.x += last_added_child.size.x / 2.0
             best_point.x += widget.size.x / 2.0
+            best_point.x += self._owning_container.margin
 
         return best_point
 
     def adjust_widgets_after_add(self, new_widget):
 
-        new_widget_x = new_widget.size.x / 2
+        new_widget_x = new_widget.size.x / 2.0
 
         for child_widget in self._owning_container.children:
             child_widget.position.x -= new_widget_x
