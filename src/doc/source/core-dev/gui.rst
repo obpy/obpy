@@ -86,11 +86,11 @@ Here's a quick example to vertically align 3 buttons (using a container) automat
     >>> container.add(button3)
 
     >>> print 'button1.position:', button1.position
-    button1.position: Vector2D(30.0, 29.0)
+    button1.position: Vector2D(30.0, 29.5)
     >>> print 'button2.position:', button2.position
-    button2.position: Vector2D(30.0, 30.0)
+    button2.position: Vector2D(30.0, 30.5)
     >>> print 'button3.position:', button3.position
-    button3.position: Vector2D(30.0, 31.25)
+    button3.position: Vector2D(30.0, 31.5)
 
 As you can see, the average **Y**-position of each of the three buttons
 is still at the container's center ``(30, 30)``.

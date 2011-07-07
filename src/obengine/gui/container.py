@@ -145,8 +145,8 @@ class VerticalLayoutManager(object):
         if len(self._owning_container.children) > 0:
 
             last_added_child = list(self._owning_container.children)[-1]
-            best_point.x = last_added_child.position.y
-            best_point.x += last_added_child.size.y / 2.0
+            best_point.y = last_added_child.position.y
+            best_point.y += last_added_child.size.y / 2.0
             best_point.y += widget.size.y / 2.0
             best_point.y += self._owning_container.margin
 
@@ -175,8 +175,12 @@ class VerticalLayoutManager(object):
             
     def adjust_size(self, size):
         
-        size.y = sum(map(lambda w: w.size.y + self._owning_container.margin, self._owning_container.children))
-        size.x = max(map(lambda w: w.size.x, self._owning_container.children))
+        size.y = sum(map(
+        lambda w: w.size.y + self._owning_container.margin,
+        self._owning_container.children))
+
+        size.x = max(map(
+        lambda w: w.size.x, self._owning_container.children))
 
 
 class HorizontalLayoutManager(object):
@@ -226,6 +230,7 @@ class HorizontalLayoutManager(object):
         size.x = sum(map(
         lambda w: w.size.x + self._owning_container.margin,
         self._owning_container.children))
+        
         size.y = max(map(
         lambda w: w.size.y,
         self._owning_container.children))

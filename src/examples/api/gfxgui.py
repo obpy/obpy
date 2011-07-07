@@ -20,13 +20,13 @@ def draw_button(sched):
 
     container = obengine.gui.Container(obengine.gui.HorizontalLayoutManager)
 
-    bv = obplugin.core.gui.ButtonView('Bigger Button!')
+    bv = obplugin.core.gui.ButtonView('Button')
     container.add(bv)
 
     lv = obplugin.core.gui.LabelView('Label')
     container.add(lv)
 
-    ev = obplugin.core.gui.EntryView('Initial text')
+    ev = obplugin.core.gui.EntryView('A text entry')
     container.add(ev)
 
     rv = obplugin.core.gui.RadioView('Radio')
