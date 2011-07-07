@@ -371,7 +371,7 @@ class Window(object):
 
         self.on_loaded = obengine.event.Event()
         self._config_src = obengine.cfg.Config()
-        self.title = window_title
+        self._title = window_title
         self.scheduler = scheduler
 
     def start_rendering(self):
@@ -379,6 +379,19 @@ class Window(object):
 
     def load(self):
         self.scheduler.add(obengine.async.Task(self._actual_load, priority=Window.LOAD_PRIORITY))
+
+    @obengine.datatypes.nested_property
+    def title():
+
+        def fget(self):
+            return self._title
+
+        def fset(self, new_title):
+
+            self._title = new_title
+            self.window_properties.setTitle(self._title)
+
+        return locals()
 
     def _actual_load(self, task):
 
@@ -393,7 +406,7 @@ class Window(object):
 
         self.window_properties = WindowProperties()
         self.window_properties.setSize(*self.resolution)
-        self.window_properties.setTitle(self.title)
+        self.window_properties.setTitle(self._title)
 
         self.panda_window = ShowBase()
         self.panda_window.setFrameRateMeter(self.show_frame_rate)
@@ -403,6 +416,8 @@ class Window(object):
 
         getModelPath().appendPath(self.search_path)
         self.on_loaded()
+
+        print dir(self.panda_window.win)
 
         return task.STOP
 
