@@ -42,7 +42,6 @@ obengine.depman.gendeps()
 
 
 def init():
-
     if hasattr(Logger, '_level') is False:
         Logger().autoconfig()
 

@@ -30,6 +30,7 @@ __date__  = "$Jul 12, 2010 8:02:01 PM$"
 
 import warnings
 
+
 warnings.warn(
 'obengine.attrdict is deprecated, use obengine.datatypes instead',
 category = DeprecationWarning,
