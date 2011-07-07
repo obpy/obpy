@@ -24,6 +24,12 @@ __date__ ="$May 4, 2011 11:27:45 AM$"
 
 
 import sys
+import traceback
+
+try:
+    import cStringIO as StringIO
+except ImportError:
+    import StringIO
 
 import obengine.log
 import obengine.async.task
@@ -62,14 +68,12 @@ class LoopingCall(object):
         
         except:
 
-            info = sys.exc_info()
-            exc_type = str(info[0])
-            exc_value = str(info[1])
-            exc_traceback = info[2]
+            traceback_message = StringIO.StringIO()
+            traceback.print_exc(file = traceback_message)
 
             obengine.log.error(
-            'Unhandled exception %s inside looping call:\nMessage: %s\nTraceback: %s' % (
-                exc_type, exc_value, exc_traceback
+            'Unhandled exception inside looping call:\n%s' % (
+                traceback_message.getvalue()
                 )
             )
 
