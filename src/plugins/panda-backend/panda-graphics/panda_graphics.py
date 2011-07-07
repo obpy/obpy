@@ -393,6 +393,7 @@ class Window(object):
 
         self.window_properties = WindowProperties()
         self.window_properties.setSize(*self.resolution)
+        self.window_properties.setTitle(self.title)
 
         self.panda_window = ShowBase()
         self.panda_window.setFrameRateMeter(self.show_frame_rate)
