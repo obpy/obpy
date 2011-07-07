@@ -171,8 +171,16 @@ class WidgetPresenter(object):
         self.on_hidden = self._model.on_hidden
 
         self._view.on_size_changed += self._update_size
-        self.show = self._model.show
-        self.hide = self._model.hide
+
+    def show(self):
+
+        self._model.show()
+        self._view.show()
+
+    def hide(self):
+
+        self._model.hide()
+        self._view.hide()
 
     @obengine.datatypes.nested_property
     def position():
@@ -215,7 +223,9 @@ class WidgetPresenter(object):
             return self._model.showing
 
         def fset(self, show):
+
             self._model.showing = show
+            self._view.showing = show
 
         return locals()
 

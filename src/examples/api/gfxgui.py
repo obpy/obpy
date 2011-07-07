@@ -20,23 +20,31 @@ def draw_button(sched):
     factory = obengine.gui.WidgetFactory()
     shutter = factory.make('shutter', position = obengine.math.Vector2D(0, 0))
 
-    bv = obplugin.core.gui.ButtonView('Bigger Button')
-    shutter.add(bv)
+    button = factory.make('button', 'Button')
+    shutter.add(button)
 
-    lv = obplugin.core.gui.LabelView('Label')
-    shutter.add(lv)
+    label = factory.make('label', 'Label')
+    shutter.add(label)
 
-    ev = obplugin.core.gui.EntryView('A text entry')
-    shutter.add(ev)
+    entry = factory.make('entry', 'A text entry')
+    shutter.add(entry)
 
-    rv = obplugin.core.gui.RadioView('Radio')
-    shutter.add(rv)
+    radio = factory.make('radio', 'Radio')
+    shutter.add(radio)
     
-    cbv = obplugin.core.gui.CheckboxView('Checkbox')
-    shutter.add(cbv)
+    checkbox = factory.make('checkbox', 'Checkbox')
+    shutter.add(checkbox)
 
-    bv2 = obplugin.core.gui.ButtonView('Button')
-    shutter.add(bv2)
+    button2 = factory.make('button', 'Another Button')
+    shutter.add(button2)
+
+    help_label = factory.make(
+    'label',
+    '''Move your mouse below this text to try out OpenBlox's widgets.
+    As you'll see, all of the widgets are hidden when you move your mouse away from them.
+    This is because all the widgets are contained in a shutter - an invisible panel that hides its contents
+    when the mouse isn't hovering over it.''',
+    obengine.math.Vector2D(0, 30))
 
 
 def main():

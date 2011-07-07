@@ -29,7 +29,6 @@ __date__  = "$Jul 6, 2011 7:54:48 PM$"
 
 import uuid
 
-import panda3d.core
 import direct.gui.DirectGui
 import direct.gui.DirectGuiGlobals
 

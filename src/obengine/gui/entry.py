@@ -51,8 +51,8 @@ class EntryPresenter(TextWidgetPresenter):
 
         TextWidgetPresenter.__init__(self, entry_model, entry_view)
 
+        self._view.on_submitted += self._update_model_text
         self._view.on_submitted += self._model.submit
-        self._view.on_text_changed += self._update_model_text
 
         self.on_submitted = self._model.on_submitted
         self.on_text_changed = self._model.on_text_changed

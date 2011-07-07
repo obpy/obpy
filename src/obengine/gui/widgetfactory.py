@@ -30,8 +30,14 @@ import obengine.plugin
 import obengine.depman
 
 from obengine.gui import GuiException
+
+from button import *
+from radio import *
+from checkbox import *
 from container import *
 from shutter import *
+from label import *
+from entry import *
 
 obengine.depman.gendeps()
 
@@ -52,9 +58,15 @@ class WidgetFactory(object):
         self._widget_handlers = {}
 
         self._widget_handlers['button'] = self._make_button
-        self._widget_handlers['menu'] = self._make_menu
+        self._widget_handlers['radio'] = self._make_radio
+        self._widget_handlers['checkbox'] = self._make_checkbox
+
         self._widget_handlers['container'] = self._make_container
         self._widget_handlers['shutter'] = self._make_shutter
+        self._widget_handlers['menu'] = self._make_menu
+
+        self._widget_handlers['label'] = self._make_label
+        self._widget_handlers['entry'] = self._make_entry
 
     def make(self, widget_type, *args, **kwargs):
 
@@ -68,9 +80,31 @@ class WidgetFactory(object):
 
     def _make_button(self, text, position = None, icon = None):
 
+        import obplugin.core.gui
+
         model = Button(text, position, icon)
-        view = MockButtonView(text, position, icon)
+        view = obplugin.core.gui.ButtonView(text, position, icon)
         presenter = ButtonPresenter(model, view)
+
+        return presenter
+
+    def _make_radio(self, text, position = None):
+
+        import obplugin.core.gui
+
+        model = Radio(text, position)
+        view = obplugin.core.gui.RadioView(text, position)
+        presenter = RadioPresenter(model, view)
+
+        return presenter
+
+    def _make_checkbox(self, text, position = None):
+
+        import obplugin.core.gui
+
+        model = Checkbox(text, position)
+        view = obplugin.core.gui.CheckboxView(text, position)
+        presenter = CheckboxPresenter(model, view)
 
         return presenter
 
@@ -89,12 +123,28 @@ class WidgetFactory(object):
 
         return presenter
 
+    def _make_label(self, text, position = None):
 
-    def _make_menu(self, text, position = None, **kwargs):
+        import obplugin.core.gui
 
-        menu_button = self.make('button', text, position)
-        model = Menu(menu_button, position, **kwargs)
-        return model
+        model = Label(text, position)
+        view = obplugin.core.gui.LabelView(text, position)
+        presenter = LabelPresenter(model, view)
+
+        return presenter
+    
+    def _make_entry(self, initial_text = '', position = None):
+        
+        import obplugin.core.gui
+        
+        model = Entry(initial_text, position)
+        view = obplugin.core.gui.EntryView(initial_text, position)
+        presenter = EntryPresenter(model, view)
+        
+        return presenter
+
+    def _make_menu(self, text, position = None):
+        raise NotImplementedError('Menu support in OpenBlox is not finished')
 
 
 class UnknownWidgetError(GuiException):
