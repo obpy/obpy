@@ -57,3 +57,33 @@ def interp_range(given_range, requested_range, num):
 
 def sign(num):
     return cmp(num, 0)
+
+
+def xfrange(start, end = None, inc = None):
+
+    if end is None:
+
+        end = start + 0.0
+        start = 0.0
+
+    if inc is None:
+        inc = 1.0
+
+    result_list = []
+
+    while True:
+
+        next = start + len(result_list) * inc
+
+        if inc > 0 and next >= end:
+            break
+
+        elif inc < 0 and next <= end:
+            break
+
+        result_list.append(next)
+        yield next
+
+
+def frange(start, end = None, inc = None):
+    return list(xfrange(start, end, inc))

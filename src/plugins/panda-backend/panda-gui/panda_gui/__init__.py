@@ -26,8 +26,10 @@ __author__ = "openblocks"
 __date__  = "$Jun 29, 2011 11:55:13 AM$"
 
 
+from widget import *
 from button import *
 from radio import *
 from checkbox import *
+from shutter import *
 from label import *
 from entry import *

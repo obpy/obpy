@@ -28,6 +28,8 @@ __date__  = "$Jul 1, 2011 2:57:27 PM$"
 
 import uuid
 
+import direct.gui.DirectGuiGlobals
+
 import obengine.math
 import obengine.datatypes
 import obengine.event
@@ -48,6 +50,12 @@ class WidgetView(object):
 
         base.taskMgr.add(self._update_pos, 'widget_pos' + str(uuid.uuid1()))
 
+    def show(self):
+        self._widget.show()
+
+    def hide(self):
+        self._widget.hide()
+
     @obengine.datatypes.nested_property
     def position():
 
@@ -66,8 +74,6 @@ class WidgetView(object):
     def size():
 
         def fget(self):
-
-            scale = self._widget.getScale()
 
             width = self._widget.getWidth()
             width *= WIDGET_SCALE

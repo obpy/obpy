@@ -44,29 +44,20 @@ class Widget(object):
         self._position = position or obengine.math.Vector2D()
         self._size = obengine.math.Vector2D()
         self._parent = None
-        self._showing = False
+        self._showing = True
 
         self.on_position_changed = obengine.event.Event()
         self.on_parent_changed = obengine.event.Event()
         self.on_size_changed = obengine.event.Event()
         self.on_hidden = obengine.event.Event()
         self.on_shown = obengine.event.Event()
-        self.on_focus_gained = obengine.event.Event()
-        self.on_focus_lost = obengine.event.Event()
-
-        self.on_hidden += self._disable_events
-        self.on_shown += self._enable_events
         
-        self.on_focus_gained += self._gain_focus
-        self.on_focus_lost += self._lose_focus
 
     def show(self):
-        if self.showing is False:
-            self.showing = True
+        self.showing = True
 
     def hide(self):
-        if self.showing is True:
-            self.showing = False
+        self.showing = False
 
     @obengine.datatypes.nested_property
     def size():
@@ -131,26 +122,6 @@ class Widget(object):
 
         return locals()
 
-    @property
-    def focused(self):
-        return self._focused
-    
-    def _disable_events(self):
-        
-        self.on_focus_gained.disable()
-        self.on_focus_lost.disable()
-        
-    def _enable_events(self):
-        
-        self.on_focus_gained.enable()
-        self.on_focus_lost.enable()
-
-    def _gain_focus(self):
-        self._focused = True
-
-    def _lose_focus(self):
-        self._focused = False
-
 
 class ClickableWidget(Widget):
 
@@ -196,14 +167,10 @@ class WidgetPresenter(object):
         self.on_position_changed = self._model.on_position_changed
         self.on_parent_changed = self._model.on_parent_changed
         self.on_size_changed = self._model.on_size_changed
-        self.on_focus_gained = self._model.on_focus_gained
-        self.on_focus_lost = self._model.on_focus_lost
         self.on_shown = self._model.on_shown
         self.on_hidden = self._model.on_hidden
 
         self._view.on_size_changed += self._update_size
-        self._view.on_focus_gained += self._model.on_focus_gained
-        self._view.on_focus_lost += self._model.on_focus_lost
         self.show = self._model.show
         self.hide = self._model.hide
 
@@ -297,8 +264,6 @@ class MockWidgetView(object):
         self._showing = False
 
         self.on_size_changed = obengine.event.Event()
-        self.on_focus_gained = obengine.event.Event()
-        self.on_focus_lost = obengine.event.Event()
 
     @obengine.datatypes.nested_property
     def parent():

@@ -32,16 +32,19 @@ import obengine.math
 import obplugin.panda_utils
 
 
+PANDA_TO_OPENBLOX_SCALE = 100.0
+
+
 def panda_to_openblox_pos(position):
     # This method is currently broken!
 
-    coords = map(lambda c: c * 100.0, position)
+    coords = map(lambda c: c * PANDA_TO_OPENBLOX_SCALE, position)
     return obengine.math.Vector2D(*coords)
 
 
 def openblox_to_panda_pos(position):
 
     vector = obengine.math.Vector2D(position.x, position.y)
-    vector.x /= 100.0
-    vector.y /= 100.0
+    vector.x /= PANDA_TO_OPENBLOX_SCALE
+    vector.y /= PANDA_TO_OPENBLOX_SCALE
     return obplugin.panda_utils.PandaConverter.convert_vector2d(vector)

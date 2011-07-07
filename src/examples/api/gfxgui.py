@@ -2,7 +2,6 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.pardir, os.pardir)))
 
-import panda3d.core
 
 import obengine
 import obengine.gui
@@ -18,22 +17,26 @@ def draw_button(sched):
     def clicked():
         lv.text = 'Button Clicked!'
 
-    container = obengine.gui.Container(obengine.gui.HorizontalLayoutManager)
+    factory = obengine.gui.WidgetFactory()
+    shutter = factory.make('shutter', position = obengine.math.Vector2D(0, 0))
 
-    bv = obplugin.core.gui.ButtonView('Button')
-    container.add(bv)
+    bv = obplugin.core.gui.ButtonView('Bigger Button')
+    shutter.add(bv)
 
     lv = obplugin.core.gui.LabelView('Label')
-    container.add(lv)
+    shutter.add(lv)
 
     ev = obplugin.core.gui.EntryView('A text entry')
-    container.add(ev)
+    shutter.add(ev)
 
     rv = obplugin.core.gui.RadioView('Radio')
-    container.add(rv)
+    shutter.add(rv)
     
     cbv = obplugin.core.gui.CheckboxView('Checkbox')
-    container.add(cbv)
+    shutter.add(cbv)
+
+    bv2 = obplugin.core.gui.ButtonView('Button')
+    shutter.add(bv2)
 
 
 def main():

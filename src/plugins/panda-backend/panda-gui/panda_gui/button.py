@@ -33,7 +33,6 @@ import direct.gui
 import direct.gui.DirectGui
 import direct.gui.DirectGuiGlobals
 
-import obengine.vfs
 import obengine.datatypes
 import obengine.event
 import widget
@@ -50,7 +49,7 @@ class ButtonView(widget.TextWidgetView):
         text_align = panda3d.core.TextNode.ACenter,
         #relief = direct.gui.DirectGuiGlobals.FLAT,
         textMayChange = True,
-        command = self.on_click,
+        command = self.on_click
         )
         self.icon = icon
         widget.TextWidgetView.__init__(self, text, position)

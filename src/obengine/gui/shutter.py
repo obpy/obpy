@@ -27,6 +27,8 @@ __author__ = "openblocks"
 __date__  = "$Jun 12, 2011 2:01:44 AM$"
 
 
+import time
+
 import obengine.datatypes
 import obengine.event
 import obengine.utils
@@ -39,23 +41,31 @@ obengine.depman.gendeps()
 
 class Shutter(Container):
 
-    def __init__(self, layout_manager, position = None):
-        Container.__init__(self, layout_manager, position)
+    SHOW_TIME_TOLERANCE = 0.3
+
+    def __init__(self, layout_manager, position = None, margin = None):
+
+        Container.__init__(self, layout_manager, position, margin)
+        self._last_shown_time = 0.0
 
     def update(self, mouse_x, mouse_y):
 
         if self._check_in_range(mouse_x, self.position.x, self.size.x) is True:
             if self._check_in_range(mouse_y, self.position.y, self.size.y) is True:
-                if self.showing is False:
 
-                    self.show()
-                    return
+                self._last_shown_time = time.time()
+                self.show()
+
+                return
 
         if self.showing is True:
-            self.hide()
+            if time.time() - self._last_shown_time >= Shutter.SHOW_TIME_TOLERANCE:
+                self.hide()
 
     def _check_in_range(self, mouse_pos, axis, size):
-        return abs(mouse_pos) in range(abs(axis), abs(axis + size) + 1)
+        
+        result = axis - size < mouse_pos < axis + size
+        return result
 
 
 class ShutterPresenter(WidgetPresenter):
@@ -77,16 +87,30 @@ class ShutterPresenter(WidgetPresenter):
 
         WidgetPresenter.__init__(self, shutter_model, shutter_view)
 
-        self._view.on_mouse_move += self._model.update
+        self._view.on_mouse_moved += self._model.update
         self.on_hidden = self._model.on_hidden
         self.on_shown = self._model.on_shown
 
         self.on_hidden += self._view.hide
         self.on_shown += self._view.show
 
+    def add(self, widget):
+
+        self._model.add(widget)
+        self._view.add(widget)
+
+    def remove(self, widget):
+
+        self._model.remove(widget)
+        self._view.remove(widget)
+
     @property
     def showing(self):
         return self._model.showing
+
+    @property
+    def size(self):
+        return self._model.size
 
 
 class MockShutterView(MockWidgetView):
@@ -97,6 +121,10 @@ class MockShutterView(MockWidgetView):
 
         self._showing = False
         self.on_mouse_move = obengine.event.Event()
+
+        self.children = set()
+        self.add = self.children.add
+        self.remove = self.children.remove
 
     def hide(self):
         self._showing = False

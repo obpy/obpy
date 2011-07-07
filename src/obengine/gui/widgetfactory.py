@@ -26,7 +26,18 @@ __author__ = "openblocks"
 __date__  = "$Jun 16, 2011 12:00:53 AM$"
 
 
-from obengine.gui import *
+import obengine.plugin
+import obengine.depman
+
+from obengine.gui import GuiException
+from container import *
+from shutter import *
+
+obengine.depman.gendeps()
+
+
+def init():
+    obengine.plugin.require('core.gui')
 
 
 class WidgetFactory(object):
@@ -43,6 +54,7 @@ class WidgetFactory(object):
         self._widget_handlers['button'] = self._make_button
         self._widget_handlers['menu'] = self._make_menu
         self._widget_handlers['container'] = self._make_container
+        self._widget_handlers['shutter'] = self._make_shutter
 
     def make(self, widget_type, *args, **kwargs):
 
@@ -66,6 +78,17 @@ class WidgetFactory(object):
 
         container = Container(layout_manager, position, margin)
         return container
+
+    def _make_shutter(self, layout_manager = HorizontalLayoutManager, position = None, margin = None):
+        
+        import obplugin.core.gui
+
+        model = Shutter(layout_manager, position, margin)
+        view = obplugin.core.gui.ShutterView(position)
+        presenter = ShutterPresenter(model, view)
+
+        return presenter
+
 
     def _make_menu(self, text, position = None, **kwargs):
 
