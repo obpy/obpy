@@ -417,8 +417,6 @@ class Window(object):
         getModelPath().appendPath(self.search_path)
         self.on_loaded()
 
-        print dir(self.panda_window.win)
-
         return task.STOP
 
 
