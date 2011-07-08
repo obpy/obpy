@@ -17,7 +17,7 @@ Pre-release
 
 * Convert all Windows/MacOS newlines to UNIX newlines using ``convert_newlines.py``
 * Run unit test suite one last time
-* Remove all ``.pyc`` files using ``remove_pycs.py``s
+* Remove all ``.pyc`` files using ``remove_pycs.py``
 * Proofread developer and end-user documentation
 * 0.7 *only*: Tag current Mercurial revision with tag "sem_ver", to signify
   OpenBlox's version scheme officially switching to Semantic Versioning [1]_
