@@ -48,9 +48,6 @@ def init():
 
 class WidgetFactory(object):
     """A factory for making widgets.
-    Example:
-        >>> w = WidgetFactory()
-        >>> m = w.make('menu', 'A test menu!')
     """
 
     def __init__(self):

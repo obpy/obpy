@@ -70,17 +70,6 @@ class Shutter(Container):
 
 class ShutterPresenter(WidgetPresenter):
     """Binds the shutter model and view together.
-    Example:
-        >>> from obengine.gui import VerticalLayoutManager
-        >>> s = Shutter(VerticalLayoutManager)
-        >>> msv = MockShutterView()
-        >>> sp = ShutterPresenter(s, msv)
-        >>> msv.on_mouse_move(0, 0)
-        >>> sp.showing
-        True
-        >>> msv.on_mouse_move(1, 0)
-        >>> sp.showing
-        False
     """
 
     def __init__(self, shutter_model, shutter_view):
@@ -120,7 +109,7 @@ class MockShutterView(MockWidgetView):
         MockWidgetView.__init__(self, position)
 
         self._showing = False
-        self.on_mouse_move = obengine.event.Event()
+        self.on_mouse_moved = obengine.event.Event()
 
         self.children = set()
         self.add = self.children.add

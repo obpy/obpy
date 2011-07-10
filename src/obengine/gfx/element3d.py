@@ -29,12 +29,12 @@ __date__  = "$Aug 9, 2010 11:04:13 PM$"
 
 import functools
 
+import obengine.math
+import obengine.datatypes
 import obengine.element
-import obengine.depman
 import obengine.plugin
 import obengine.deprecated
-import obengine.gfx.math
-
+import obengine.depman
 obengine.depman.gendeps()
 
 
@@ -52,7 +52,7 @@ class BrickView(object):
     Base view for all different sorts of bricks.
     To use, simply create a variable called type in your subclass, that corresponds to a model file in data/.
     Then, implement set_size, set_hpr, set_pos, and set_color methods
-    that take obengine.gfx.math.Vector, obengine.gfx.math.EulerAngle, or obengine.gfx.math.Color as arguments.
+    that take obengine.math.Vector, obengine.math.EulerAngle, or obengine.math.Color as arguments.
     """
 
     def __init__(self, size, rotation, color, window):
@@ -64,24 +64,26 @@ class BrickView(object):
 
         self.on_loaded += functools.partial(self._init_attrs, size, rotation, color)
 
-    @property
-    def showing(self):
-        return self.model.showing
-
-    @showing.setter
-    def showing(self, show):
-        self.model.showing = show
-
-    @obengine.deprecated.deprecated
     def hide(self):
         self.showing = False
 
-    @obengine.deprecated.deprecated
     def show(self):
         self.showing = True
 
     def load(self, async = True):
         self.model.load(async)
+
+    @obengine.datatypes.nested_property
+    def showing():
+
+        def fget(self):
+            return self.model.showing
+
+
+        def fset(self, show):
+            self.model.showing = show
+
+        return locals()
 
     @property
     def loaded(self):
@@ -98,45 +100,62 @@ class BlockBrickView(BrickView):
 
     type = 'brick'
 
-    @property
-    def position(self):
-        return self.model.position
+    @obengine.datatypes.nested_property
+    def position():
 
-    @position.setter
-    def position(self, new_pos):
-        self.model.position = new_pos
+        def fget(self):
+            return self.model.position
 
-    @property
-    def size(self):
+        def fset(self, new_pos):
+            self.model.position = new_pos
 
-        size = self.model.size
-        brick_size = obengine.gfx.math.Vector(
-        size.x * DEFAULT_X_SIZE,
-        size.y * DEFAULT_Y_SIZE,
-        size.z * DEFAULT_Z_SIZE
-        )
-        
-        return brick_size
+        return locals()
 
-    @size.setter
-    def size(self, new_size):
-        self.model.scale = new_size.x / DEFAULT_X_SIZE, new_size.y / DEFAULT_Y_SIZE, new_size.z / DEFAULT_Z_SIZE
+    @obengine.datatypes.nested_property
+    def size():
 
-    @property
-    def rotation(self):
-        return self.model.rotation
+        def fget(self):
 
-    @rotation.setter
-    def rotation(self, new_rot):
-        self.model.rotation = new_rot
+            size = self.model.size
+            brick_size = obengine.gfx.math.Vector(
+            size.x * DEFAULT_X_SIZE,
+            size.y * DEFAULT_Y_SIZE,
+            size.z * DEFAULT_Z_SIZE
+            )
 
-    @property
-    def color(self):
-        return self.model.color
+            return brick_size
 
-    @color.setter
-    def color(self, new_color):
-        self.model.color = new_color
+        def fset(self, new_size):
+            
+            self.model.scale = (
+            new_size.x / DEFAULT_X_SIZE,
+            new_size.y / DEFAULT_Y_SIZE,
+            new_size.z / DEFAULT_Z_SIZE
+            )
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def rotation():
+
+        def fget(self):
+            return self.model.rotation
+
+        def fset(self, new_rot):
+            self.model.rotation = new_rot
+            
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def color():
+
+        def fget(self):
+            return self.model.color
+
+        def fset(self, new_color):
+            self.model.color = new_color
+
+        return locals()
 
     @obengine.deprecated.deprecated
     def set_pos(self, vector):
@@ -173,69 +192,85 @@ class BrickPresenter(object):
         self.phys_rep = phys_rep
         self.phys_rep.owner = self
 
-    @obengine.deprecated.deprecated
     def hide(self):
-        pass
 
-    @obengine.deprecated.deprecated
+        self.view.hide()
+        self.phys_rep.disable()
+
     def show(self):
-        pass
 
-    @property
-    def size(self):
-        return self.view.size
+        self.view.show()
+        self.phys_rep.enable()
 
-    @size.setter
-    def size(self, new_size):
+    @obengine.datatypes.nested_property
+    def size():
 
-        self.view.size = new_size
-        self.brick.set_size(new_size)
+        def fget(self):
+            return self.view.size
 
-        self.phys_obj.update_size()
-        
-    @property
-    def rotation(self):
-        return self.view.rotation
+        def fget(self, new_size):
 
-    @rotation.setter
-    def rotation(self, new_rot):
+            self.view.size = new_size
+            self.brick.set_size(new_size)
 
-        self.brick.set_hpr(new_rot)
-        self.view.rotation = new_rot
-        
-        self.phys_rep.rotation = new_rot
+            self.phys_obj.update_size()
 
-    @property
-    def position(self):
-        return self.view.position
+        return locals()
 
-    @position.setter
-    def position(self, new_pos):
+    @obengine.datatypes.nested_property
+    def rotation():
 
-        self.brick.set_pos(new_pos)
-        self.view.position = new_pos
+        def fget(self):
+            return self.view.rotation
 
-        self.phys_rep.position = new_pos
+        def fset(self, new_rot):
 
-    @property
-    def name(self):
-        return self.brick.name
+            self.brick.set_hpr(new_rot)
+            self.view.rotation = new_rot
+            self.phys_rep.rotation = new_rot
 
-    @name.setter
-    def name(self, new_name):
-        self.brick.name = new_name
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def position():
+
+        def fget(self):
+            return self.view.position
+
+        def fset(self, new_pos):
+
+            self.brick.set_pos(new_pos)
+            self.view.position = new_pos
+
+            self.phys_rep.position = new_pos
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def name():
+
+        def fget(self):
+            return self.brick.name
+
+        def fset(self, new_name):
+            self.brick.name = new_name
+
+        return locals()
 
     @property
     def nid(self):
         return self.brick.nid
 
-    @property
-    def parent(self):
-        return self.brick.parent
+    @obengine.datatypes.nested_property
+    def parent():
 
-    @parent.setter
-    def parent(self, new_parent):
-        self.brick.parent = new_parent
+        def fget(self):
+            return self.brick.parent
+
+        def fset(self, new_parent):
+            self.brick.parent = new_parent
+
+        return locals()
 
     @property
     def children(self):

@@ -70,36 +70,7 @@ Here's the general architecture for OpenBlox's GUI toolkit::
 An example
 ==========
 
-Here's a quick example to vertically align 3 buttons (using a container) automatically::
-
-    >>> from obengine.gui import *
-    >>> from obengine.math import Vector2D
-
-    >>> factory = WidgetFactory()
-    >>> container = factory.make('container', position = Vector2D(30, 30), margin = 0.5)
-    >>> button1 = factory.make('button', 'Button 1')
-    >>> button2 = factory.make('button', 'Button 2')
-    >>> button3 = factory.make('button', 'Button 3')
-
-    >>> container.add(button1)
-    >>> container.add(button2)
-    >>> container.add(button3)
-
-    >>> print 'button1.position:', button1.position
-    button1.position: Vector2D(30.0, 29.5)
-    >>> print 'button2.position:', button2.position
-    button2.position: Vector2D(30.0, 30.5)
-    >>> print 'button3.position:', button3.position
-    button3.position: Vector2D(30.0, 31.5)
-
-As you can see, the average **Y**-position of each of the three buttons
-is still at the container's center ``(30, 30)``.
-
-.. note::
-
-    The average **Y**-position of the widgets in
-    the container is *actually*  about ``(30, 30.1)``. This is due to
-    floating-point errors in the partitioning algorithm.
+See *examples/api/gfxgui.py* for a complete example.
 
 The coordinate system
 =====================

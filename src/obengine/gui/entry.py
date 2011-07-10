@@ -60,8 +60,8 @@ class EntryPresenter(TextWidgetPresenter):
     def submit(self):
         self._view.submit()
 
-    def _update_model_text(self, new_text):
-        self._model.text = new_text
+    def _update_model_text(self):
+        self._model.text = self._view.text
 
 
 class MockEntryView(MockTextWidgetView):

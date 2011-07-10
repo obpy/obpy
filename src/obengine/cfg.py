@@ -101,7 +101,7 @@ class Config(obengine.datatypes.Borg):
             try:
                 val = self.parser.get(section, name)
 
-            except ConfigParser.NoSuchOptionError:
+            except ConfigParser.NoOptionError:
 
                 if default is None:
                     raise NoSuchOptionError(name)

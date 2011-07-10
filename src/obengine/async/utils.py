@@ -23,7 +23,6 @@ __author__="openblocks"
 __date__ ="$May 4, 2011 11:27:45 AM$"
 
 
-import sys
 import traceback
 
 try:
@@ -32,7 +31,8 @@ except ImportError:
     import StringIO
 
 import obengine.log
-import obengine.async.task
+import obengine.datatypes
+import obengine.async
 import obengine.depman
 obengine.depman.gendeps()
 
@@ -53,10 +53,10 @@ class LoopingCall(object):
         self.delay = delay
 
         if self.delay != 0.0:
-            self.task = obengine.async.task.PeriodicTask(self.run_action, delay, priority)
+            self.task = obengine.async.PeriodicTask(self.run_action, delay, priority)
 
         else:
-            self.task = obengine.async.task.Task(self.run_action, priority)
+            self.task = obengine.async.Task(self.run_action, priority)
             
         self.execute = self.task.execute
         self.__cmp__ = self.task.__cmp__
@@ -82,13 +82,17 @@ class LoopingCall(object):
         else:
             return task.AGAIN
 
-    @property
-    def scheduler(self):
-        return self.task.scheduler
+    @obengine.datatypes.nested_property
+    def scheduler():
 
-    @scheduler.setter
-    def scheduler(self, sched):
-        self.task.scheduler = sched
+        def fget(self):
+            return self.task.scheduler
+
+   
+        def fset(self, sched):
+            self.task.scheduler = sched
+
+        return locals()
 
     @property
     def name(self):
