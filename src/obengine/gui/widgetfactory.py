@@ -62,7 +62,7 @@ class WidgetFactory(object):
         self._widget_handlers['container'] = self._make_container
         self._widget_handlers['shutter'] = self._make_shutter
         self._widget_handlers['menu'] = self._make_menu
-        self._widget_handlers['pulldown'] = sekf._make_pulldown
+        self._widget_handlers['pulldown'] = self._make_pulldown
 
         self._widget_handlers['label'] = self._make_label
         self._widget_handlers['entry'] = self._make_entry
