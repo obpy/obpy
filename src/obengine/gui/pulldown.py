@@ -1,6 +1,6 @@
 #
-# This module implements a simple menu. Note that at the time of this writing,
-# nested menus aren't supported.
+# This module implements a pulldown - a shutter-like widget that is hidden/shown
+# by the touch of a button.
 # See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
 # for this module.
 #
@@ -24,43 +24,36 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 14, 2011 11:16:52 AM$"
+__date__  = "$Jul 11, 2011 12:26:46 PM$"
 
 
 import obengine.datatypes
 import obengine.event
 import obengine.depman
 import obengine.math
-from obengine.gui import Container, VerticalLayoutManager
+from obengine.gui import Container
 
 obengine.depman.gendeps()
 
-class Menu(Container):
 
-    def __init__(self, button, position = None):
+class Pulldown(Container):
+
+    def __init__(self, button, position):
 
         self._button = button
+        
+        if position is not None:
+            self._button.position = position
 
         container_pos = obengine.math.Vector2D(self._button.position.x, self._button.position.y)
         container_pos.y += self._button.size.y
-        Container.__init__(self, VerticalLayoutManager, container_pos)
 
+        Container.___init__(self, container_pos)
+        
         self.on_text_changed = self._button.on_text_changed
-
         self.on_click = self._button.on_click
-        self.on_click += self.show
-
-    @obengine.datatypes.nested_property
-    def text():
-
-        def fget(self):
-            return self._button.text
-
-        def fset(self, new_text):
-            self._button.text = new_text
-
-        return locals()
-
+        self.on_click += self._toggle_status
+        
     @obengine.datatypes.nested_property
     def position():
 
@@ -94,3 +87,11 @@ class Menu(Container):
     @property
     def size(self):
         return self._button.size
+
+    def _toggle_status(self):
+
+        if self.showing is True:
+            self.showing = False
+
+        else:
+            self.showing = True
