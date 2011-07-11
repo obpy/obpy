@@ -48,7 +48,7 @@ class Pulldown(Container):
         container_pos = obengine.math.Vector2D(self._button.position.x, self._button.position.y)
         container_pos.y += self._button.size.y
 
-        Container.___init__(self, container_pos)
+        Container.__init__(self, container_pos)
         
         self.on_text_changed = self._button.on_text_changed
         self.on_click = self._button.on_click

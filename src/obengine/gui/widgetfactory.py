@@ -38,6 +38,7 @@ from container import *
 from shutter import *
 from label import *
 from entry import *
+from pulldown import *
 
 obengine.depman.gendeps()
 
@@ -61,6 +62,7 @@ class WidgetFactory(object):
         self._widget_handlers['container'] = self._make_container
         self._widget_handlers['shutter'] = self._make_shutter
         self._widget_handlers['menu'] = self._make_menu
+        self._widget_handlers['pulldown'] = sekf._make_pulldown
 
         self._widget_handlers['label'] = self._make_label
         self._widget_handlers['entry'] = self._make_entry
@@ -139,6 +141,13 @@ class WidgetFactory(object):
         presenter = EntryPresenter(model, view)
         
         return presenter
+
+    def _make_pulldown(self, intial_text = '', position = None):
+
+        button = self.make('button', initial_text, position)
+        pulldown = Pulldown(button)
+
+        return pulldown
 
     def _make_menu(self, text, position = None):
         raise NotImplementedError('Menu support in OpenBlox is not finished')
