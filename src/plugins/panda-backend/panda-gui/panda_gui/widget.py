@@ -45,6 +45,7 @@ class WidgetView(object):
 
     def __init__(self, position = None):
 
+        self._showing = True
         self.on_size_changed = obengine.event.Event()
         self.position = position or obengine.math.Vector2D()
 
@@ -85,6 +86,24 @@ class WidgetView(object):
             height *= PANDA_TO_OPENBLOX_SCALE
 
             return obengine.math.Vector2D(width, height)
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def showing():
+
+        def fget(self):
+            return self._showing
+
+        def fset(self, show):
+
+            self._showing = show
+
+            if show is True:
+                self.show()
+
+            else:
+                self.hide()
 
         return locals()
 

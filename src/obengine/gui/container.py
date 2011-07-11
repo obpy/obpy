@@ -119,7 +119,7 @@ class Container(Widget):
         return self._margin
 
     def _update_layout(self, new_pos):
-        self._layout_manager.update_widgets_after_move(new_pos)
+        self._layout_manager.adjust_widgets_after_move(new_pos)
 
     def _show_children(self):
         for child in self.children:

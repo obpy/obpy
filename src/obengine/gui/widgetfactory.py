@@ -142,10 +142,11 @@ class WidgetFactory(object):
         
         return presenter
 
-    def _make_pulldown(self, intial_text = '', position = None):
+    def _make_pulldown(self, initial_text = '', position = None):
 
         button = self.make('button', initial_text, position)
-        pulldown = Pulldown(button)
+        container = self.make('container')
+        pulldown = Pulldown(button, container)
 
         return pulldown
 

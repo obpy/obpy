@@ -46,6 +46,15 @@ def draw_button(sched):
     when the mouse isn't hovering over it.''',
     obengine.math.Vector2D(0, 30))
 
+    pulldown = factory.make(
+    'pulldown',
+    'A pulldown',
+    obengine.math.Vector2D(0, -20))
+
+    pulldown_label = factory.make('label', 'A label inside a pulldown!')
+
+    pulldown.add(pulldown_label)
+
 
 def main():
 

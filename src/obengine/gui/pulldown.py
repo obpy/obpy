@@ -31,28 +31,40 @@ import obengine.datatypes
 import obengine.event
 import obengine.depman
 import obengine.math
-from obengine.gui import Container
+from obengine.gui import Widget
 
 obengine.depman.gendeps()
 
 
-class Pulldown(Container):
+class Pulldown(Widget):
 
-    def __init__(self, button, position):
+    SPACING = 2.0
+
+    def __init__(self, button, container, position = None):
 
         self._button = button
-        
         if position is not None:
             self._button.position = position
 
-        container_pos = obengine.math.Vector2D(self._button.position.x, self._button.position.y)
-        container_pos.y += self._button.size.y
+        Widget.__init__(self, position)
 
-        Container.__init__(self, container_pos)
+        self._container = container
+        container_pos = obengine.math.Vector2D(self._button.position.x,self._button.position.y)
+        container_pos.y -= self._button.size.y + Pulldown.SPACING
+        self._container.position = container_pos
         
         self.on_text_changed = self._button.on_text_changed
         self.on_click = self._button.on_click
         self.on_click += self._toggle_status
+
+        self.on_hidden += self._container.hide
+        self.on_shown += self._container.show
+
+    def add(self, widget):
+        self._container.add(widget)
+
+    def remove(self, widget):
+        self._container.remove(widget)
         
     @obengine.datatypes.nested_property
     def position():
@@ -63,8 +75,7 @@ class Pulldown(Container):
         def fset(self, new_pos):
 
             self._button.position = new_pos
-            self._position = Vector2D(new_pos.x, new_pos.y + self._button.size.y)
-            
+            self._container.position = Vector2D(new_pos.x, new_pos.y + self._button.size.y)
             self.on_position_changed(self._position)
 
         return locals()
@@ -85,9 +96,4 @@ class Pulldown(Container):
         return self._button.size
 
     def _toggle_status(self):
-
-        if self.showing is True:
-            self.showing = False
-
-        else:
-            self.showing = True
+        self.showing = not self.showing
