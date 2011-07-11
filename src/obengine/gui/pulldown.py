@@ -64,10 +64,6 @@ class Pulldown(Container):
 
             self._button.position = new_pos
             self._position = Vector2D(new_pos.x, new_pos.y + self._button.size.y)
-
-            # Note that the menu display's position is used for
-            # Widget.on_position_changed, insted of our button's position.
-            # This might cause problems!
             
             self.on_position_changed(self._position)
 
