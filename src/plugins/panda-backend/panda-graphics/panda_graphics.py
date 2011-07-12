@@ -203,8 +203,6 @@ class Model(PandaResource):
 
     def _check_mouse(self):
 
-        # print 'in _check_mouse...'
-
         if self.window.panda_window.mouseWatcherNode.hasMouse() is False:
             return
 
@@ -214,26 +212,17 @@ class Model(PandaResource):
         mouse_pos.getX(),
         mouse_pos.getY())
 
-        # print 'Mouse is at', mouse_pos
-
         self.window.mouse_traverser.traverse(self.window.panda_window.render)
 
-        # print 'Traversed mouse collision handler'
-
         if self.window.collision_queue.getNumEntries() > 0:
-
-            print 'Something is under the mouse!'
 
             self.window.collision_queue.sortEntries()
             picked_node = self.window.collision_queue.getEntry(0).getIntoNodePath().findNetTag('clickable-flag')
 
-            print 'Node', picked_node, 'is the closest node to the mouse'
 
             picked_node_uuid = picked_node.getTag('clickable-flag')
-            print picked_node_uuid, self._uuid
 
             if picked_node_uuid == self._uuid:
-                print 'Firing event...'
                 self.on_click()
 
     def _set_load_okay(self, model):
