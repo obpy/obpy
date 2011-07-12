@@ -24,6 +24,8 @@ __author__ = "openblocks"
 __date__  = "$May 2, 2011 5:37:04 PM$"
 
 
+import uuid
+
 from panda3d.core import *
 from direct.showbase.ShowBase import ShowBase
 
@@ -54,6 +56,7 @@ class Model(PandaResource):
         self.load_okay = False
         self.window = window
         self._showing = False
+        self.on_click = obengine.event.Event()
         
         self._texture = None
         self._position = position or obengine.gfx.math.Vector()
@@ -198,12 +201,50 @@ class Model(PandaResource):
         self._color.on_g_changed += lambda g: self.panda_node.setColor(self._color.r, self._color.b, g / COLOR_SCALER)
         self._color.on_b_changed += lambda b: self.panda_node.setColor(b / COLOR_SCALER, self._color.g, self._color.b)
 
+    def _check_mouse(self):
+
+        # print 'in _check_mouse...'
+
+        if self.window.panda_window.mouseWatcherNode.hasMouse() is False:
+            return
+
+        mouse_pos = self.window.panda_window.mouseWatcherNode.getMouse()
+        self.window.picker_ray.setFromLens(
+        self.window.panda_window.camNode,
+        mouse_pos.getX(),
+        mouse_pos.getY())
+
+        # print 'Mouse is at', mouse_pos
+
+        self.window.mouse_traverser.traverse(self.window.panda_window.render)
+
+        # print 'Traversed mouse collision handler'
+
+        if self.window.collision_queue.getNumEntries() > 0:
+
+            print 'Something is under the mouse!'
+
+            self.window.collision_queue.sortEntries()
+            picked_node = self.window.collision_queue.getEntry(0).getIntoNodePath().findNetTag('clickable-flag')
+
+            print 'Node', picked_node, 'is the closest node to the mouse'
+
+            picked_node_uuid = picked_node.getTag('clickable-flag')
+            print picked_node_uuid, self._uuid
+
+            if picked_node_uuid == self._uuid:
+                print 'Firing event...'
+                self.on_click()
+
     def _set_load_okay(self, model):
 
         self.load_okay = True
+        self._uuid = str(uuid.uuid1())
         
         self.panda_node = model
         self.panda_node.setTransparency(TransparencyAttrib.MAlpha)
+        self.panda_node.setTag('clickable-flag', self._uuid)
+        self.window.panda_window.accept('mouse1', self._check_mouse)
         
         self.on_loaded()
 
@@ -413,6 +454,15 @@ class Window(object):
         self.panda_window.setBackgroundColor(1, 1, 1, 1)
         self.panda_window.win.requestProperties(self.window_properties)
         self.panda_window.render.setShaderAuto()
+
+        picker_node = CollisionNode('mouse_ray')
+        picker_nodepath = self.panda_window.camera.attachNewNode(picker_node)
+        picker_node.setFromCollideMask(GeomNode.getDefaultCollideMask())
+        self.picker_ray = CollisionRay()
+        picker_node.addSolid(self.picker_ray)
+        self.mouse_traverser = CollisionTraverser()
+        self.collision_queue = CollisionHandlerQueue()
+        self.mouse_traverser.addCollider(picker_nodepath, self.collision_queue)
 
         getModelPath().appendPath(self.search_path)
         self.on_loaded()
