@@ -56,14 +56,26 @@ class Pulldown(Widget):
         self.on_text_changed = self._button.on_text_changed
         self.on_click = self._button.on_click
         self.on_click += self._toggle_status
-
+        
         self.on_hidden += self._container.hide
         self.on_shown += self._container.show
+        self.pulldown_showing = False
 
     def add(self, widget):
+
+        new_container_pos = obengine.math.Vector2D(self._container.position.x, self._container.position.y)
+        new_container_pos.y -= widget.size.y
+        self._container.position = new_container_pos
+        
         self._container.add(widget)
 
+
     def remove(self, widget):
+        
+        new_container_pos = obengine.math.Vector2D(self._container.position.x, self._container.position.y)
+        new_container_pos.y += widget.size.y
+        self._container.position = new_container_pos
+
         self._container.remove(widget)
         
     @obengine.datatypes.nested_property
@@ -91,9 +103,33 @@ class Pulldown(Widget):
 
         return locals()
 
+    @obengine.datatypes.nested_property
+    def pulldown_showing():
+
+        def fget(self):
+            return self._container.showing
+
+        def fset(self, show):
+            self._container.showing = show
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def showing():
+
+        def fget(self):
+            return self._showing
+
+        def fset(self, show):
+
+            self.pulldown_showing = show
+            self._button.showing = show
+
+        return locals()
+
     @property
     def size(self):
         return self._button.size
 
     def _toggle_status(self):
-        self.showing = not self.showing
+        self.pulldown_showing = not self.pulldown_showing

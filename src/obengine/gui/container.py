@@ -92,6 +92,7 @@ class Container(Widget):
 
         widget.parent = self
         widget.position = self._layout_manager.find_space_for_widget(widget)
+        widget.showing = self.showing
 
         self.children.add(widget)
 
@@ -169,9 +170,9 @@ class VerticalLayoutManager(object):
     def adjust_widgets_after_move(self, new_pos):
 
         for child_widget in self._owning_container.children:
-            
-            child_widget.y += new_pos.y - child_widget.y
-            child_widget.x += new_pos.x - child_widget.x
+
+            child_widget.position.y += new_pos.y - child_widget.position.y
+            child_widget.position.x += new_pos.x - child_widget.position.x
             
     def adjust_size(self, size):
         
@@ -222,8 +223,8 @@ class HorizontalLayoutManager(object):
 
         for child_widget in self._owning_container.children:
 
-            child_widget.y += new_pos.y - child_widget.y
-            child_widget.x += new_pos.x - child_widget.x
+            child_widget.position.y += new_pos.y - child_widget.position.y
+            child_widget.position.x += new_pos.x - child_widget.position.x
 
     def adjust_size(self, size):
 

@@ -48,12 +48,14 @@ def draw_button(sched):
 
     pulldown = factory.make(
     'pulldown',
-    'A pulldown',
+    'A pulldown - click me!',
     obengine.math.Vector2D(0, -20))
 
     pulldown_label = factory.make('label', 'A label inside a pulldown!')
-
     pulldown.add(pulldown_label)
+    
+    pulldown_button = factory.make('button', 'A button inside a pulldown!')
+    pulldown.add(pulldown_button)
 
 
 def main():
