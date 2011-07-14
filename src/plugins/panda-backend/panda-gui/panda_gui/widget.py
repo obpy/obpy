@@ -32,7 +32,7 @@ import obengine.math
 import obengine.datatypes
 import obengine.event
 import utils
-from obplugin.panda_utils import PANDA_TO_OPENBLOX_SCALE = 100.0
+from obplugin.panda_utils import PANDA_TO_OPENBLOX_SCALE
 
 
 WIDGET_SCALE = 0.05
