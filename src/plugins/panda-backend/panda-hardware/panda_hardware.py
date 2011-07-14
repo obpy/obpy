@@ -25,8 +25,12 @@ __date__  = "$Jun 1, 2011 7:55:43 PM$"
 
 
 import obengine.cfg
+import obengine.math
 import obengine.event
+import obengine.async
 import obengine.depman
+
+import obplugin.panda_utils
 
 obengine.depman.gendeps()
 
@@ -84,6 +88,8 @@ class KeyEvent(obengine.event.Event):
 
     def __init___(self, window, key, event_type, *args):
 
+        obengine.event.Event.__init__(self)
+
         self._panda_key = KeyEvent._key_conv[key]
         self._panda_evt_type = KeyEvent._type_conv[event_type]
         self._window = window
@@ -93,8 +99,6 @@ class KeyEvent(obengine.event.Event):
 
         self._method_args = args
 
-    def enable(self):
-        
         self._window.panda_window.accept(
         '%s-%s' % (self._panda_key, self._panda_evt_type),
         self.fire,
@@ -108,3 +112,105 @@ class KeyEvent(obengine.event.Event):
     @property
     def event_type(self):
         return self._event_type
+
+
+class MouseEvent(obengine.event.Event):
+
+    LEFT_MOUSE = 0
+    RIGHT_MOUSE = 1
+    MIDDLE_MOUSE = 2
+
+    _mouse_conv = ['mouse1', 'mouse2', 'mouse3']
+
+    TYPE_DOWN = 0
+    TYPE_UP = 1
+
+    _type_conv = ['', '-up']
+
+    def __init__(self, window, button, event_type, *args):
+
+        obengine.event.Event.__init__(self)
+
+        self._panda_button = MouseEvent._mouse_conv[button]
+        self._panda_event_type = MouseEvent._type_conv[event_type]
+        self._window = window
+
+        self._button = button
+        self._event_type = event_type
+        self._method_args = args
+
+        self._window.panda_window.accept(
+        '%s%s' % (self._panda_button, self._panda_event_type),
+        self.fire,
+        self._method_args)
+
+    @property
+    def button(self):
+        return self._button
+
+    @property
+    def event_type(self):
+        return self._event_type
+
+
+class MouseMotionEvent(obengine.event.Event):
+
+    COORD_2D = 0
+    COORD_3D = 1
+
+    def __init__(self, window, coord_space = MouseMotionEvent.COORD_2D, *args):
+
+        obengine.event.Event.__init__(self)
+
+        self._window = window
+        self._coord_space = coord_space
+        self._method_args = args
+
+        self._old_mouse_x = 0
+        self._old_mouse_y = 0
+        self._old_mouse_z = 0
+        
+        self._window.scheduler.add(obengine.async.Task(self._update_mouse_pos))
+
+    def _update_mouse_pos(self):
+        
+        if self._window.panda_window.mouseWatcherNode.hasMouse() is False:
+            return task.AGAIN
+
+        mouse_pos_x = self._window.panda_window.mouseWatcherNode.getMouseX()
+        mouse_pos_y = self._window.panda_window.mouseWatcherNode.getMouseY()
+
+        if self._coord_space == MouseMotionEvent.COORD_3D:
+
+            self._window.picker_ray.setFromLens(
+            self._window.panda_window.camNode,
+            mouse_pos_x,
+            mouse_pos_y)
+
+            mouse_pos = self._window.panda_window.render.getRelativePoint(
+            self._window.panda_window.camera,
+            self._window.picker_ray.getOrigin())
+
+            mouse_pos = obplugin.panda_utils.PandaConverter.convert_vec3(mouse_pos)
+
+            if mouse_pos.x != self._old_mouse_x or mouse_pos.y != self._old_mouse_y or mouse_pos.z != self._old_mouse_z:
+
+                self._old_mouse_x = mouse_pos.x
+                self._old_mouse_y = mouse_pos.y
+                self._old_mouse_z = mouse_pos.z
+                
+                self.fire(mouse_pos)
+
+        else:
+
+            mouse_pos_x *= obplugin.panda_utils.PANDA_TO_OPENBLOX_SCALE
+            mouse_pos_y *= obplugin.panda_utils.PANDA_TO_OPENBLOX_SCALE
+
+            mouse_pos = obengine.math.Vector2D(mouse_pos_x, mouse_pos_y)
+
+            if mouse_pos.x != self._old_mouse_x or mouse_pos.y != self._old_mouse_y:
+
+                self._old_mouse_x = mouse_pos.x
+                self._old_mouse_y = mouse_pos.y
+
+                self.fire(mouse_pos)

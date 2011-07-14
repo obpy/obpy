@@ -33,7 +33,7 @@ import obengine.event
 
 
 COLOR_SCALER = 255.0
-
+PANDA_TO_OPENBLOX_SCALE = 100.0
 
 class PandaResource(object):
     """
@@ -82,6 +82,10 @@ class PandaConverter(object):
     @staticmethod
     def convert_vec3(vector):
         return obengine.gfx.math.Vector(vector.getX(), vector.getY(), vector.getZ())
+
+    @staticmethod
+    def convert_vec2(vector):
+        return obengine.gfx.math.Vector2D(vector.getX(), vector.getZ())
 
     @staticmethod
     def convert_quat(quat):

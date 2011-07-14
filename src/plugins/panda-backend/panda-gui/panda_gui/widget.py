@@ -28,16 +28,14 @@ __date__  = "$Jul 1, 2011 2:57:27 PM$"
 
 import uuid
 
-import direct.gui.DirectGuiGlobals
-
 import obengine.math
 import obengine.datatypes
 import obengine.event
 import utils
+from obplugin.panda_utils import PANDA_TO_OPENBLOX_SCALE = 100.0
 
 
 WIDGET_SCALE = 0.05
-PANDA_TO_OPENBLOX_SCALE = 100.0
 WIDTH_ADJUSTMENT = 5.5
 
 
