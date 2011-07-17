@@ -26,19 +26,75 @@ __author__ = "openblocks"
 __date__  = "$Jul 14, 2011 4:19:44 PM$"
 
 
+import ConfigParser
+import os
+
+import obengine
+import obengine.world
+import obengine.gfx.worldsource
+
+
+PROJECT_CFG_FILE = 'project.ini'
+WORLD_XML_FILE = os.path.join('bwproject', 'world.xml')
+
+
 class Project(object):
 
-    def __init__(self, author, ob_version): pass
+    def __init__(self, world, author, ob_version):
 
-    def load(self, source):
-        for command in source:
-            command.execute(self)
+        self.author = author
+        self.ob_version = ob_version
+        self.world = world
+        self.path = path
 
     def accept(self, visitor):
         visitor.visit(self)
+
+    @property
+    def name(self):
+        return self.world.name
 
 
 class ProjectVisitor(object):
 
     def accept(self, project):
+        # Override this in a subclass
         raise NotImplementedError
+
+
+class ProjectCommand(object):
+
+    def __init__(self, project):
+        self.project = project
+
+    def execute(self):
+        raise NotImplementedError
+
+
+class ProjectLoader(object):
+
+    def __init__(self, element_factory, path):
+        
+        self._parser = ConfigParser.ConfigParser()
+        self._path = path
+
+        world_file = os.path.join(self._path, WORLD_XML_FILE)
+        self._world_source = obengine.gfx.worldsource.FileWorldSource(
+        element_factory,
+        world_file)
+
+    def load(self):
+
+        self._parser.read(self._path)
+
+        name = self._parser.get('project', 'name')
+        author = self._parser.get('project', 'author')
+        ob_version = self._parser.get('project', 'obversion')
+
+        world = obengine.world.World(name, 1)
+        project = Project(world, author, ob_version)
+
+        self._world_source.parse()
+        world.load_world(self._world_source)
+
+        return project
