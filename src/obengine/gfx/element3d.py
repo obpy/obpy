@@ -94,6 +94,7 @@ class BrickView(object):
         self.size = size
         self.rotation = rotation
         self.color = color
+        self.on_click = self.model.on_click
 
 
 class BlockBrickView(BrickView):
@@ -185,6 +186,7 @@ class BrickPresenter(object):
         self.on_remove = self.brick.on_remove
         self.on_name_changed = self.brick.on_name_changed
         self.on_parent_changed = self.brick.on_parent_changed
+        self.on_click += self.view.on_click
 
         self.brick.on_add += self.presenter_on_add
         self.brick.on_remove += self.presenter_on_remove
