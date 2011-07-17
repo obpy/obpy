@@ -56,7 +56,10 @@ class WorldSource(list):
         handler_owner._element_handlers.setdefault(tag, []).append(handler)
 
     def supported_tag(self, tag):
-        return tag in self._element_handlers.keys()
+        return tag in self.supported_tags()
+
+    def supported_tags(self):
+        return self._element_handlers.keys()
 
     def _handle_node(self, node):
 

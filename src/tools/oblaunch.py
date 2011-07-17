@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 # A simple command-line OpenBlox game launcher.
+# WARNING: This script is currently written for OpenBlox 0.6.2, and will not
+# work with OpenBlox 0.7 (the current version OpenBlox, the one you're using now).
 # See <TODO: no Sphinx docs yet - add some> for the main source of documentation
 # for this script.
 
@@ -84,6 +86,7 @@ def load_world(game):
 
 
 if __name__ == '__main__':
+    sys.exit(0)
 
     obengine.cfg.init()
     obengine.utils.init()
