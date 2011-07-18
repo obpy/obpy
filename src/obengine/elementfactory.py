@@ -93,7 +93,7 @@ class ElementFactory(object):
 
         # Create the model (not the 3D model, model as in MVC/MVP)
 
-        model = obengine.element.BrickElement(name, coords, color, size, rotation)
+        ##model = obengine.element.BrickElement(name, coords, color, size, rotation)
 
         # Create the view and presenter
 
@@ -111,7 +111,7 @@ class ElementFactory(object):
         while phys_rep.loaded is False:
             scheduler.step()
 
-        presenter = obengine.gfx.element3d.BrickPresenter(model, view,  phys_rep)
+        presenter = obengine.gfx.element3d.BrickPresenter(name, coords, color, size, rotation, view,  phys_rep)
         return presenter
 
     def make_skybox(self, texture = None):

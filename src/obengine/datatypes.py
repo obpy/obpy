@@ -34,6 +34,7 @@ import obengine.depman
 
 obengine.depman.gendeps()
 
+
 class AttrDict(dict):
     """
     A decorated dict that links attributes to keys, so we can do this:
@@ -141,6 +142,17 @@ class EventAttrDict(EventDict, AttrDict):
         EventDict.__init__(self, **kwargs)
         AttrDict.__init__(self, **kwargs)
 
+
+class ExtensibleObjectMixin(object):
+
+    _extensions = {}
+
+    def get_extension(self, name):
+        return self._extensions[name](self)
+
+    def _set_extension(self, name, extension):
+        self._extensions[name] = extension
+        
 
 class orderedset(collections.MutableSet):
     """Ordered set - like a set, but remembers insertion order

@@ -175,24 +175,25 @@ class BlockBrickView(BrickView):
         self.color = rgb
 
 
-class BrickPresenter(object):
+class BrickPresenter(obengine.element.Element):
     
-    def __init__(self, brick, view, phys_rep):
+    def __init__(self, name, position, color, size, rotation, view, phys_rep):
 
-        self.brick = brick
+        obengine.element.Element.__init__(self, name)
+        
         self.view = view
+        self.on_click = self.view.on_click
 
-        self.on_add = self.brick.on_add
-        self.on_remove = self.brick.on_remove
-        self.on_name_changed = self.brick.on_name_changed
-        self.on_parent_changed = self.brick.on_parent_changed
-        self.on_click += self.view.on_click
-
-        self.brick.on_add += self.presenter_on_add
-        self.brick.on_remove += self.presenter_on_remove
+        self.on_add += self._on_add
+        self.on_remove += self._on_remove
 
         self.phys_rep = phys_rep
         self.phys_rep.owner = self
+
+        self._position = position
+        self._color = color
+        self._size = size
+        self._rotation = rotation
 
     def hide(self):
 
@@ -212,9 +213,8 @@ class BrickPresenter(object):
 
         def fget(self, new_size):
 
+            self._size = new_size
             self.view.size = new_size
-            self.brick.set_size(new_size)
-
             self.phys_obj.update_size()
 
         return locals()
@@ -227,7 +227,7 @@ class BrickPresenter(object):
 
         def fset(self, new_rot):
 
-            self.brick.set_hpr(new_rot)
+            self._rotation = new_rot
             self.view.rotation = new_rot
             self.phys_rep.rotation = new_rot
 
@@ -241,76 +241,34 @@ class BrickPresenter(object):
 
         def fset(self, new_pos):
 
-            self.brick.set_pos(new_pos)
+            self._position = new_pos
             self.view.position = new_pos
-
             self.phys_rep.position = new_pos
 
         return locals()
 
-    @obengine.datatypes.nested_property
-    def name():
-
-        def fget(self):
-            return self.brick.name
-
-        def fset(self, new_name):
-            self.brick.name = new_name
-
-        return locals()
-
-    @property
-    def nid(self):
-        return self.brick.nid
-
-    @obengine.datatypes.nested_property
-    def parent():
-
-        def fget(self):
-            return self.brick.parent
-
-        def fset(self, new_parent):
-            self.brick.parent = new_parent
-
-        return locals()
-
-    @property
-    def children(self):
-        return self.brick.children
-
     @obengine.deprecated.deprecated
     def set_size(self, size):
-
-        self.brick.set_size(size)
-        self.view.set_size(size)
+        self.size = size
 
     @obengine.deprecated.deprecated
     def set_hpr(self, hpr):
-
-        self.brick.set_hpr(hpr)
-        self.view.rotation = hpr
-        self.phys_rep.rotation = hpr
+        self.rotation = hpr
 
     @obengine.deprecated.deprecated
     def set_pos(self, vector):
-
-        self.brick.set_pos(vector)
-        self.view.position = vector
-
-        self.phys_rep.position = vector
+        self.position = vector
 
     @obengine.deprecated.deprecated
     def set_rgb(self, color):
+        self.color = color
 
-        self.brick.set_rgb(color)
-        self.view.color = color
-
-    def presenter_on_add(self, world):
+    def _on_add(self, world):
 
         self.world = world
         self.phys_rep.enable()
 
-    def presenter_on_remove(self):
+    def _on_remove(self):
 
         self.model.showing = False
         self.phys_rep.disable()
