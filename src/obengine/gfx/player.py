@@ -26,7 +26,6 @@ __author__ = "openblocks"
 __date__  = "$Oct 25, 2010 9:57:22 PM$"
 
 
-import time
 import copy
 
 import obengine.gfx
@@ -99,7 +98,7 @@ class KeyboardPlayerController(PlayerController):
         # This is used to keep sneaky players from flying!
         # NOTE: This will eventually be replaced with something better,
         # like checking for a collision with ground
-        self.last_jump_time = time.time()
+        self.last_jump_time = 0
 
     def set_key(self, key, val):
         self.key_map[key] = val
@@ -122,10 +121,10 @@ class KeyboardPlayerController(PlayerController):
             self.view._move_b()
 
         # Is the space key pressed, and the user waited long enough to jump again?
-        if self.key_map['space'] == True and time.time() - self.last_jump_time > self.jump_interval:
+        if self.key_map['space'] == True and task.time - self.last_jump_time > self.jump_interval:
 
             # Save the current time, and then jump
-            self.last_jump_time = time.time()
+            self.last_jump_time = task.time
             self.view._jump()
 
         # Make ourselves be called again
