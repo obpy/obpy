@@ -190,11 +190,6 @@ class BrickPresenter(obengine.element.Element):
         self.phys_rep = phys_rep
         self.phys_rep.owner = self
 
-        self._position = position
-        self._color = color
-        self._size = size
-        self._rotation = rotation
-
     def hide(self):
 
         self.view.hide()
@@ -213,7 +208,6 @@ class BrickPresenter(obengine.element.Element):
 
         def fget(self, new_size):
 
-            self._size = new_size
             self.view.size = new_size
             self.phys_obj.update_size()
 
@@ -227,7 +221,6 @@ class BrickPresenter(obengine.element.Element):
 
         def fset(self, new_rot):
 
-            self._rotation = new_rot
             self.view.rotation = new_rot
             self.phys_rep.rotation = new_rot
 
@@ -241,7 +234,6 @@ class BrickPresenter(obengine.element.Element):
 
         def fset(self, new_pos):
 
-            self._position = new_pos
             self.view.position = new_pos
             self.phys_rep.position = new_pos
 

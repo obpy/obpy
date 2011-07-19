@@ -150,8 +150,8 @@ class ExtensibleObjectMixin(object):
     def get_extension(self, name):
         return self._extensions[name](self)
 
-    def _set_extension(self, name, extension):
-        self._extensions[name] = extension
+    def set_extension(self, name, extension):
+        self.__class__._extensions[name] = extension
         
 
 class orderedset(collections.MutableSet):

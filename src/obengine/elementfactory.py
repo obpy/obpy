@@ -68,10 +68,7 @@ class ElementFactory(object):
         * Script
         * **(NEW)** Sound
 
-        :param name: The type of element to create.
-        :type name: `str`
-        :returns: The created element
-        :raises: `UnknownElementType` is raised if an unknown element type is given
+        UnknownElementType is raised if an unknown element type is given.
         """
 
         try:
@@ -91,12 +88,6 @@ class ElementFactory(object):
         size = size or  obengine.gfx.math.Vector(2, 4, 1)
         rotation = rotation or obengine.gfx.math.EulerAngle(0, 0, 0)
 
-        # Create the model (not the 3D model, model as in MVC/MVP)
-
-        ##model = obengine.element.BrickElement(name, coords, color, size, rotation)
-
-        # Create the view and presenter
-
         view = obengine.gfx.element3d.BlockBrickView(size, rotation, color, self.window)
         view.load()
 
@@ -111,8 +102,8 @@ class ElementFactory(object):
         while phys_rep.loaded is False:
             scheduler.step()
 
-        presenter = obengine.gfx.element3d.BrickPresenter(name, coords, color, size, rotation, view,  phys_rep)
-        return presenter
+        controller = obengine.gfx.element3d.BrickPresenter(name, coords, color, size, rotation, view,  phys_rep)
+        return controller
 
     def make_skybox(self, texture = None):
 

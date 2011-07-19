@@ -28,11 +28,12 @@ __author__ = "openblocks"
 __date__  = "$Jul 13, 2010 6:13:05 PM$"
 
 
+import obengine.datatypes
 import obengine.event
 import obengine.scenegraph
 
 
-class Element(obengine.scenegraph.SceneNode):
+class Element(obengine.scenegraph.SceneNode, obengine.datatypes.ExtensibleObjectMixin):
     """
     The base class for all elements(i.e, scripts, bricks, etc...).
     You shouldn't make an instance of this class.
