@@ -40,21 +40,36 @@ def init():
     config_src = obengine.cfg.Config()
 
     a_key = config_src.get_str('a_key', 'core.hardware', '').lower()
-    b_key = config_src.get_str('b_key', 'core.hardware', '').lower()
-    x_key = config_src.get_str('x_key', 'core.hardware', '').lower()
-    y_key = config_src.get_str('y_key', 'core.hardware', '').lower()
-
     if a_key != '':
         KeyEvent._key_conv[KeyEvent.A_KEY] = a_key
 
+    b_key = config_src.get_str('b_key', 'core.hardware', '').lower()
     if b_key != '':
         KeyEvent._key_conv[KeyEvent.B_KEY] = b_key
-        
+
+    x_key = config_src.get_str('x_key', 'core.hardware', '').lower()
     if x_key != '':
         KeyEvent._key_conv[KeyEvent.X_KEY] = x_key
 
+    y_key = config_src.get_str('y_key', 'core.hardware', '').lower()
     if y_key != '':
         KeyEvent._key_conv[KeyEvent.Y_KEY] = y_key
+
+    up_key = config_src.get_str('up_key', 'core.hardware', '').lower()
+    if up_key != '':
+        KeyEvent._key_conv[KeyEvent.UP_KEY] = up_key
+
+    down_key = config_src.get_str('left_key', 'core.hardware', '').lower()
+    if down_key != '':
+        KeyEvent._key_conv[KeyEvent.DOWN_KEY] = down_key
+
+    left_key = config_src.get_str('left_key', 'core.hardware', '').lower()
+    if left_key != '':
+        KeyEvent._key_conv[KeyEvent.LEFT_KEY] = left_key
+
+    right_key = config_src.get_str('right_key', 'core.hardware', '').lower()
+    if right_key != '':
+        KeyEvent._key_conv[KeyEvent.RIGHT_KEY] = right_key
 
 
 class KeyEvent(obengine.event.Event):
@@ -64,13 +79,23 @@ class KeyEvent(obengine.event.Event):
     X_KEY = 2
     Y_KEY = 3
 
+    UP_KEY = 4
+    DOWN_KEY = 5
+    LEFT_KEY = 6
+    RIGHT_KEY = 7
+
     _key_conv = {
 
     A_KEY : 'a',
     B_KEY : 's',
 
     X_KEY : 'x',
-    Y_KEY : 'c'
+    Y_KEY : 'c',
+
+    UP_KEY : 'arrow_up',
+    DOWN_KEY : 'arrow_down',
+    LEFT_KEY : 'arrow_left',
+    RIGHT_KEY : 'arrow_right'
 
     }
 
