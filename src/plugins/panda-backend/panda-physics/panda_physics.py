@@ -256,10 +256,37 @@ class CharacterCapsule(object):
         def fset(self, vel):
             self.object.linearVelocity = PandaConverter.convert_vector(vel)
 
+    @obengine.datatypes.nested_property
+    def rotational_velocity():
+
+        def fget(self):
+            return self._rotational_velocity
+
+        def fset(self, vel):
+            self._rotational_velocity = vel
+
     def _actual_load(self):
 
         self.object = kinematicCharacterController(self.world.world_manager, (9, 4))
         self.object.setCatColBits('general')
 
+        self.scheduler.add(
+        obengine.async.Task(self._update_rotational_vel, priority = 5))
+        self._rotational_velocity = obengine.math.Vector()
+
         self._loaded = True
         self.on_loaded()
+
+    def _update_rotational_vel(self, task):
+
+        rotation = self.rotational
+        rot_velocity = self.rotational_velocity
+
+        rotation.x += rot_velocity.x
+        rotation.x = rotation.x % 360
+        rotation.y += rot_velocity.y
+        rotation.y = rotation.y % 360
+        rotation.z += rot_velocity.z
+        rotation.z = rotation.z % 360
+
+        self.rotation = rotation
