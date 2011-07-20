@@ -698,7 +698,7 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 		would actually be "obstructing geoms".
 		"""
 		if angle > self.ccdSlidingAngle[0] and angle < self.ccdSlidingAngle[1]:
-			print "ANGLE", angle, self.ccdSlidingAngle[0], self.ccdSlidingAngle[1]
+			#print "ANGLE", angle, self.ccdSlidingAngle[0], self.ccdSlidingAngle[1]
 			if self.showCCD:
 				self.placeDebug(geom.getPosition(), Vec4(0, 0, 0, 1))
 			return

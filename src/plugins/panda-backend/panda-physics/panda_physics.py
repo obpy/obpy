@@ -232,7 +232,7 @@ class CharacterCapsule(object):
             return PandaConverter.convert_vec3(self.object.getPos())
 
         def fset(self, new_pos):
-            self.object.setPos(PandaConverter.convert_vec3(new_pos))
+            self.object.setPos(PandaConverter.convert_vector(new_pos))
 
         return locals()
 
@@ -246,6 +246,15 @@ class CharacterCapsule(object):
             self.object.setQuat(PandaConverter.convert_angle(new_rot))
 
         return locals()
+
+    @obengine.datatypes.nested_property
+    def linear_velocity():
+
+        def fget(self):
+            return PandaConverter.convert_vec3(self.object.linearVelocity)
+
+        def fset(self, vel):
+            self.object.linearVelocity = PandaConverter.convert_vector(vel)
 
     def _actual_load(self):
 
