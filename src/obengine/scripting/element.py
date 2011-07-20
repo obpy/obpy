@@ -48,14 +48,13 @@ class ScriptElement(Element):
             self.code = code
 
         self.on_add += self.script_on_add
+        self.on_world_loaded += self.script_on_loaded
 
     def script_on_add(self, scene_graph):
-
-        from thread import start_new_thread
-
         self.world = scene_graph.owner
-        start_new_thread(self.run, ())
 
+    def script_on_loaded(self):
+        self.run()
 
     def run(self):
 
