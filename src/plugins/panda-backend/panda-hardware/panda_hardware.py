@@ -111,7 +111,7 @@ class KeyEvent(obengine.event.Event):
 
     }
 
-    def __init___(self, window, key, event_type, *args):
+    def __init___(self, window, key, event_type = TYPE_DOWN, *args):
 
         obengine.event.Event.__init__(self)
 
@@ -183,7 +183,7 @@ class MouseMotionEvent(obengine.event.Event):
     COORD_2D = 0
     COORD_3D = 1
 
-    def __init__(self, window, coord_space = MouseMotionEvent.COORD_2D, *args):
+    def __init__(self, window, coord_space = COORD_2D, *args):
 
         obengine.event.Event.__init__(self)
 
