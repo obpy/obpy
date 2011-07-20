@@ -30,7 +30,7 @@ import atexit
 
 import obengine
 import obengine.world
-import obengine.phys
+#import obengine.phys
 import obengine.gfx.worldsource as worldsource
 from obengine.gfx.player import PlayerView
 from obengine.gfx.player import KeyboardPlayerController

@@ -1,6 +1,8 @@
-A simple test for obengine. Make sure we can import and initalize it!
+A simple test for obengine. Make sure we can import and initialize it!
 
 >>> import obengine
+>>> import obengine.depman
+>>> obengine.depman.collected_modules = [] # Hack to get around doctest limitation
 >>> obengine.init()
 
 

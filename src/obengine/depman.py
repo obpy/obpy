@@ -31,7 +31,6 @@ import atexit
 from sys import _getframe as getframe
 
 
-__all__ = ['gendeps', 'init']
 collected_modules = []
 
 
