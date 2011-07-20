@@ -34,10 +34,6 @@ import obengine.depman
 obengine.depman.gendeps()
 
 
-def init():
-    obengine.plugin.require('core.scripting')
-
-
 class ScriptElement(Element):
 
     def __init__(self, name, filename = None, code = None):
@@ -57,11 +53,14 @@ class ScriptElement(Element):
 
         from thread import start_new_thread
 
-        self.world = scene_graph.world
+        self.world = scene_graph.owner
         start_new_thread(self.run, ())
 
 
     def run(self):
+
+        import obengine.plugin
+        obengine.plugin.require('core.scripting')
 
         import obplugin.core.scripting
         import obengine.elementfactory
@@ -100,16 +99,12 @@ class LuaFactory(object):
 
     def __init__(self):
 
-        import obengine.gfx.math
-        import obengine.hardware.event
+        import obengine.math
 
         self.factory_items = {
-        'Vector' : obengine.gfx.math.Vector,
-        'Color' : obengine.gfx.math.Color,
-        'EulerAngle' : obengine.gfx.math.EulerAngle,
-
-        'KeyEvent' : obengine.hardware.event.KeyEvent,
-        'TimerEvent' : obengine.hardware.event.TimerEvent
+        'Vector' : obengine.math.Vector,
+        'Color' : obengine.math.Color,
+        'EulerAngle' : obengine.math.EulerAngle
         }
 
     def make(self, item, *args):

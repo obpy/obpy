@@ -75,12 +75,13 @@ class PlayerController(object):
 
 class KeyboardPlayerController(PlayerController):
 
-    def __init__(self, view):
+    def __init__(self, model, view):
 
         import obplugin.core.hardware
 
-        PlayerController.__init__(self, view)
+        PlayerController.__init__(self, model, view)
 
+        """
         forward = obplugin.core.hardware.KeyEvent(
         self._view.window,
         obplugin.core.hardware.KeyEvent.UP_KEY)
@@ -124,36 +125,37 @@ class KeyboardPlayerController(PlayerController):
         obplugin.core.hardware.KeyEvent.RIGHT_KEY,
         obplugin.core.hardware.KeyEvent.TYPE_UP)
         right_stop += self.rotation_stop
+        """
 
 
 class PlayerView(object):
 
-    def __init__(self, window):
+    def __init__(self, window, sandbox, position = None):
 
         import obplugin.core.graphics
         import obplugin.core.physics
 
-        self._window = window
-        self._scheduler = self._window.scheduler
-        self._model = obplugin.core.graphics.Model('avatar', self._window)
+        self.window = window
+        self._scheduler = self.window.scheduler
+        self._model = obplugin.core.graphics.Model('avatar', self.window)
         self._model.load()
 
         while self._model.load_okay is False:
             self._scheduler.step()
 
-        self._capsule = obplugin.core.physics.CharacterCapsule()
+        if position is not None:
+            self._model.position = position
+
+        self._capsule = obplugin.core.physics.CharacterCapsule(
+        sandbox, self, self._scheduler)
         self._scheduler.add(obengine.async.Task(self._update, priority = 5))
         self.linear_velocity = obengine.math.Vector()
 
     def show(self):
-
-        self._model.show()
-        self.phys_rep.enable()
+        self._model.showing = True
 
     def hide(self):
-
-        self._model.hide()
-        self._phys_rep.disable()
+        pass
 
     @obengine.datatypes.nested_property
     def position():
@@ -167,6 +169,7 @@ class PlayerView(object):
         return locals()
 
     def _update(self, task):
+        return task.AGAIN
         
         self._capsule.linear_velocity = self.linear_velocity
         self._model.position = self._capsule.position

@@ -28,67 +28,72 @@ import zipfile
 import tempfile
 import atexit
 
-import obengine
+sys.path.append(os.path.abspath(os.curdir))
+sys.path.append(os.path.abspath(os.pardir))
+
+import obengine.environ
 import obengine.world
-#import obengine.phys
+import obengine.elementfactory
 import obengine.gfx.worldsource as worldsource
+import obengine.worldloader
+import obengine.player
 from obengine.gfx.player import PlayerView
 from obengine.gfx.player import KeyboardPlayerController
-from obengine.gfx.math import Vector
+from obengine.math import Vector
 
 
 def load_world(game):
 
-    def run_world(win):
-        """
-        Actually runs the world.
-        win is a reference to the root Panda3D window.
-        """
+    # Extract the file
+    game_file = zipfile.ZipFile(game)
+    tmpdir = tempfile.mkdtemp()
 
-        obengine.phys.init()
+    # Extract and change directories
+    game_file.extractall(tmpdir)
+    os.chdir(tmpdir)
 
-        # Extract the file
-        world_file = zipfile.ZipFile(os.path.join(os.path.abspath(__file__)[:-len(__file__)],os.path.join('games', game + '.zip')))
+    game_name = os.path.basename(game).strip('.zip')
 
-        # We can't run inside the zip file, now can we? :)
-        tmpdir = tempfile.mkdtemp()
-
-        # Extract and change directories
-        world_file.extractall(tmpdir)
-
-        os.chdir(tmpdir)
-
-        # Open and parse the world
-        source = worldsource.FileWorldSource('world.xml')
-        source.parse()
+    environ = obengine.environ.Environment(game_name)
+    element_factory = obengine.elementfactory.ElementFactory()
+    element_factory.set_window(environ.window)
+    element_factory.set_sandbox(environ.physics_sandbox)
 
 
-        # Start 'er up, Jack!
-        world = obengine.world.World(game, 1)
-        world.load_world(source)
+    # Open and parse the world
+    source = worldsource.FileWorldSource('world.xml', element_factory)
 
-        # Initalize the player
-        p = PlayerView('OBPlayer')
-        p.join_world(world, Vector(-10, -10, -5))
-        KeyboardPlayerController(p)
+    world = obengine.world.World(game_name, 1)
+    worldloader = obengine.worldloader.WorldLoader(world, source, environ.scheduler)
 
-        def clean_up():
-            """
-            Removes the temporary directory.
-            """
+    def create_player():
 
-            os.chdir(os.pardir)
-            shutil.rmtree(tmpdir)
+        # Initialize the player
+        player_model = obengine.player.Player('OBPlayer')
+        player_view = PlayerView(environ.window, Vector(-10, -10, -5))
+        player_controller = KeyboardPlayerController(player_model, player_view)
+        player_model.join_world(world)
 
-        atexit.register(clean_up)
-        
-    obengine.gfx.run(run_world)
+    def clean_up():
+
+        os.chdir(os.pardir)
+        shutil.rmtree(tmpdir)
+
+    atexit.register(clean_up)
+
+    environ.window.on_loaded += lambda: environ.window.start_rendering()
+    environ.window.on_loaded += lambda: environ.physics_sandbox.load()
+    
+    environ.physics_sandbox.on_loaded += lambda: source.parse()
+    environ.physics_sandbox.on_loaded += lambda: worldloader.load()
+    worldloader.on_world_loaded += lambda: environ.physics_sandbox.unpause()
+    worldloader.on_world_loaded += lambda: create_player()
+
+    environ.window.load()
+    environ.scheduler.loop()
 
 
 if __name__ == '__main__':
-    sys.exit(0)
 
-    obengine.cfg.init()
-    obengine.utils.init()
-    
+    obengine.init()
     load_world(sys.argv[1])

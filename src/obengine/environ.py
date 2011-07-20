@@ -52,8 +52,8 @@ class Environment(object):
         import obplugin.core.graphics
         import obplugin.core.physics
 
-        self._eid = Envrionment._next_avail_id
-        Envrionment._next_avail_id += 1
+        self._eid = Environment._next_avail_id
+        Environment._next_avail_id += 1
         
         self.scheduler = obengine.async.Scheduler()
         self.window = obplugin.core.graphics.Window(window_title, self.scheduler)

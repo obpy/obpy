@@ -247,6 +247,7 @@ class Model(PandaResource):
         self.panda_node.setTransparency(TransparencyAttrib.MAlpha)
         self.panda_node.setTag('clickable-flag', self._uuid)
         self.window.panda_window.accept('mouse1', self._check_mouse)
+        self.showing = True
         
         self.on_loaded()
 

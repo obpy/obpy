@@ -193,6 +193,7 @@ class BrickPresenter(obengine.element.Element):
 
         self.phys_rep = phys_rep
         self.phys_rep.owner = self
+        self.position = position
 
     def hide(self):
 

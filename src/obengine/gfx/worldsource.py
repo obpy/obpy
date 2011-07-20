@@ -65,7 +65,7 @@ class WorldSource(list):
 
         if self.supported_tag(node.tag):
             for handler in self._element_handlers[node.tag]:
-                handler(self, node, factory)
+                handler(self, node, self.factory)
 
         else:
             raise UnknownWorldTagError, node.tag
@@ -79,10 +79,10 @@ class WorldSource(list):
 
         # Create the different brick attributes, with defaults
 
-        rgb = Color()
-        coords = Vector()
-        orientation = EulerAngle()
-        size = Vector()
+        rgb = obengine.math.Color()
+        coords = obengine.math.Vector()
+        orientation = obengine.math.EulerAngle()
+        size = obengine.math.Vector()
         anchored = False
 
         # Remove all empty space first, to make string to number conversion easy
@@ -122,14 +122,14 @@ class WorldSource(list):
 
         # Finally, create the brick!
 
-        element = factory.make('brick', name, coords, rgb, size, orientation, False, anchored)
+        element = factory.make('brick', name, coords, rgb, size, orientation, anchored)
 
         self.append(element)
 
     def handle_skybox(self, _, child, factory):
 
         # Create a skybox, optionally with a custom texture
-        element = factory.make('skybox', child.attrib.get('src'))
+        element = factory.make('skybox', child.attrib.get('src'), )
 
         # Add it
         self.append(element)
@@ -196,7 +196,7 @@ class FileWorldSource(WorldSource):
     Supply this class to an obengine.world.World's load_world method, after calling FileWorldSource.parse.
     """
 
-    def __init__(self, factory, path):
+    def __init__(self, path, factory):
         """
         path is the file path of the world to load.
         """

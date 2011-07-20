@@ -145,7 +145,7 @@ class Box(object):
 
     @position.setter
     def position(self, new_pos):
-        self.object.setPos(PandaConverter.convert_vec3(new_pos))
+        self.object.setPos(PandaConverter.convert_vector(new_pos))
 
     @property
     def loaded(self):
@@ -256,6 +256,8 @@ class CharacterCapsule(object):
         def fset(self, vel):
             self.object.linearVelocity = PandaConverter.convert_vector(vel)
 
+        return locals()
+
     @obengine.datatypes.nested_property
     def rotational_velocity():
 
@@ -264,6 +266,8 @@ class CharacterCapsule(object):
 
         def fset(self, vel):
             self._rotational_velocity = vel
+
+        return locals()
 
     def _actual_load(self):
 

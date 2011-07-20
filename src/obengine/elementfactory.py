@@ -35,7 +35,9 @@ import obengine.depman
 obengine.depman.gendeps()
 
 def init():
+
     obengine.plugin.require('core.physics')
+    obengine.plugin.require('core.graphics')
 
 class ElementFactory(object):
 
@@ -107,9 +109,12 @@ class ElementFactory(object):
 
     def make_skybox(self, texture = None):
 
+        import obplugin.core.graphics
         from obengine.gfx.element3d import SkyboxElement
 
-        element = SkyboxElement(texture)
+        camera = obplugin.core.graphics.Camera(self.window)
+        element = SkyboxElement(self.window, camera, texture)
+        
         return element
 
     def make_script(self, name, code, filename = None):
