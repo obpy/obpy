@@ -54,10 +54,10 @@ class ElementFactory(object):
         self.element_handlers[element_type] = handler
 
     def set_window(self, window):
-        self.window = window
+        ElementFactory.window = window
 
     def set_sandbox(self, sandbox):
-        self.sandbox = sandbox
+        ElementFactory.sandbox = sandbox
 
     def make(self, name, *args, **kwargs):
         """
@@ -100,7 +100,7 @@ class ElementFactory(object):
 
         phys_rep = obplugin.core.physics.Box(view.model, self.sandbox, None, scheduler, anchored)
         phys_rep.load()
-
+        
         while phys_rep.loaded is False:
             scheduler.step()
 

@@ -61,10 +61,9 @@ class BrickView(object):
     def __init__(self, size, rotation, color, window):
 
         import obplugin.core.graphics
-
         self.model = obplugin.core.graphics.Model(self.type + '-new', window)
-        self.on_loaded = self.model.on_loaded
 
+        self.on_loaded = self.model.on_loaded
         self.on_loaded += functools.partial(self._init_attrs, size, rotation, color)
 
     def hide(self):
@@ -194,6 +193,8 @@ class BrickPresenter(obengine.element.Element):
         self.phys_rep = phys_rep
         self.phys_rep.owner = self
         self.position = position
+        self.color = color
+        self.rotation = rotation
 
     def hide(self):
 
@@ -214,7 +215,7 @@ class BrickPresenter(obengine.element.Element):
         def fset(self, new_size):
 
             self.view.size = new_size
-            self.phys_obj.update_size()
+            self.phys_rep.update_size()
 
         return locals()
 
@@ -340,31 +341,31 @@ class SkyboxElement(obengine.element.Element):
 
         import obplugin.core.graphics
 
-        self._sky = obplugin.core.graphics.Model('sky', self._window)
+        self.view = obplugin.core.graphics.Model('sky', self._window)
 
         self.on_add += self.sky_on_add
         self.on_remove += self.sky_on_remove
 
     def sky_on_add(self, _):
 
-        self._sky.load()
+        self.view.load()
 
-        while self._sky.load_okay is False:
+        while self.view.load_okay is False:
             self._window.scheduler.step()
 
-        self._sky.parent = self._camera
-        self._sky.scale = obengine.math.Vector(5000, 5000, 5000)
+        self.view.parent = self._camera
+        self.view.scale = obengine.math.Vector(5000, 5000, 5000)
 
         # TODO: Replace the below code with something not Panda-specific!
 
-        self._sky.panda_node.setShaderOff()
-        self._sky.panda_node.setLightOff()
-        self._sky.panda_node.setEffect(CompassEffect.make(self._window.panda_window.render))
+        self.view.panda_node.setShaderOff()
+        self.view.panda_node.setLightOff()
+        self.view.panda_node.setEffect(CompassEffect.make(self._window.panda_window.render))
 
         # Did the user specifiy a texture?
 
         if self._texture:
-            self._sky.texture = self._texture
+            self.view.texture = self._texture
 
     def sky_on_remove(self):
         self.sky.hide()
@@ -384,5 +385,73 @@ class XmlSkyboxExtension(object):
             attributes['texture'] = self._skybox._texture
 
         element = xmlparser.Element('skybox', attributes)
-
         return element
+
+
+class LightElement(obengine.element.Element):
+
+    def __init__(self, name, window, light_type = None, color = None, cast_shadows = False, rotation = None):
+
+        obengine.element.Element.__init__(self, name)
+
+        obengine.plugin.require('core.graphics')
+        import obplugin.core.graphics
+
+        light_type = light_type or obplugin.core.graphics.Light.DIRECTIONAL
+        color = color or obengine.math.Color(255, 255, 255)
+        rotation = rotation or obengine.math.EulerAngle()
+
+        self._window = window
+        self._light = obplugin.core.graphics.Light(
+        light_type,
+        name,
+        window,
+        color,
+        cast_shadows,
+        rotation)
+
+        self._light.load()
+
+    def look_at(self, object):
+        self._light.look_at(object.view)
+
+    @obengine.datatypes.nested_property
+    def position():
+
+        def fget(self):
+            return self._light.position
+
+        def fset(self, new_pos):
+            self._light.position = new_pos
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def rotation():
+
+        def fget(self):
+            return self._light.rotation
+
+        def fset(self, new_rot):
+            self._light.rotation = new_rot
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def color():
+
+        def fget(self):
+            return self._light.color
+
+        def fset(self, new_color):
+            self._light.color = new_color
+
+        return locals()
+
+    @property
+    def casting_shadows(self):
+        return self._light.casting_shadows
+
+    @property
+    def light_type(self):
+        return self._light.light_type

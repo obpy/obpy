@@ -22,8 +22,9 @@
 #     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-__author__="openblocks"
-__date__ ="$May 28, 2011 11:26:46 AM$"
+__author__ = "openblocks"
+__date__  = "$May 28, 2011 11:26:46 AM$"
+
 
 import obengine.event
 import obengine.async
@@ -31,6 +32,7 @@ import obengine.utils
 import obengine.depman
 
 obengine.depman.gendeps()
+
 
 class WorldLoader(object):
 
@@ -41,6 +43,7 @@ class WorldLoader(object):
         self._world = world
         self._source = source
         self._scheduler = scheduler
+        self._loaded_elements = 0
 
         self.on_world_loaded = obengine.event.Event()
 
@@ -54,17 +57,23 @@ class WorldLoader(object):
             self._load_single_element,
             self._get_priority(index, num_elements),
             element,
-            index,
             num_elements
             )
 
             self._scheduler.add(loader)
 
-    def _load_single_element(self, element, element_index, num_elements):
+    def _load_single_element(self, element, num_elements):
 
         self._world.element.add_node(element)
+        self._loaded_elements += 1
 
-        if element_index + 1 == num_elements:
+        if self._loaded_elements == num_elements:
+
+            elements = list(self._world.element.nodes.itervalues())
+
+            for element in elements:
+                element.on_world_loaded()
+                
             self.on_world_loaded()
 
     def _get_priority(self, element_index, num_elements):
