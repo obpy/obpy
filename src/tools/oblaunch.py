@@ -31,6 +31,7 @@ import atexit
 sys.path.append(os.path.abspath(os.curdir))
 sys.path.append(os.path.abspath(os.pardir))
 
+import obengine.plugin
 import obengine.environ
 import obengine.world
 import obengine.elementfactory
@@ -66,9 +67,8 @@ def load_world(game):
     world = obengine.world.World(game_name, 1)
     worldloader = obengine.worldloader.WorldLoader(world, source, environ.scheduler)
 
-    def create_player():
+    def create_player():    
 
-        # Initialize the player
         player_model = obengine.player.Player('OBPlayer')
         player_view = PlayerView(environ.window, Vector(-10, -10, -5))
         player_controller = KeyboardPlayerController(player_model, player_view)
