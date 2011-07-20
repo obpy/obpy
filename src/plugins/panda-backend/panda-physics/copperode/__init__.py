@@ -1,2 +1,2 @@
 from odeWorldManager import *
-import kcc
+from kcc import *

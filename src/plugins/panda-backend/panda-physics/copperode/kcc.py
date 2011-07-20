@@ -1,3 +1,5 @@
+from panda3d.core import Vec3
+
 from odeWorldManager import *
 
 """
@@ -29,7 +31,7 @@ to understand them (like objectType variable and collisionCallback method).
 """
 
 class kinematicCharacterController(kinematicObject):
-	def __init__(self, worldManager, charNP=None):
+	def __init__(self, worldManager, size=(12, 4)):
 		kinematicObject.__init__(self, worldManager)
 		"""
 		Those values don't really matter, but they need to be here for
@@ -55,7 +57,8 @@ class kinematicCharacterController(kinematicObject):
 		"""
 		FINALLY you can easily set the height, radius and stepping height! Just like that.
 		"""
-		self.setCapsuleData(1.85, 0.8, 0.3, 0.35)
+		self.setCapsuleData(size[0], 0, 0, size[1])
+                self.currentPos = Vec3(0, 0, 0)
 		
 		"""
 		Initial values
@@ -72,7 +75,7 @@ class kinematicCharacterController(kinematicObject):
 		"""
 		Visualization.
 		"""
-		if self.visualize:
+		if True: # self.visualize:
 			self.visualization = wireGeom().generate("capsule", radius = self.capsuleCurrentRadius, length = self.capsuleCurrentLength)
 			self.visualization.reparentTo(render)
 		else:

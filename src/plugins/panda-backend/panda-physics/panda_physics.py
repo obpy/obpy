@@ -23,10 +23,14 @@ __author__ = "openblocks"
 __date__  = "$May 2, 2011 12:30:08 PM$"
 
 
+from panda3d.core import Vec3
+
 from copperode import odeWorldManager
-from copperode import staticObject, dynamicObject
+from copperode import staticObject, dynamicObject, kinematicCharacterController
+
 
 import obengine.event
+import obengine.datatypes
 import obengine.async
 import obengine.plugin
 import obengine.gfx.math
@@ -83,7 +87,7 @@ class Box(object):
 
         self.world = world
         self.owner = owner
-        self.anchored = anchored
+        self._anchored = anchored
         self.weight = weight or ((self.model.scale.x or 1.0) * (self.model.scale.y or 1.0) * (self.model.scale.z or 1.0))
 
         self._loaded = False
@@ -93,7 +97,7 @@ class Box(object):
 
     def _actual_load(self):
 
-        if self.anchored is False:
+        if self._anchored is False:
 
             self.object = dynamicObject(self.world.world_manager)
             self._init_dynamic_object()
@@ -112,10 +116,10 @@ class Box(object):
 
     def update_size(self):
 
-        if self.anchored is False:
+        if self._anchored is False:
             self._init_dynamic_object()
 
-        elif self.anchored is True:
+        elif self._anchored is True:
             self._init_static_object()
 
     def enable(self):
@@ -146,6 +150,24 @@ class Box(object):
     @property
     def loaded(self):
         return self._loaded
+
+    @obengine.datatypes.nested_property
+    def anchored():
+
+        def fget(self):
+            return self._anchored
+
+        def fset(self, anchored):
+
+            self._anchored = anchored
+
+            if self._anchored is True:
+                self._init_dynamic_object()
+
+            else:
+                self._init_static_object()
+
+        return locals()
 
     def _general_init(self):
 
@@ -184,3 +206,51 @@ class Box(object):
             second_subject = object2
 
         self.on_collision(first_subject, second_subject)
+
+
+class CharacterCapsule(object):
+
+    def __init__(self, world, owner, scheduler):
+
+        self.on_loaded = obengine.event.Event()
+        self.on_collision = obengine.event.Event()
+
+        self.world = world
+        self.owner = owner
+        self.scheduler = scheduler
+
+        self._loaded = False
+
+    def load(self):
+        self.scheduler.add(obengine.async.AsyncCall(self._actual_load, 10))
+
+    @obengine.datatypes.nested_property
+    def position():
+
+        def fget(self):
+            print PandaConverter.convert_vec3(self.object.getPos())
+            return PandaConverter.convert_vec3(self.object.getPos())
+
+        def fset(self, new_pos):
+            self.object.setPos(PandaConverter.convert_vec3(new_pos))
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def rotation():
+
+        def fget(self):
+            return PandaConverter.convert_quat(self.object.getQuat())
+
+        def fset(self, new_rot):
+            self.object.setQuat(PandaConverter.convert_angle(new_rot))
+
+        return locals()
+
+    def _actual_load(self):
+
+        self.object = kinematicCharacterController(self.world.world_manager, (9, 4))
+        self.object.setCatColBits('general')
+
+        self._loaded = True
+        self.on_loaded()

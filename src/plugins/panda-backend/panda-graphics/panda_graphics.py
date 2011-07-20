@@ -59,6 +59,7 @@ class Model(PandaResource):
         self.on_click = obengine.event.Event()
         
         self._texture = None
+        self._parent = None
         self._position = position or obengine.gfx.math.Vector()
         self._setup_position()
         self._color = color or obengine.gfx.math.Color()
@@ -177,6 +178,19 @@ class Model(PandaResource):
         self._texture = tex
         self.panda_node.setTexture(tex.texture)
 
+    @obengine.datatypes.nested_property
+    def parent():
+
+        def fget(self):
+            return self._parent
+
+        def fset(self, parent):
+
+            self._parent = parent
+            self.panda_node.reparentTo(parent.panda_node)
+
+        return locals()
+
     def _setup_position(self):
 
         self._position.on_x_changed += lambda x: self.panda_node.setX(x)
@@ -218,7 +232,6 @@ class Model(PandaResource):
 
             self.window.collision_queue.sortEntries()
             picked_node = self.window.collision_queue.getEntry(0).getIntoNodePath().findNetTag('clickable-flag')
-
 
             picked_node_uuid = picked_node.getTag('clickable-flag')
 
@@ -467,6 +480,7 @@ class Camera(object):
 
         self.window = window
         self.camera = self.window.panda_window.camera
+        self.panda_node = self.camera
 
     def load(self):
         self.on_loaded()

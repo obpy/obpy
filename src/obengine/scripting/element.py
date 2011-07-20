@@ -25,6 +25,8 @@ __author__ = "openblocks"
 __date__  = "$Jan 23, 2011 8:10:16 AM$"
 
 
+import xml.etree.ElementTree as xmlparser
+
 from obengine.element import Element
 import obengine.plugin
 import obengine.depman
@@ -41,6 +43,7 @@ class ScriptElement(Element):
     def __init__(self, name, filename = None, code = None):
 
         Element.__init__(self, name)
+        self.set_extension('xml', XmlScriptExtension)
 
         if filename != None:
             self.code = open(filename, 'r').read()
@@ -73,6 +76,25 @@ class ScriptElement(Element):
 
     def __tolua__(self):
         return 'Script'
+
+
+class XmlScriptExtension(object):
+
+    def __init__(self, script):
+        self._script = script
+
+    @property
+    def xml_element(self):
+
+        attributes = {
+        'name' :  self._script.name
+        }
+
+        element = xmlparser.Element('script', attributes)
+        element.text = self._script.code
+
+        return element
+
 
 class LuaFactory(object):
 

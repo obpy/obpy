@@ -24,6 +24,8 @@ __author__ = "openblocks"
 __date__  = "$Apr 2, 2011 7:51:54 AM$"
 
 
+import xml.etree.ElementTree as xmlparser
+
 import obengine.element
 import obengine.depman
 import obengine.plugin
@@ -50,7 +52,11 @@ class SoundElement(obengine.element.Element):
 
         obengine.element.Element.__init__(self, name)
 
+        self.set_extension('xml', XmlSoundExtension)
+
         self._sound = obplugin.core.audio.Sound(soundfile, volume, looping, autoplay)
+        self._soundfile = soundfile
+
         self.on_loaded = self._sound.on_loaded
         self.looping = self._sound.__dict__['looping']
         self.playing = self._sound.__dict__['playing']
@@ -58,3 +64,24 @@ class SoundElement(obengine.element.Element):
         
     def load(self):
         self._sound.load()
+
+    @property
+    def sound(self):
+        return self._soundfile
+
+
+class XmlSoundExtension(object):
+
+    def __init__(self, sound):
+        self._sound = sound
+
+    @property
+    def xml_element(self):
+
+        attributes = {
+        'name' : self._sound.name,
+        'src' : self._sound.sound
+        }
+
+        element = xmlparser.Element('sound', attributes)
+        return element

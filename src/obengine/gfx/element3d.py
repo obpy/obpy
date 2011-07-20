@@ -28,6 +28,9 @@ __date__  = "$Aug 9, 2010 11:04:13 PM$"
 
 
 import functools
+import xml.etree.ElementTree as xmlparser
+
+from panda3d.core import CompassEffect
 
 import obengine.math
 import obengine.datatypes
@@ -117,7 +120,7 @@ class BlockBrickView(BrickView):
 
         def fget(self):
 
-            size = self.model.size
+            size = self.model.scale
             brick_size = obengine.gfx.math.Vector(
             size.x * DEFAULT_X_SIZE,
             size.y * DEFAULT_Y_SIZE,
@@ -180,6 +183,7 @@ class BrickPresenter(obengine.element.Element):
     def __init__(self, name, position, color, size, rotation, view, phys_rep):
 
         obengine.element.Element.__init__(self, name)
+        self.set_extension('xml', XmlBrickExtension)
         
         self.view = view
         self.on_click = self.view.on_click
@@ -206,7 +210,7 @@ class BrickPresenter(obengine.element.Element):
         def fget(self):
             return self.view.size
 
-        def fget(self, new_size):
+        def fset(self, new_size):
 
             self.view.size = new_size
             self.phys_obj.update_size()
@@ -239,6 +243,17 @@ class BrickPresenter(obengine.element.Element):
 
         return locals()
 
+    @obengine.datatypes.nested_property
+    def anchored():
+
+        def fget(self):
+            return self.phys_rep.anchored
+
+        def fset(self, anchored):
+            self.phys_rep.anchored = anchored
+
+        return locals()
+
     @obengine.deprecated.deprecated
     def set_size(self, size):
         self.size = size
@@ -266,32 +281,107 @@ class BrickPresenter(obengine.element.Element):
         self.phys_rep.disable()
 
 
+class XmlBrickExtension(object):
+
+    def __init__(self, brick):
+        self._brick = brick
+
+    @property
+    def xml_element(self):
+        
+        attributes = {
+        'name' : self._brick.name,
+        'coords' : self._vector_str(self._brick.position),
+        'orientation' : self._euler_str(self._brick.rotation),
+        'size' : self._vector_str(self._brick.size),
+        'anchored' : self._bool_str(self._brick.anchored)
+        }
+
+        element = xmlparser.Element('brick', attributes)
+
+        return element
+
+    def _vector_str(self, vector):
+
+        vector_str = str(vector)
+        vector_str = vector_str[len('Vector3') + 1:len(vector_str) - 1]
+
+        return vector_str
+
+    def _euler_str(self, angle):
+
+        euler_str = str(angle)
+        euler_str = euler_str[len('EulerAngle') + 1:len(euler_str) - 1]
+
+        return euler_str
+
+    def _bool_str(self, bool):
+
+        conv_dict = {True : 'yes', False : 'no'}
+        return conv_dict[bool]
+
+
 class SkyboxElement(obengine.element.Element):
 
-    def __init__(self, texture = None):
+    def __init__(self, window, camera, texture = None):
 
         obengine.element.Element.__init__(self, 'Skybox')
+        self.set_extension('xml', XmlSkyboxExtension)
+
+        self._window = window
+        self._camera = camera
+
+        self._texture = texture
 
         # Create the skybox (although the actual model is currently a skysphere!)
 
-        self.texture = texture
-        self.sky = obengine.gfx.get_rootwin().loader.loadModel(Filename.fromOsSpecific(obengine.cfg.get_config_var('cfgdir') +  os.path.join(os.sep + 'data','sky.egg.pz')))
+        obengine.plugin.require('core.graphics')
+
+        import obplugin.core.graphics
+
+        self._sky = obplugin.core.graphics.Model('sky', self._window)
 
         self.on_add += self.sky_on_add
         self.on_remove += self.sky_on_remove
 
-    def sky_on_add(self, world):
+    def sky_on_add(self, _):
 
-        self.sky.reparentTo(obengine.gfx.get_rootwin().camera)
-        self.sky.setEffect(CompassEffect.make(obengine.gfx.get_rootwin().render))
-        self.sky.setScale(5000)
-        self.sky.setShaderOff()
-        self.sky.setLightOff()
+        self._sky.load()
 
-        # Did the user specifiy a texture to use instead?
+        while self._sky.load_okay is False:
+            self._window.scheduler.step()
 
-        if self.texture:
-            self.sky.setTexture(obengine.gfx.get_rootwin().loader.loadTexture(texture))
+        self._sky.parent = self._camera
+        self._sky.scale = obengine.math.Vector(5000, 5000, 5000)
+
+        # TODO: Replace the below code with something not Panda-specific!
+
+        self._sky.panda_node.setShaderOff()
+        self._sky.panda_node.setLightOff()
+        self._sky.panda_node.setEffect(CompassEffect.make(self._window.panda_window.render))
+
+        # Did the user specifiy a texture?
+
+        if self._texture:
+            self._sky.texture = self._texture
 
     def sky_on_remove(self):
-        self.sky.detachNode()
+        self.sky.hide()
+
+
+class XmlSkyboxExtension(object):
+
+    def __init__(self, skybox):
+        self._skybox = skybox
+
+    @property
+    def xml_element(self):
+
+        attributes = {}
+
+        if self._skybox._texture is not None:
+            attributes['texture'] = self._skybox._texture
+
+        element = xmlparser.Element('skybox', attributes)
+
+        return element
