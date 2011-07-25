@@ -29,7 +29,6 @@ __date__  = "$Jul 16, 2011 11:06:26 PM$"
 import xml.etree.ElementTree
 
 import obengine
-
 import bloxworks.project
 
 
@@ -40,28 +39,16 @@ class ProjectPackagerVisitor(bloxworks.project.ProjectVisitor):
 
     def visit(self, project):
 
-        class_map = {
-        'BrickPresenter' : 'brick',
-        'ScriptElement' : 'script',
-        'SkyboxElement' : 'skybox',
-        'SoundElement' : 'sound'
-        }
-
-        element_handlers = {
-        'brick' : self._serialize_brick,
-        'script' : self._serialize_script,
-        'skybox' : self._serialize_skybox,
-        'sound' : self._serialize_sound
-        }
-
         scene_graph = project.world.element
+        root_node = self._make_node()
 
         for scene_node in scene_graph.nodes.itervalues():
 
-            node_type = class_map[scene_node.__class__.__name__]
-            handler = element_handlers[node_type]
+            xml_node = scene_node.get_extension('xml').xml_element
+            root_node.append(xml_node)
 
-            raw_data = handler(scene_node)
+        xml_tree = xml.etree.ElementTree.ElementTree(root_node)
+        xml_tree.write(self.outfile)
 
     def _make_root_node(self):
 
