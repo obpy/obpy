@@ -1,5 +1,5 @@
 #
-# <module description>
+# This module provides serialization (saving) of OpenBlox worlds for BloxWorks.
 # See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
 # for this module.
 #

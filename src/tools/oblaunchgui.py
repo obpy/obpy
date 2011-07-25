@@ -33,6 +33,9 @@ import multiprocessing
 
 import wx
 
+sys.path.append(os.path.abspath(os.pardir))
+sys.path.append(os.path.abspath(os.curdir))
+
 import obengine
 import obengine.cfg
 import obengine.utils
@@ -67,7 +70,10 @@ class GameBrowser(wx.Frame):
 
         self.game_panel.SetSizer(global_box)
 
-        gamedir = os.listdir(os.path.join(__file__[:len(__file__) - len('oblaunchgui.py')], 'games'))
+        try:
+            gamedir = os.listdir('games')
+        except OSError:
+            gamedir = os.listdir(os.path.join(__file__[:len(__file__) - len('oblaunchgui.py')], 'games'))
         self.gamecount = 0
 
         for game in gamedir:
@@ -116,24 +122,22 @@ class GameBrowser(wx.Frame):
 
         if self.games.GetFocusedItem() != -1:
 
-            game = self.games.GetItemText(self.games.GetFocusedItem())
+            game = os.path.join('games', self.games.GetItemText(self.games.GetFocusedItem()) + '.zip')
             target = os.system
 
             if os.name == 'nt':
-                arg = 'ppython.exe oblaunch.py \"%s\"' % game
+                arg = 'ppython.exe tools\oblaunch.py \"%s\"' % game
 
             else:
-                arg = 'python oblaunch.py \"%s\"' % game
+                arg = 'python tools/oblaunch.py \"%s\"' % game
 
             launcher = multiprocessing.Process(target = target, args = (arg, ), group = None)
             launcher.daemon = True
             launcher.start()
 
 if __name__ == '__main__':
-    sys.exit(0)
 
-    obengine.cfg.init()
-    obengine.utils.init()
+    obengine.init()
 
     app = wx.App(False)
     g = GameBrowser()
