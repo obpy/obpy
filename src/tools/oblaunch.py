@@ -67,10 +67,10 @@ def load_world(game):
     world = obengine.world.World(game_name, 1)
     worldloader = obengine.worldloader.WorldLoader(world, source, environ.scheduler)
 
-    def create_player():    
+    def create_player():
 
         player_model = obengine.player.Player('OBPlayer')
-        player_view = PlayerView(environ.window, Vector(-10, -10, -5))
+        player_view = PlayerView(environ.window, environ.physics_sandbox, Vector(0, 0, 0))
         player_controller = KeyboardPlayerController(player_model, player_view)
         player_model.join_world(world)
 

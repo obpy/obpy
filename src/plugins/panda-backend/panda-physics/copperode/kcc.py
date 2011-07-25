@@ -1,5 +1,3 @@
-from panda3d.core import Vec3
-
 from odeWorldManager import *
 
 """
@@ -31,8 +29,8 @@ to understand them (like objectType variable and collisionCallback method).
 """
 
 class kinematicCharacterController(kinematicObject):
-	def __init__(self, worldManager, size=(12, 4)):
-		kinematicObject.__init__(self, worldManager)
+	def __init__(self, map, charNP=None):
+		kinematicObject.__init__(self, map)
 		"""
 		Those values don't really matter, but they need to be here for
 		world manager.
@@ -57,8 +55,7 @@ class kinematicCharacterController(kinematicObject):
 		"""
 		FINALLY you can easily set the height, radius and stepping height! Just like that.
 		"""
-		self.setCapsuleData(size[0], 0, 0, size[1])
-                self.currentPos = Vec3(0, 0, 0)
+		self.setCapsuleData(10, 0, 0, 4)
 		
 		"""
 		Initial values
@@ -75,7 +72,7 @@ class kinematicCharacterController(kinematicObject):
 		"""
 		Visualization.
 		"""
-		if True: # self.visualize:
+		if self.visualize:
 			self.visualization = wireGeom().generate("capsule", radius = self.capsuleCurrentRadius, length = self.capsuleCurrentLength)
 			self.visualization.reparentTo(render)
 		else:
@@ -145,7 +142,7 @@ class kinematicCharacterController(kinematicObject):
 		self.linearVelocity = Vec3(0, 0, 0)
 		self.jumpStartPos = 0.0
 		self.jumpTime = 0.0
-		self.jumpSpeed = 0.0
+		self.jumpSpeed = 10.0
 		self.fallStartPos = 0.0
 		self.fallSpeed = 0.0
 		self.fallTime = 0.0
@@ -415,6 +412,13 @@ class kinematicCharacterController(kinematicObject):
 	def update(self, stepSize):
 		if self.noclip:
 			self.state = "fly"
+
+                if self.state == "fly":
+			self.linearVelocity = base.cam.getQuat(render).xform(self.linearVelocity)
+		else:
+			self.linearVelocity = self.movementParent.getQuat(render).xform(self.linearVelocity)
+
+                self.currentPos += self.linearVelocity * stepSize
 		
 		"""
 		Since 1.2.0 this code is a lot cleaner. Also, all hardcoded stuff was removed.

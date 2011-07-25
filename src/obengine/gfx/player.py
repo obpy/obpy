@@ -44,8 +44,8 @@ def init():
 
 class PlayerController(object):
 
-    LINEAR_SPEED = 5
-    ROT_SPEED = 2
+    LINEAR_SPEED = 10
+    ROT_SPEED = 4
 
     def __init__(self, model, view):
 
@@ -55,22 +55,25 @@ class PlayerController(object):
         self._model.on_joined += lambda _: self._view.show()
 
     def forward(self):
-        self._view.linear_velocity.x = self.LINEAR_SPEED
+        self._view.linear_velocity.y = self.LINEAR_SPEED
 
     def backward(self):
-        self._view.linear_velocity.x = -self.LINEAR_SPEED
+        self._view.linear_velocity.y = -self.LINEAR_SPEED
 
     def linear_stop(self):
-        self._view.linear_velocity.x = 0
+        self._view.linear_velocity.y = 0
         
     def left(self):
-        self._view.rotational_velocity.z = -self.ROT_SPEED
+        self._view.rotational_velocity.h = self.ROT_SPEED
 
     def right(self):
-        self._view.rotational_velocity.z = self.ROT_SPEED
+        self._view.rotational_velocity.h = -self.ROT_SPEED
 
     def rotation_stop(self):
-        self._view.rotational_velocity.z = 0
+        self._view.rotational_velocity.h = 0
+
+    def jump(self):
+        self._view.jump()
 
 
 class KeyboardPlayerController(PlayerController):
@@ -81,7 +84,6 @@ class KeyboardPlayerController(PlayerController):
 
         PlayerController.__init__(self, model, view)
 
-        """
         forward = obplugin.core.hardware.KeyEvent(
         self._view.window,
         obplugin.core.hardware.KeyEvent.UP_KEY)
@@ -125,7 +127,11 @@ class KeyboardPlayerController(PlayerController):
         obplugin.core.hardware.KeyEvent.RIGHT_KEY,
         obplugin.core.hardware.KeyEvent.TYPE_UP)
         right_stop += self.rotation_stop
-        """
+
+        jump = obplugin.core.hardware.KeyEvent(
+        self._view.window,
+        obplugin.core.hardware.KeyEvent.JUMP_KEY)
+        jump += self.jump
 
 
 class PlayerView(object):
@@ -143,19 +149,26 @@ class PlayerView(object):
         while self._model.load_okay is False:
             self._scheduler.step()
 
-        if position is not None:
-            self._model.position = position
-
         self._capsule = obplugin.core.physics.CharacterCapsule(
         sandbox, self, self._scheduler)
+        self._capsule.load()
+
+        while self._capsule.loaded is False:
+            self._scheduler.step()
+
+        if position is not None:
+            self._model.position = position
+        self._capsule.position = position or obengine.math.Vector()
+
         self._scheduler.add(obengine.async.Task(self._update, priority = 5))
         self.linear_velocity = obengine.math.Vector()
+        self.rotational_velocity = obengine.math.EulerAngle()
 
     def show(self):
         self._model.showing = True
 
-    def hide(self):
-        pass
+    def jump(self):
+        self._capsule.jump()
 
     @obengine.datatypes.nested_property
     def position():
@@ -169,10 +182,13 @@ class PlayerView(object):
         return locals()
 
     def _update(self, task):
-        return task.AGAIN
         
         self._capsule.linear_velocity = self.linear_velocity
-        self._model.position = self._capsule.position
+        self._model.position.x = self._capsule.position.x
+        self._model.position.y = self._capsule.position.y
+        self._model.position.z = self._capsule.position.z + 6
+
+        self._capsule.rotational_velocity = self.rotational_velocity
         self._model.rotation = self._capsule.rotation
-        
+
         return task.AGAIN

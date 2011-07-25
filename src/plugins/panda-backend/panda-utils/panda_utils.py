@@ -30,6 +30,7 @@ __date__  = "$Jul 1, 2011 10:36:46 AM$"
 from panda3d.core import Vec3, Vec4, Quat, Filename
 
 import obengine.event
+import obengine.gfx.math
 
 
 COLOR_SCALER = 255.0
@@ -90,5 +91,5 @@ class PandaConverter(object):
     @staticmethod
     def convert_quat(quat):
 
-        vec = Vec3(quat)
-        return PandaConverter.convert_vec3(vec)
+        hpr = quat.getHpr()
+        return obengine.gfx.math.EulerAngle(hpr.getX(), hpr.getY(), hpr.getZ())

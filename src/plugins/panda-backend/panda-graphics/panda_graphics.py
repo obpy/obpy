@@ -195,7 +195,7 @@ class Model(PandaResource):
 
         self._position.on_x_changed += lambda x: self.panda_node.setX(x)
         self._position.on_y_changed += lambda y: self.panda_node.setY(y)
-        self._position.on_z_changed += lambda z: self.panda_node.setX(z)
+        self._position.on_z_changed += lambda z: self.panda_node.setZ(z)
 
     def _setup_scale(self):
 

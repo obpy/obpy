@@ -126,7 +126,7 @@ class physicalObject(object):
 		"""
 		Whether to visualize this object ore not.
 		"""
-		self.visualize = False
+		self.visualize = True
 		
 	def getGeom(self):
 		return self.geom
@@ -261,7 +261,7 @@ class staticObject(physicalObject):
 		so that it can be used by many objects, like bitMasks,
 		but I didn't want to delay the release because of this.
 		"""
-		self.surfaceFriction = 0.0
+		self.surfaceFriction = 100.0
 		self.surfaceBounce = 0.3
 		self.surfaceBounceVel = 0.5
 		self.surfaceSoftCFM = 0.1

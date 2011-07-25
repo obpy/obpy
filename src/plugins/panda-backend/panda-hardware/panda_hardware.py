@@ -71,6 +71,10 @@ def init():
     if right_key != '':
         KeyEvent._key_conv[KeyEvent.RIGHT_KEY] = right_key
 
+    jump_key = config_src.get_str('jump_key', 'core.hardware', '').lower()
+    if jump_key != '':
+        KeyEvent._key_conv[KeyEvent.JUMP_KEY] = jump_key
+
 
 class KeyEvent(obengine.event.Event):
 
@@ -83,6 +87,7 @@ class KeyEvent(obengine.event.Event):
     DOWN_KEY = 5
     LEFT_KEY = 6
     RIGHT_KEY = 7
+    JUMP_KEY = 8
 
     _key_conv = {
 
@@ -95,7 +100,8 @@ class KeyEvent(obengine.event.Event):
     UP_KEY : 'arrow_up',
     DOWN_KEY : 'arrow_down',
     LEFT_KEY : 'arrow_left',
-    RIGHT_KEY : 'arrow_right'
+    RIGHT_KEY : 'arrow_right',
+    JUMP_KEY : 'space'
 
     }
 
@@ -105,13 +111,13 @@ class KeyEvent(obengine.event.Event):
 
     _type_conv = {
 
-    TYPE_REPEAT : 'repeat',
-    TYPE_DOWN : 'down',
-    TYPE_UP : 'up'
+    TYPE_REPEAT : '-repeat',
+    TYPE_DOWN : '',
+    TYPE_UP : '-up'
 
     }
 
-    def __init___(self, window, key, event_type = TYPE_DOWN, *args):
+    def __init__(self, window, key, event_type = TYPE_DOWN):
 
         obengine.event.Event.__init__(self)
 
@@ -122,12 +128,9 @@ class KeyEvent(obengine.event.Event):
         self._key = key
         self._event_type = event_type
 
-        self._method_args = args
-
         self._window.panda_window.accept(
-        '%s-%s' % (self._panda_key, self._panda_evt_type),
-        self.fire,
-        self._method_args
+        '%s%s' % (self._panda_key, self._panda_evt_type),
+        self.fire
         )
 
     @property

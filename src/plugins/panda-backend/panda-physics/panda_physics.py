@@ -23,11 +23,8 @@ __author__ = "openblocks"
 __date__  = "$May 2, 2011 12:30:08 PM$"
 
 
-from panda3d.core import Vec3
-
 from copperode import odeWorldManager
-from copperode import staticObject, dynamicObject, kinematicCharacterController
-
+from copperode import staticObject, dynamicObjectNoCCD, kinematicCharacterController
 
 import obengine.event
 import obengine.datatypes
@@ -99,7 +96,7 @@ class Box(object):
 
         if self._anchored is False:
 
-            self.object = dynamicObject(self.world.world_manager)
+            self.object = dynamicObjectNoCCD(self.world.world_manager)
             self._init_dynamic_object()
 
         else:
@@ -115,6 +112,8 @@ class Box(object):
         self.on_loaded()
 
     def update_size(self):
+
+        self.destroy()
 
         if self._anchored is False:
             self._init_dynamic_object()
@@ -171,7 +170,6 @@ class Box(object):
 
     def _general_init(self):
 
-        self.object.setCatColBits('general')
         self.object.collisionCallback = self._translate_collision_cb
         self.object.owner = self.owner
 
@@ -221,14 +219,20 @@ class CharacterCapsule(object):
 
         self._loaded = False
 
+    def jump(self):
+        self.object.jump()
+
     def load(self):
         self.scheduler.add(obengine.async.AsyncCall(self._actual_load, 10))
+
+    @property
+    def loaded(self):
+        return self._loaded
 
     @obengine.datatypes.nested_property
     def position():
 
         def fget(self):
-            print PandaConverter.convert_vec3(self.object.getPos())
             return PandaConverter.convert_vec3(self.object.getPos())
 
         def fset(self, new_pos):
@@ -271,26 +275,27 @@ class CharacterCapsule(object):
 
     def _actual_load(self):
 
-        self.object = kinematicCharacterController(self.world.world_manager, (9, 4))
-        self.object.setCatColBits('general')
+        self.object = kinematicCharacterController(self.world.world_manager, (5, 4))
 
         self.scheduler.add(
         obengine.async.Task(self._update_rotational_vel, priority = 5))
-        self._rotational_velocity = obengine.math.Vector()
+        self._rotational_velocity = obengine.math.EulerAngle()
 
         self._loaded = True
         self.on_loaded()
 
     def _update_rotational_vel(self, task):
 
-        rotation = self.rotational
+        rotation = self.rotation
         rot_velocity = self.rotational_velocity
 
-        rotation.x += rot_velocity.x
-        rotation.x = rotation.x % 360
-        rotation.y += rot_velocity.y
-        rotation.y = rotation.y % 360
-        rotation.z += rot_velocity.z
-        rotation.z = rotation.z % 360
+        rotation.h += rot_velocity.h
+        #rotation.h = rotation.h % 360
+        rotation.p += rot_velocity.p
+        #rotation.p = rotation.p % 360
+        rotation.r += rot_velocity.r
+        #rotation.r = rotation.r % 360
 
         self.rotation = rotation
+
+        return task.AGAIN
