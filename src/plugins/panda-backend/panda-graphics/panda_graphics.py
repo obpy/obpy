@@ -294,7 +294,7 @@ class Light(PandaResource):
     DIRECTIONAL = 'directional'
     AMBIENT = 'ambient'
 
-    def __init__(self, light_type, name, window, color = obengine.gfx.math.Color(255, 255, 255, 255), cast_shadows = False, rotation = obengine.gfx.math.EulerAngle(0, 0, 0)):
+    def __init__(self, light_type, name, window, color = obengine.gfx.math.Color(255, 255, 255, 255), rotation = obengine.gfx.math.EulerAngle(0, 0, 0), cast_shadows = False):
         """Creates a new light
         Arguments:
          * light_type - either Light.DIRECTIONAL for a directional light, or

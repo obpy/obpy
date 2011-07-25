@@ -47,7 +47,8 @@ class ElementFactory(object):
         'brick' : self.make_brick,
         'skybox' : self.make_skybox,
         'script' : self.make_script,
-        'sound' : self.make_sound
+        'sound' : self.make_sound,
+        'light' : self.make_light
         }
 
     def add_element_handler(self, element_type, handler):
@@ -69,6 +70,7 @@ class ElementFactory(object):
         * Skybox
         * Script
         * **(NEW)** Sound
+        * **(NEW)** Light
 
         UnknownElementType is raised if an unknown element type is given.
         """
@@ -129,6 +131,13 @@ class ElementFactory(object):
         from obengine.audio.element import SoundElement
 
         element = SoundElement(name, soundfile, autoplay)
+        return element
+
+    def make_light(self, name, type = None, color = None, rotation = None):
+
+        from obengine.gfx.element3d import LightElement
+
+        element = LightElement(name, self.window, type, color, rotation)
         return element
 
 class UnknownElementError(Exception):

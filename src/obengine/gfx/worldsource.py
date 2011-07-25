@@ -45,6 +45,7 @@ class WorldSource(list):
         self.add_element_handler('script', self.handle_script)
         self.add_element_handler('skybox', self.handle_skybox)
         self.add_element_handler('sound', self.handle_sound)
+        self.add_element_handler('light', self.handle_light)
 
     def add_element_handler(self, tag, handler, local = True):
 
@@ -164,6 +165,19 @@ class WorldSource(list):
 
         self.append(element)
 
+    def handle_light(self, _, child, factory):
+
+        name = child.attrib['name']
+        type = child.attrib['type']
+
+        light_rotation = map(lambda s: float(s), child.attrib['orientation'].strip().split(','))
+        rotation = obengine.math.EulerAngle(*light_rotation)
+
+        light_color = map(lambda s: float(s), child.attrib['rgb'].strip().split(','))
+        color = obengine.math.Color(*light_color)
+
+        element = factory.make('light', name, type, color, rotation)
+
     def parse(self):
         """
         Parses a world.
@@ -190,6 +204,7 @@ class WorldSource(list):
         for child in rootnode:
             self._handle_node(child)
 
+
 class FileWorldSource(WorldSource):
     """
     This class loads a world from a file.
@@ -206,6 +221,7 @@ class FileWorldSource(WorldSource):
 
     def retrieve(self):
         return open(self.path,'r')
+
 
 class WorldSourceException(Exception): pass
 class UnknownWorldTagError(WorldSourceException): pass
