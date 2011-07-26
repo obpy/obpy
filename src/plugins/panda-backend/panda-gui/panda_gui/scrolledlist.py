@@ -40,7 +40,7 @@ class ScrolledListView(widget.WidgetView):
         position = position or obengine.math.Vector2D()
 
         self._widget = direct.gui.DirectGui.DirectScrolledFrame(
-        canvasSize = (-2, 2, -2, 2),
+        canvasSize = (-1, 1, -1, 1),
         frameSize = (-0.50, 0.50, -0.25, 0.25)) # TODO: Replace this with a dynamically
         # resizing frame!
 

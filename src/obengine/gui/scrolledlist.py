@@ -32,7 +32,7 @@ from obengine.gui import Container, VerticalLayoutManager, WidgetPresenter
 class ScrolledList(Container):
 
     def __init__(self, position = None):
-        Container.__init__(self, VerticalLayoutManager, position, 0.5)
+        Container.__init__(self, VerticalLayoutManager, position, 2.5)
 
 
 class ScrolledListPresenter(WidgetPresenter):

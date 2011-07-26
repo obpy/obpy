@@ -59,6 +59,7 @@ def draw_button(sched):
 
     scrolledlist = factory.make('scrolledlist', obengine.math.Vector2D(0, 70))
     scrolledlist.add(factory.make('button', 'A button inside a scrolled list!'))
+    scrolledlist.add(factory.make('button', 'Another button inside a scrolled list!'))
 
 
 def main():
