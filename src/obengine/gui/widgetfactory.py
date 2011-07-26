@@ -39,6 +39,7 @@ from shutter import *
 from label import *
 from entry import *
 from pulldown import *
+from scrolledlist import *
 
 obengine.depman.gendeps()
 
@@ -63,9 +64,11 @@ class WidgetFactory(object):
         self._widget_handlers['shutter'] = self._make_shutter
         self._widget_handlers['menu'] = self._make_menu
         self._widget_handlers['pulldown'] = self._make_pulldown
+        self._widget_handlers['scrolledlist'] = self._make_scrolledlist
 
         self._widget_handlers['label'] = self._make_label
         self._widget_handlers['entry'] = self._make_entry
+
 
     def make(self, widget_type, *args, **kwargs):
 
@@ -119,6 +122,16 @@ class WidgetFactory(object):
         model = Shutter(layout_manager, position, margin)
         view = obplugin.core.gui.ShutterView(position)
         presenter = ShutterPresenter(model, view)
+
+        return presenter
+
+    def _make_scrolledlist(self, position = None):
+
+        import obplugin.core.gui
+
+        model = ScrolledList(position)
+        view = obplugin.core.gui.ScrolledListView(position)
+        presenter = ScrolledListPresenter(model, view)
 
         return presenter
 

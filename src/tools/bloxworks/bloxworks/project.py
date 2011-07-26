@@ -79,16 +79,16 @@ class ProjectLoader(object):
     def __init__(self, element_factory, path):
         
         self._parser = ConfigParser.ConfigParser()
-        self._path = path
+        self.path = path
 
-        world_file = os.path.join(self._path, WORLD_XML_FILE)
+        world_file = os.path.join(self.path, WORLD_XML_FILE)
         self._world_source = obengine.gfx.worldsource.FileWorldSource(
         element_factory,
         world_file)
 
     def load(self):
 
-        self._parser.read(self._path)
+        self._parser.read(self.path)
 
         name = self._parser.get('project', 'name')
         author = self._parser.get('project', 'author')

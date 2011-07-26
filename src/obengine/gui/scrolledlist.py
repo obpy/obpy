@@ -1,9 +1,7 @@
 #
-# Base package for OpenBlox's GUI code that is GUI toolkit independent.
-# Bindings to various GUI toolkits is provided by obplugin.core.gui.
+# This module provides a scrolled list widget.
 # See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
 # for this module.
-#
 #
 # Copyright (C) 2011 The OpenBlox Project
 #
@@ -23,23 +21,32 @@
 #     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
 __author__ = "openblocks"
-__date__  = "$Jun 9, 2011 12:43:52 AM$"
+__date__  = "$Jul 25, 2011 11:24:43 PM$"
 
 
-class GuiException(Exception): pass
+from obengine.gui import Container, VerticalLayoutManager, WidgetPresenter
 
-# I know, wierd, but the class definition must be here for
-# our sub-modules to find it.
 
-from widget import *
-from button import *
-from checkbox import *
-from container import *
-from scrolledlist import *
-from label import *
-from entry import *
-from radio import *
-from pulldown import *
-from menu import *
-from widgetfactory import *
+class ScrolledList(Container):
+
+    def __init__(self, position = None):
+        Container.__init__(self, VerticalLayoutManager, position, 0.5)
+
+
+class ScrolledListPresenter(WidgetPresenter):
+
+    def __init__(self, model, view):
+
+        WidgetPresenter.__init__(self, model, view)
+
+    def add(self, widget):
+
+        self._model.add(widget)
+        self._view.add(widget)
+
+    def remove(self, widget):
+
+        self._model.remove(widget)
+        self._view.remove(widget)

@@ -44,6 +44,7 @@ class WidgetView(object):
     def __init__(self, position = None):
 
         self._showing = True
+        self.parent = None
         self.on_size_changed = obengine.event.Event()
         self.position = position or obengine.math.Vector2D()
 
@@ -65,7 +66,12 @@ class WidgetView(object):
 
             self._position = new_pos
             panda_vector = utils.openblox_to_panda_pos(new_pos)
-            self._widget.setPos(render2d, panda_vector)
+
+            if self._widget.getParent() == aspect2d:
+                self._widget.setPos(render2d, panda_vector)
+
+            else:
+                self._widget.setPos(self._widget.getParent(), panda_vector)
 
         return locals()
 
@@ -106,6 +112,7 @@ class WidgetView(object):
         return locals()
 
     def _update_pos(self, task):
+
         self.position = self.position
         return task.cont
 

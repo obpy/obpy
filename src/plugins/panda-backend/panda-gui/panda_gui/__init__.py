@@ -31,5 +31,6 @@ from button import *
 from radio import *
 from checkbox import *
 from shutter import *
+from scrolledlist import *
 from label import *
 from entry import *

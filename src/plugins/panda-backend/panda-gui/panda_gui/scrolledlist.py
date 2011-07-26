@@ -1,9 +1,7 @@
 #
-# Base package for OpenBlox's GUI code that is GUI toolkit independent.
-# Bindings to various GUI toolkits is provided by obplugin.core.gui.
+# <module description>
 # See <TODO: No Sphinx docs yet - add some> for the primary source of documentation
 # for this module.
-#
 #
 # Copyright (C) 2011 The OpenBlox Project
 #
@@ -23,23 +21,37 @@
 #     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
 __author__ = "openblocks"
-__date__  = "$Jun 9, 2011 12:43:52 AM$"
+__date__  = "$Jul 26, 2011 10:36:43 AM$"
 
 
-class GuiException(Exception): pass
+import direct.gui.DirectGui
 
-# I know, wierd, but the class definition must be here for
-# our sub-modules to find it.
+import obengine.math
 
-from widget import *
-from button import *
-from checkbox import *
-from container import *
-from scrolledlist import *
-from label import *
-from entry import *
-from radio import *
-from pulldown import *
-from menu import *
-from widgetfactory import *
+import widget
+
+
+class ScrolledListView(widget.WidgetView):
+
+    def __init__(self, position = None):
+
+        position = position or obengine.math.Vector2D()
+
+        self._widget = direct.gui.DirectGui.DirectScrolledFrame(
+        canvasSize = (-2, 2, -2, 2),
+        frameSize = (-0.50, 0.50, -0.25, 0.25)) # TODO: Replace this with a dynamically
+        # resizing frame!
+
+        widget.WidgetView.__init__(self, position)
+
+    def add(self, widget):
+
+        widget._view.parent = self
+        widget._view._widget.reparentTo(self._widget.getCanvas())
+
+    def remove(self, widget):
+
+        widget._view.parent = None
+        widget._view._widget.reparentTo(aspect2d)
