@@ -139,7 +139,7 @@ class VerticalLayoutManager(object):
     def find_space_for_widget(self, widget):
 
         best_point = obengine.math.Vector2D(
-        self._owning_container.position.x,
+        self._owning_container.position.x + 5,
         self._owning_container.position.y
         )
 

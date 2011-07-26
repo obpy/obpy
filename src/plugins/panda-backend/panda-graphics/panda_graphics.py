@@ -454,7 +454,7 @@ class Window(object):
 
         self.panda_window = ShowBase()
         self.panda_window.setFrameRateMeter(self.show_frame_rate)
-        self.panda_window.setBackgroundColor(1, 1, 1, 1)
+        self.panda_window.setBackgroundColor(0.4, 0.4, 0.4, 1)
         self.panda_window.win.requestProperties(self.window_properties)
         self.panda_window.render.setShaderAuto()
 

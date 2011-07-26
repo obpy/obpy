@@ -126,7 +126,7 @@ class physicalObject(object):
 		"""
 		Whether to visualize this object ore not.
 		"""
-		self.visualize = True
+		self.visualize = False
 		
 	def getGeom(self):
 		return self.geom

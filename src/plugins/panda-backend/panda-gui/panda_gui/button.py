@@ -69,13 +69,14 @@ class ButtonView(widget.TextWidgetView):
 
                 self._widget['image_pos'] = (-2.5, 0, 0)
 
-                for state in range(0, 4):
-                    self._widget.component('image' + str(state)).setTransparency(TransparencyAttrib.MAlpha)
-
             else:
                 self._widget['image_pos'] = (0, 0, 0)
 
             self._widget.setImage()
+
+            for state in range(0, 4):
+                self._widget.component('image' + str(state)).setTransparency(TransparencyAttrib.MAlpha)
+
             self._check_size(old_size)
 
         return locals()

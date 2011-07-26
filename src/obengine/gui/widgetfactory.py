@@ -80,7 +80,7 @@ class WidgetFactory(object):
 
         return factory_handler(*args, **kwargs)
 
-    def _make_button(self, text, position = None, icon = None):
+    def _make_button(self, text = '', position = None, icon = None):
 
         import obplugin.core.gui
 
