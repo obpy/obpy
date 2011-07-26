@@ -77,7 +77,7 @@ class World(object):
         Removes an element with its name contained in name.
         """
 
-        nid = self.element.get_node_by_name().nid
+        nid = self.element.get_node_by_name(name).nid
         self.element.remove_node_by_id(nid)
 
     def add_player(self, player):

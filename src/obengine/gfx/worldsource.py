@@ -62,15 +62,6 @@ class WorldSource(list):
     def supported_tags(self):
         return self._element_handlers.keys()
 
-    def _handle_node(self, node):
-
-        if self.supported_tag(node.tag):
-            for handler in self._element_handlers[node.tag]:
-                handler(self, node, self.factory)
-
-        else:
-            raise UnknownWorldTagError, node.tag
-
     def retrieve(self):
 
         # This method needs to be overridden in a derivative
@@ -194,15 +185,24 @@ class WorldSource(list):
 
         # Check the version. We use 0.6.2 as the default, as that was the last version of OpenBlox
         # to not have this feature
-        game_version = tuple(int(v) for v in rootnode.attrib.get('version', '0.6.2').split('.'))
+        game_version = rootnode.attrib.get('version', '0.6.2')
 
         # We can't load this game if it's for a non-compatible version of OpenBlox
-        if game_version[0] != obengine.ENGINE_VERSION[0]:
+        if obengine.compatible_with(game_version) is False:
             raise InsufficientVersionError, rootnode.attrib.get('version', '0.6.2')
 
         # Run over all the children of the top-level "world" tag
         for child in rootnode:
             self._handle_node(child)
+
+     def _handle_node(self, node):
+
+        if self.supported_tag(node.tag):
+            for handler in self._element_handlers[node.tag]:
+                handler(self, node, self.factory)
+
+        else:
+            raise UnknownWorldTagError, node.tag
 
 
 class FileWorldSource(WorldSource):
