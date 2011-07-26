@@ -58,7 +58,7 @@ class AddElementCommand(bloxworks.project.ProjectCommand):
         self.project.world.add_element(self._element)
 
     def undo(self):
-        RemoveElementCommand(self.project, nid = self._element.nid).execute()
+         self.project.world.element.remove_node_by_id(self.element.nid)
 
 
 class RemoveElementCommand(bloxworks.project.ProjectCommand):
