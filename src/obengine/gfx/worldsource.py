@@ -195,7 +195,7 @@ class WorldSource(list):
         for child in rootnode:
             self._handle_node(child)
 
-     def _handle_node(self, node):
+    def _handle_node(self, node):
 
         if self.supported_tag(node.tag):
             for handler in self._element_handlers[node.tag]:

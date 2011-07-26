@@ -61,7 +61,7 @@ class BrickView(object):
     def __init__(self, size, rotation, color, window):
 
         import obplugin.core.graphics
-        self.model = obplugin.core.graphics.Model(self.type + '-new', window)
+        self.model = obplugin.core.graphics.Model(self.type, window)
 
         self.on_loaded = self.model.on_loaded
         self.on_loaded += functools.partial(self._init_attrs, size, rotation, color)
