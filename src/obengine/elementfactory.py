@@ -140,6 +140,7 @@ class ElementFactory(object):
         element = LightElement(name, self.window, type, color, rotation)
         return element
 
+
 class UnknownElementError(Exception):
     """
     Raised when an unknown element type is passed to ElementFactory.make.

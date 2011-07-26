@@ -70,6 +70,9 @@ class ProjectCommand(object):
     def execute(self):
         raise NotImplementedError
 
+    def undo(self):
+        raise NotImplementedError
+
 
 class ProjectLoader(object):
 
