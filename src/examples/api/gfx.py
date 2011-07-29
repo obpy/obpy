@@ -28,8 +28,8 @@ def main():
     light = obplugin.core.graphics.Light(obplugin.core.graphics.Light.AMBIENT, 'ambient light', window, obengine.gfx.math.Color(25, 25, 25, 255), False)
     light2 = obplugin.core.graphics.Light(obplugin.core.graphics.Light.DIRECTIONAL, 'directional light', window, obengine.gfx.math.Color(250, 250, 250, 255), False)
 
-    model = obplugin.core.graphics.Model('brick-new.egg', window)
-    model2 = obplugin.core.graphics.Model('brick-new.egg', window)
+    model = obplugin.core.graphics.Model('brick.egg', window)
+    model2 = obplugin.core.graphics.Model('brick.egg', window)
 
     window.on_loaded += light.load
     window.on_loaded += light2.load
