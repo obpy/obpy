@@ -547,7 +547,7 @@ class kinematicCharacterController(kinematicObject):
 	Here you can put health related stuff.
 	"""
 	def fallCallback(self, speed):
-		print "A character has hit the ground with speed:", speed
+		pass #print "A character has hit the ground with speed:", speed
 	
 	def setSpeed(self, x, y):
 		self.speed[0] = x
