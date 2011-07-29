@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Shell script to run Gource with OpenBlox
+# Shell script to output information about the last commit to the local
+# OpenBlox Mercurial repository
 # Author: openblocks
 #
 # This program is free software: you can redistribute it and/or modify
@@ -18,41 +19,30 @@
 #
 
 
-GOURCE_FLAGS="--hide filenames,dirnames,usernames \
---logo src/doc/source/_static/oblogo.png \
---title OpenBlox --key -s 0.2 -a 2.0"
-
-GOURCE="gource"
+HG="hg"
 
 
 function usage()
 {
     cat << EOF
     Usage: $0
-    This script runs Gource (http://code.google.com/p/gource/) over your local
-    copy of the OpenBlox Mercurial repository, producing a nice visualization
-    of OpenBlox's development of to the current commit in your local
-    repository clone. Mostly useless, but fun nonetheless :)
-
+    This shell script prints out information about the last commit
+    to this computer's local copy of the OpenBlox Mercurial repository.
     Environment variables:
 
-    * GOURCE_FLAGS: Flags/options to pass to Gource (currently $GOURCE_FLAGS)
-    * GOURCE: The path to the Gource executable (currently $GOURCE)
+     * HG - the command to run Mercurial (by default, $HG)
 EOF
 
 }
 
 
-function run_gource()
+function run_hg()
 {
-    cd ../..
-    echo $GOURCE $GOURCE_FLAGS
-
-    $GOURCE $GOURCE_FLAGS
+    $HG log --template \
+    'Last revision {rev} commited by {author|person} on {date|shortdate} ({date|age})\n' \
+    | tac | tail -n 1
 }
 
-# We're currently in the "build-helpers" subdirectory, and its parent directory
-# contains the Mercurial repository, so change directories
 
 if [ "--help" == "$1" ]; then
 
@@ -68,6 +58,4 @@ if [ "-h" == "$1" ]; then
 
 fi
 
-run_gource
-
-exit 0
+run_hg
