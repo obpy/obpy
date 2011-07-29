@@ -123,7 +123,7 @@ class ElementFactory(object):
         
         from obengine.scripting.element import ScriptElement
 
-        element = ScriptElement(name, filename, code)
+        element = ScriptElement(name, self.window.scheduler, filename, code)
         return element
 
     def make_sound(self, name, soundfile, autoplay = False):
