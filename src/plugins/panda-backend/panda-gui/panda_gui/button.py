@@ -51,7 +51,10 @@ class ButtonView(widget.TextWidgetView):
         textMayChange = True,
         command = self.on_click
         )
-        self.icon = icon
+
+        if icon is not None:
+            self.icon = icon
+            
         widget.TextWidgetView.__init__(self, text, position)
 
     @obengine.datatypes.nested_property
@@ -66,7 +69,6 @@ class ButtonView(widget.TextWidgetView):
             self._widget['image'] = new_image
 
             if new_image is not None:
-
                 self._widget['image_pos'] = (-2.5, 0, 0)
 
             else:
