@@ -162,7 +162,7 @@ class VerticalLayoutManager(object):
             
     def adjust_widgets_after_remove(self, removed_widget):
 
-        removed_widget_y = removed_widget.size.y
+        removed_widget_y = removed_widget.size.y / 2.0
 
         for child_widget in self._owning_container.children:
             child_widget.position.y += removed_widget_y
@@ -171,8 +171,17 @@ class VerticalLayoutManager(object):
 
         for child_widget in self._owning_container.children:
 
-            child_widget.position.y += new_pos.y - child_widget.position.y
-            child_widget.position.x += new_pos.x - child_widget.position.x
+            new_child_position = obengine.math.Vector2D(
+            child_widget.position.x,
+            child_widget.position.y
+            )
+
+            new_child_position.x += new_pos.x - self._owning_container.position.x
+            new_child_position.y += new_pos.y - self._owning_container.position.y
+
+            child_widget.position = new_child_position
+
+
             
     def adjust_size(self, size):
         
@@ -223,8 +232,15 @@ class HorizontalLayoutManager(object):
 
         for child_widget in self._owning_container.children:
 
-            child_widget.position.y += new_pos.y - child_widget.position.y
-            child_widget.position.x += new_pos.x - child_widget.position.x
+            new_child_position = obengine.math.Vector2D(
+            child_widget.position.x,
+            child_widget.position.y
+            )
+
+            new_child_position.x += new_pos.x - self._owning_container.position.x
+            new_child_position.y += new_pos.y - self._owning_container.position.y
+
+            child_widget.position = new_child_position
 
     def adjust_size(self, size):
 
