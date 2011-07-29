@@ -49,6 +49,7 @@ def create_gui():
     bottom_toolbar.add(widget_factory.make('button', icon = 'data/icons/move.png'))
     bottom_toolbar.add(widget_factory.make('button', icon = 'data/icons/scale.png'))
     bottom_toolbar.add(widget_factory.make('button', icon = 'data/icons/repaint.png'))
+    bottom_toolbar.add(widget_factory.make('button', icon = 'data/icons/Lua-edit.png'))
 
     side_toolbar = widget_factory.make('shutter',
     position = obengine.math.Vector2D(-90, 0),
@@ -58,6 +59,44 @@ def create_gui():
     side_toolbar.add(widget_factory.make('button', icon = 'data/icons/light.png'))
     side_toolbar.add(widget_factory.make('button', icon = 'data/icons/Lua.png'))
     side_toolbar.add(widget_factory.make('button', icon = 'data/icons/add-brick.png'))
+
+    scene_graph_browser = widget_factory.make(
+    'scrolledlist',
+    obengine.math.Vector2D(60, 50))
+
+    property_editor_form = widget_factory.make(
+    'container',
+    layout_manager = obengine.gui.VerticalLayoutManager,
+    position = obengine.math.Vector2D(75, -60))
+
+    property_editor_form.add(widget_factory.make('checkbox', 'Collide'))
+
+    property_editor_form.add(widget_factory.make('checkbox', 'Anchored'))
+    
+    property_editor_form.add(widget_factory.make('entry'))
+
+    property_editor_form.add(widget_factory.make(
+    'label',
+    'Rotation'))
+
+    property_editor_form.add(widget_factory.make('entry'))
+
+    property_editor_form.add(widget_factory.make(
+    'label',
+    'Size'))
+
+    property_editor_form.add(widget_factory.make('entry'))
+
+    property_editor_form.add(widget_factory.make(
+    'label',
+    'Color'))
+
+    property_editor_form.add(widget_factory.make('entry'))
+
+    property_editor_form.add(widget_factory.make(
+    'label',
+    'Name'
+    ))
     
 
 def create_window(scheduler):
@@ -83,6 +122,7 @@ def main():
     window.on_loaded += create_gui
 
     sched.loop()
+
 
 if __name__ == '__main__':
     main()
