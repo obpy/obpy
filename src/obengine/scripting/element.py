@@ -36,7 +36,7 @@ obengine.depman.gendeps()
 
 class ScriptElement(Element):
 
-    def __init__(self, name, filename = None, code = None):
+    def __init__(self, name, scheduler, filename = None, code = None):
 
         Element.__init__(self, name)
         self.set_extension('xml', XmlScriptExtension)
@@ -49,6 +49,8 @@ class ScriptElement(Element):
 
         self.on_add += self.script_on_add
         self.on_world_loaded += self.script_on_loaded
+
+        self.scheduler = scheduler
 
     def script_on_add(self, scene_graph):
         self.world = scene_graph.owner
