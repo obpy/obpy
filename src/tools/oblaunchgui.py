@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
 # A simple wxPython-based OpenBlox game launcher.
-# WARNING: This script is currently written for OpenBlox 0.6.2, and will not
-# work with OpenBlox 0.7 (the current version OpenBlox, the one you're using now).
 # See <TODO: no Sphinx docs yet - add some> for the main source of documentation
 # for this script.
 
