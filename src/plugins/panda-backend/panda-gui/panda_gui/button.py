@@ -27,7 +27,7 @@ __date__  = "$Jun 30, 2011 12:06:54 AM$"
 
 
 import panda3d.core
-from panda3d.core import TransparencyAttrib
+from panda3d.core import TransparencyAttrib, Filesystem
 
 import direct.gui
 import direct.gui.DirectGui
@@ -66,7 +66,7 @@ class ButtonView(widget.TextWidgetView):
         def fset(self, new_image):
 
             old_size = self.size
-            self._widget['image'] = new_image
+            self._widget['image'] = Filesystem.fromOsSpecific(new_image)
 
             if new_image is not None:
                 self._widget['image_pos'] = (-2.5, 0, 0)
