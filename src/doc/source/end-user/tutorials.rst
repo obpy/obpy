@@ -1,0 +1,60 @@
+==================
+End-user tutorials
+==================
+
+.. note::
+
+    If you're looking for tutorials on how to install OpenBlox,
+    go to :doc:`/gettingstarted`, instead.
+
+
+.. _playing-a-game:
+
+Playing a game
+==============
+
+Open up the OpenBlox game launcher. It's in different locations, depending upon
+which OS you've installed OpenBlox on:
+
+    * On Windows, it's under :guilabel:`Start` > :guilabel:`All Programs` >
+      :guilabel:`OpenBlox` > :guilabel:`OpenBlox`
+    * On Linux (with GNOME, KDE will differ slightly), the OpenBlox game launcher is in
+      :guilabel:`Applications` > :guilabel:`OpenBlox` > :guilabel:`OpenBlox`
+    * On Mac OSX, it's the file ``tools/oblaunchgui.py`` located in the directory
+      you extracted OpenBlox to
+
+You'll see a window come up that looks something like this:
+
+.. image:: images/obgamebrowser.png
+
+To play an installed game, just click on its name, and then
+press :guilabel:`Play selected game`.
+
+**How to play**
+
+ * Move with the arrow keys
+ * Jump with the spacebar
+
+Installing a game
+=================
+
+First, you have to open up the OpenBlox game launcher (see :ref:`playing-a-game` for
+more info on this). Once you've done that, press on :guilabel:`Install new game`.
+A file browser window will come up; navigate to the OpenBlox game you want to
+install.
+
+Once you've selected it (and possibly pressed :guilabel:`Open`), the game
+will appear in OpenBlox's list of installed games. See :ref:`playing-a-game` for
+instructions on how to play your newly-installed game.
+
+Uninstalling a game
+===================
+
+Once you've opened up the OpenBox game launcher, removing a game is easy: Just
+click on its name, and press :guilabel:`Uninstall selected game`.
+
+.. warning::
+
+    The game itself is removed from your hard drive when you uninstall it,
+    so make sure you have a copy of the game handy, in case you
+    want to reinstall it!
