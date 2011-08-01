@@ -33,37 +33,6 @@ import obengine.gui
 
 def create_gui():
 
-    widget_factory = obengine.gui.WidgetFactory()
-
-    top_toolbar = widget_factory.make('shutter',
-    position = obengine.math.Vector2D(0, 90))
-
-    top_toolbar.add(widget_factory.make('button', icon = 'data/icons/new.png'))
-    top_toolbar.add(widget_factory.make('button', icon = 'data/icons/open.png'))
-    top_toolbar.add(widget_factory.make('button', icon = 'data/icons/save.png'))
-    top_toolbar.add(widget_factory.make('button', icon = 'data/icons/pack.png'))
-
-    bottom_toolbar = widget_factory.make('shutter',
-    position = obengine.math.Vector2D(0, -90))
-
-    bottom_toolbar.add(widget_factory.make('button', icon = 'data/icons/move.png'))
-    bottom_toolbar.add(widget_factory.make('button', icon = 'data/icons/scale.png'))
-    bottom_toolbar.add(widget_factory.make('button', icon = 'data/icons/repaint.png'))
-    bottom_toolbar.add(widget_factory.make('button', icon = 'data/icons/Lua-edit.png'))
-
-    side_toolbar = widget_factory.make('shutter',
-    position = obengine.math.Vector2D(-90, 0),
-    layout_manager = obengine.gui.VerticalLayoutManager)
-
-    side_toolbar.add(widget_factory.make('button', icon = 'data/icons/Sky.png'))
-    side_toolbar.add(widget_factory.make('button', icon = 'data/icons/light.png'))
-    side_toolbar.add(widget_factory.make('button', icon = 'data/icons/Lua.png'))
-    side_toolbar.add(widget_factory.make('button', icon = 'data/icons/add-brick.png'))
-
-    scene_graph_browser = widget_factory.make(
-    'scrolledlist',
-    obengine.math.Vector2D(60, 50))
-
     property_editor_form = widget_factory.make(
     'container',
     layout_manager = obengine.gui.VerticalLayoutManager,
@@ -97,6 +66,8 @@ def create_gui():
     'label',
     'Name'
     ))
+
+    
     
 
 def create_window(scheduler):

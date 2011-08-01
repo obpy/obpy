@@ -58,7 +58,7 @@ class AddElementCommand(bloxworks.project.ProjectCommand):
         self.project.world.add_element(self._element)
 
     def undo(self):
-         self.project.world.element.remove_node_by_id(self.element.nid)
+        self.project.world.element.remove_node_by_id(self.element.nid)
 
 
 class RemoveElementCommand(bloxworks.project.ProjectCommand):
@@ -68,7 +68,7 @@ class RemoveElementCommand(bloxworks.project.ProjectCommand):
         bloxworks.project.ProjectCommand.__init__(self, project)
 
         if name is None and nid is None:
-            raise ValueError, 'name or nid must be given'
+            raise ValueError('name or nid must be given')
 
         self.element_name = name
         self.element_id = nid
