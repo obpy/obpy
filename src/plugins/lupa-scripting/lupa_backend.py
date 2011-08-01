@@ -26,17 +26,17 @@ __date__  = "$May 2, 2011 1:15:36 AM$"
 
 
 import sys
+
 import lupa
 
 # Panda3D hack for errant Windows sys.path
 
 if sys.platform == 'win32':
-    
+
     sys.path.insert(0, 'C:\\Program Files\\OpenBlox')
     sys.path.insert(1, 'C:\\Program Files\\OpenBlox\\obengine\\scripting')
 
-from obengine.utils import error, wrap_callable
-from obengine.datatypes import EventAttrDict
+from obengine.utils import error
 import obengine.event
 
 
@@ -95,27 +95,16 @@ class ScriptEngine(object):
     OpenBlox's powerful script engine class. Use this to run Lua scripts, by calling execute.
     You can also expose Python objects, by calling expose.
 
-    Also, this class has attributes (namely, method and var) that exposes all Lua methods and variables.
-
     Example:
 
         >>> lua = ScriptEngine()
         >>> lua.execute('''
         ... function hello()
-        ... return "Hello Python world!"
+        ... print("Hello Python world!")
         ... end
+        ... hello()
         ... ''')
-        >>> print lua.method.hello()
         Hello Python world!
-
-    NEW IN OpenBlox 0.5:
-    You can set Lua variables and methods outside of the runtime, like this:
-
-        >>> lua = ScriptEngine()
-        >>> lua.execute('a = 1')
-        >>> lua.var.a = 10
-        >>> print lua.eval('a')
-        10
     """
 
     def __init__(self, filename = '<stdin>'):
@@ -132,12 +121,6 @@ class ScriptEngine(object):
 
         self.filename = filename
 
-        # Create the EventDicts that will keep track of our variables and methods
-        self.var = EventAttrDict()
-        self.method = EventAttrDict()
-
-        self.var.on_item_changed += self._update_globals
-
     def eval(self, string):
         """
         Return the result of a Lua script.
@@ -147,20 +130,6 @@ class ScriptEngine(object):
         try:
 
             val = self.lua.eval(string)
-
-            # Update our var and method dicts
-            for key in self.lua.globals():
-
-                if key not in default_globals:
-
-                    # Is this a variable?
-                    if str(self.lua.globals()['type'](self.globals()[key])) != u'function':
-                        self.var[key] = self.globals()[key]
-
-                    # No, so I guess it's a function
-                    elif str(self.lua.globals()['type'](self.globals()[key])) == u'function':
-                        self.method[key] = self.globals()[key]
-
             return val
 
         # Houston, we have a problem...
@@ -173,22 +142,12 @@ class ScriptEngine(object):
         If the script is invalid, error_cb is called.
         """
         try:
+
             self.lua.execute(string)
-
-            for key in self.lua.globals():
-                if key not in default_globals:
-
-                    added_globals_type = str(self.lua.globals()['type'](self.globals()[key]))
-                    
-                    if added_globals_type != u'function':
-                        self.var[key] = self.globals()[key]
-
-                    elif added_globals_type == u'function':
-                        self.method[key] = self.globals()[key]
+            self._update_globals()
 
         except Exception, message:
             self.on_error(message)
-
     def expose(self, obj):
         """Exposes obj to the Lua interpreter.
         If obj has a __tolua__ method, the return value of that method is used as the exposed
@@ -201,9 +160,3 @@ class ScriptEngine(object):
 
     def _default_error_cb(self, msg):
         error('Script error: Script ' + self.filename + ', error: ' + msg)
-
-    def globals(self):
-        return self.lua.globals()
-
-    def _update_globals(self, item, value):
-        self.globals()[item] = value
