@@ -23,7 +23,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jul 31, 2011 8:48:24 PM$"
+__date__ = "$Jul 31, 2011 8:48:24 PM$"
 
 
 import obengine.math
@@ -41,22 +41,22 @@ class TopToolbar(object):
         position = obengine.math.Vector2D(0, 90))
 
         new_button = widget_factory.make('button',
-        icon = obengine.vfs.getsyspath('bloxworks-data/icons/new.png'))
+        icon = obengine.vfs.getsyspath('/bloxworks-data/icons/new.png'))
         self._toolbar.add(new_button)
         self.on_new_button_clicked = new_button.on_click
 
         open_button = widget_factory.make('button',
-        icon = obengine.vfs.getsyspath('bloxworks-data/icons/open.png'))
+        icon = obengine.vfs.getsyspath('/bloxworks-data/icons/open.png'))
         self._toolbar.add(open_button)
         self.on_open_button_clicked = open_button.on_click
 
         save_button = widget_factory.make('button',
-        icon = obengine.vfs.getsyspath('bloxworks-data/data/icons/save.png'))
+        icon = obengine.vfs.getsyspath('/bloxworks-data/icons/save.png'))
         self._toolbar.add(save_button)
         self.on_save_button_clicked = save_button.on_click
 
         pack_button = widget_factory.make('button',
-        icon = obengine.vfs.getsyspath('bloxworks-data/data/icons/save.png'))
+        icon = obengine.vfs.getsyspath('/bloxworks-data/icons/save.png'))
         self._toolbar.add(pack_button)
         self.on_pack_button_clicked = pack_button.on_click
 
@@ -70,17 +70,17 @@ class BottomToolbar(object):
         position = obengine.math.Vector2D(0, -90))
 
         move_button = widget_factory.make('button',
-        icon = obengine.vfs.getsyspath('bloxworks-data/data/icons/move.png'))
+        icon = obengine.vfs.getsyspath('/bloxworks-data/icons/move.png'))
         self._toolbar.add(move_button)
         self.on_move_button_clicked = move_button.on_click
 
         scale_button = widget_factory.make('button',
-        icon = obengine.vfs.getsyspath('bloxworks-data/data/icons/scale.png'))
+        icon = obengine.vfs.getsyspath('/bloxworks-data/icons/scale.png'))
         self._toolbar.add(scale_button)
         self.on_scale_button_clicked = scale_button.on_click
 
         repaint_button = widget_factory.make('button',
-        icon = obengine.vfs.getsyspath('bloxworks-data/data/icons/repaint.png'))
+        icon = obengine.vfs.getsyspath('/bloxworks-data/icons/repaint.png'))
         self._toolbar.add(repaint_button)
 
 
@@ -95,21 +95,21 @@ class SideToolbar(object):
         layout_manager = obengine.gui.VerticalLayoutManager)
 
         sky_button = widget_factory.make('button',
-        icon = obengine.vfs.getsyspath('bloxworks-data/data/icons/Sky.png'))
+        icon = obengine.vfs.getsyspath('/bloxworks-data/icons/Sky.png'))
         self._toolbar.add(sky_button)
-        self.on_sky_button_clicked = scale_button.on_click
+        self.on_sky_button_clicked = sky_button.on_click
 
         light_button = widget_factory.make('button',
-        icon = obengine.vfs.getsyspath('bloxworks-data/data/icons/light.png'))
+        icon = obengine.vfs.getsyspath('/bloxworks-data/icons/light.png'))
         self._toolbar.add(light_button)
         self.on_light_button_clicked = light_button.on_click
 
         lua_button = widget_factory.make('button',
-        icon = obengine.vfs.getsyspath('bloxworks-data/data/icons/Lua.png'))
+        icon = obengine.vfs.getsyspath('/bloxworks-data/icons/Lua.png'))
         self._toolbar.add(lua_button)
         self.on_lua_button_clicked = lua_button.on_click
 
         brick_button = widget_factory.make('button',
-        icon = obengine.vfs.getsyspath('bloxworks-data/data/icons/add-brick.png'))
+        icon = obengine.vfs.getsyspath('/bloxworks-data/icons/add-brick.png'))
         self._toolbar.add(brick_button)
         self.on_brick_button_clicked = brick_button.on_click

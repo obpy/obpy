@@ -23,7 +23,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jul 5, 2011 10:24:39 AM$"
+__date__ = "$Jul 5, 2011 10:24:39 AM$"
 
 
 import obengine.datatypes
@@ -38,7 +38,7 @@ obengine.depman.gendeps()
 
 class Checkbox(ClickableWidget, TextWidget):
 
-    CHECKED, NOT_CHECKED = range(2)
+    NOT_CHECKED, CHECKED = range(2)
 
     def __init__(self, text = '', position = None, state = NOT_CHECKED):
 

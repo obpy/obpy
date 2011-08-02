@@ -23,8 +23,10 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jul 25, 2011 6:03:21 PM$"
+__date__ = "$Jul 25, 2011 6:03:21 PM$"
 
+
+import obengine.vfs
 
 import bloxworks.project
 
@@ -39,26 +41,29 @@ class ElementCommand(bloxworks.project.ProjectCommand):
 
 class AddElementCommand(bloxworks.project.ProjectCommand):
 
-    def __init__(self, project, factory, type, *args, **kwargs):
+    def __init__(self, project, factory):
 
         bloxworks.project.ProjectCommand.__init__(self, project)
-        self.factory = factory
 
-        self._element_type = type
-        self._factory_args = args
-        self._factory_kwargs = kwargs
+        self.factory = factory
+        self._factory_args = []
+        self._factory_kwargs = {}
 
     def execute(self):
 
-        self._element = self.factory.make(
-        self._element_type,
-        *self._factory_args,
-        **self._factory_kwargs)
+        self._element = self.factory.make('brick', self._factory_kwargs['name'])
 
         self.project.world.add_element(self._element)
 
+        try:
+            property_editor = obengine.vfs.open('/bloxworks-registry/property-editor').read()
+            self._element.on_click += lambda: property_editor.populate(self._element)
+
+        except obengine.vfs.ReadError:
+            pass
+
     def undo(self):
-        self.project.world.element.remove_node_by_id(self.element.nid)
+        self.project.world.element.remove_node_by_id(self._element.nid)
 
 
 class RemoveElementCommand(bloxworks.project.ProjectCommand):

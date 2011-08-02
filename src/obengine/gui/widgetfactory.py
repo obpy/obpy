@@ -23,7 +23,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 16, 2011 12:00:53 AM$"
+__date__ = "$Jun 16, 2011 12:00:53 AM$"
 
 
 import obengine.plugin
@@ -116,7 +116,7 @@ class WidgetFactory(object):
         return container
 
     def _make_shutter(self, layout_manager = HorizontalLayoutManager, position = None, margin = None):
-        
+
         import obplugin.core.gui
 
         model = Shutter(layout_manager, position, margin)
@@ -144,15 +144,15 @@ class WidgetFactory(object):
         presenter = LabelPresenter(model, view)
 
         return presenter
-    
-    def _make_entry(self, initial_text = '', position = None):
-        
+
+    def _make_entry(self, initial_text = '', position = None, length = 15):
+
         import obplugin.core.gui
-        
+
         model = Entry(initial_text, position)
-        view = obplugin.core.gui.EntryView(initial_text, position)
+        view = obplugin.core.gui.EntryView(initial_text, position, length)
         presenter = EntryPresenter(model, view)
-        
+
         return presenter
 
     def _make_pulldown(self, initial_text = '', position = None):

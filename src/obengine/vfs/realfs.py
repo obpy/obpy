@@ -34,7 +34,7 @@ class RealFS(basefs.BaseFS):
     def __init__(self, real_loc):
         self.real_loc = real_loc
 
-    def open(self, path, mode='r'):
+    def open(self, path, mode = 'r'):
 
         self._check_path(path)
 
@@ -49,7 +49,7 @@ class RealFS(basefs.BaseFS):
             elif mode == 'w':
                 raise basefs.WriteError(message)
 
-    def listdir(self, path=''):
+    def listdir(self, path = ''):
 
         self._check_path(path)
 

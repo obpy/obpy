@@ -23,7 +23,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jul 25, 2011 7:18:47 PM$"
+__date__ = "$Jul 25, 2011 7:18:47 PM$"
 
 
 import bloxworks.commands.element

@@ -42,19 +42,19 @@ def addMask(name, collide, forceCategory = None):
 		newCat = newCat << len(bitMaskDict)
 	else:
 		newCat = forceCategory
-	
+
 	newCol = BitMask32(0b0)
-	
+
 	for dictName in collide:
 		if dictName == "self":
 			newCol = newCol | newCat
 			continue
-		
+
 		cat, col = bitMaskDict[dictName]
 		newCol = newCol | cat
-	
+
 	bitMaskDict[name] = newCat, newCol
-	
+
 addMask("environment", [])
 addMask("pickable", ["self", "environment"])
 
@@ -75,30 +75,30 @@ More complex objects inherit from this one.
 """
 class physicalObject(object):
 	def __init__(self, worldManager):
-		
+
 		self.worldManager = worldManager
-		
+
 		"""
 		Node Path, graphical representation for this object
 		"""
 		self.nodePath = None
-		
+
 		"""
 		OdeGeom for collision detection
 		"""
 		self.geom = None
-		
+
 		"""
 		In case of physicalObject and staticObject this will stay None,
 		but it aids the world manager's readability to keep it here.
 		"""
 		self.body = None
-		
+
 		"""
 		Shape visualization geom. Currently only Box can be visualized.
 		"""
 		self.visualization = None
-		
+
 		"""
 		Object type for World Manager
 		
@@ -114,51 +114,51 @@ class physicalObject(object):
 		feel free to add more)
 		"""
 		self.objectType = "static"
-		
+
 		self.pos = None
 		self.quat = None
-		
+
 		"""
 		Name of the bit masks used for this object.
 		"""
 		self.bitsName = ""
-		
+
 		"""
 		Whether to visualize this object ore not.
 		"""
 		self.visualize = False
-		
+
 	def getGeom(self):
 		return self.geom
-	
-	
+
+
 	def disable(self):
 		if self.geom: self.geom.disable()
 		if self.body: self.body.disable()
-		
+
 	def enable(self):
 		if self.geom: self.geom.enable()
 		if self.body: self.body.enable()
-	
+
 	"""
 	Collision and Selection Callbacks, functionality previously
 	implemented in the now removed OdeGeomData class.
 	"""
 	def collisionCallback(self, *args):
 		return
-	
+
 	def selectionCallback(self, *args):
 		return
-	
+
 	"""
 	Set a custom geom (as in, not created by this class).
 	"""
 	def setGeom(self, geom):
 		self.geom = geom
-		
+
 	def getNodePath(self):
 		return self.nodePath
-		
+
 	"""
 	Set the Node Path for this Object's rendering
 	
@@ -167,7 +167,7 @@ class physicalObject(object):
 	
 	Parent indicates the new parent for this node.
 	"""
-	def setNodePath(self, model, parent=None, pos=None):
+	def setNodePath(self, model, parent = None, pos = None):
 		"""
 		Load the model using it's name or wrap around a passed nodepath
 		"""
@@ -175,26 +175,26 @@ class physicalObject(object):
 			self.nodePath = loader.loadModel(model)
 		else:
 			self.nodePath = model
-		
+
 		if pos:
 			self.setPos(pos)
-		
+
 		if parent is None:
 			pass
 		elif parent == "detach":
 			self.nodePath.detachNode()
 		else:
 			self.nodePath.reparentTo(parent)
-		
+
 	def detachNode(self):
 		self.nodePath.detachNode()
-	
+
 	def synchPosQuatToNode(self):
 		if self.nodePath:
 			self.geom.setPosition(self.nodePath.getPos(render))
 			self.geom.setQuaternion(self.nodePath.getQuat(render))
-	
-	def setPos(self, pos=None):
+
+	def setPos(self, pos = None):
 		if pos is None:
 			pos = self.nodePath.getPos(render)
 			self.geom.setPosition(pos)
@@ -203,17 +203,17 @@ class physicalObject(object):
 				self.nodePath.setPos(render, pos)
 			self.geom.setPosition(pos)
 		self.pos = pos
-		
+
 		if self.visualization:
 			self.visualization.setPos(pos)
-			
+
 	def getPos(self):
 		return self.geom.getPosition()
-	
+
 	def getQuat(self):
 		return self.geom.getQuaternion()
-	
-	def setQuat(self, quat=None):
+
+	def setQuat(self, quat = None):
 		if quat is None:
 			quat = self.nodePath.getQuat(render)
 			self.geom.setQuaternion(quat)
@@ -222,10 +222,10 @@ class physicalObject(object):
 				self.nodePath.setQuat(render, quat)
 			self.geom.setQuaternion(quat)
 		self.quat = quat
-		
+
 		if self.visualization:
 			self.visualization.setQuat(quat)
-	
+
 	"""
 	Simplified setting collision and category bits for geoms.
 	Uses the bitMaskDict dictionary -- see at the begining of this file.
@@ -234,25 +234,25 @@ class physicalObject(object):
 		self.bitsName = name
 		self.geom.setCollideBits(bitMaskDict[name][0])
 		self.geom.setCategoryBits(bitMaskDict[name][1])
-	
+
 	def update(self, stepSize):
 		return
-		
+
 	def destroy(self):
 		self.worldManager.removeObject(self)
 		if self.visualization:
 			self.visualization.remove()
 		self.geom.destroy()
-		del self.visualization
-		del self.geom
-		del self.nodePath
+		#del self.visualization
+		#del self.geom
+		#del self.nodePath
 		del self
 
 
 class staticObject(physicalObject):
 	def __init__(self, worldManager):
 		physicalObject.__init__(self, worldManager)
-		
+
 		"""
 		This is the data for handling collisions.
 		Previously, this was placed in the OdeGeomData class.
@@ -268,14 +268,14 @@ class staticObject(physicalObject):
 		self.surfaceSoftERP = 0.2
 		self.surfaceSlip = 0.0
 		self.surfaceDampen = 2.0
-	
+
 	"""
 	Set up an OdeBoxGeom of the given size.
 	"""
 	def setBoxGeom(self, size):
 		self.boxSize = size
 		self.geom = OdeBoxGeom(self.worldManager.getSpace(), size)
-		
+
 		"""
 		If visualization is enabled, create the visualization node.
 		Note that the visualization technique has changed. Now I use the fantastic code
@@ -286,64 +286,64 @@ class staticObject(physicalObject):
 			self.visualization.reparentTo(render)
 			if self.nodePath:
 				self.visualization.setPos(self.nodePath.getPos(render))
-			
+
 		"""
 		If a nodePath is set, get the position and rotation from it
 		"""
 		self.synchPosQuatToNode()
-	
+
 	"""
 	Set a box geom from a given model.
 	See World Manager class for details.
 	"""
-	def setBoxGeomFromNodePath(self, node, remove=False):
+	def setBoxGeomFromNodePath(self, node, remove = False):
 		size = self.worldManager.extractSizeForBoxGeom(node)
 		self.setBoxGeom(size)
 		if remove:
 			node.removeNode()
-	
+
 	"""
 	Set up an OdeCappedCylinderGeom. New in ver. 1.2
 	"""
 	def setCapsuleGeom(self, radius, length):
 		self.geom = OdeCappedCylinderGeom(self.worldManager.getSpace(), radius, length)
-		
+
 		if self.visualize:
 			self.visualization = wireGeom().generate("capsule", radius = radius, length = length)
 			self.visualization.reparentTo(render)
 			if self.nodePath:
 				self.visualization.setPos(self.nodePath.getPos(render))
-			
+
 		self.synchPosQuatToNode()
-	
+
 	"""
 	Set up an OdeTriMeshGeom from the given node.
 	"""
-	def setTrimeshGeom(self, model, remove=False):
+	def setTrimeshGeom(self, model, remove = False):
 		if isinstance(model, basestring):
 			model = loader.loadModel(model)
 		trimeshData = OdeTriMeshData(model, True)
 		self.geom = OdeTriMeshGeom(self.worldManager.space, trimeshData)
-		
+
 		self.synchPosQuatToNode()
-		
+
 		if remove:
 			model.removeNode()
-	
+
 	"""
 	Set up an OdeSphereGeom of the given radius.
 	"""
 	def setSphereGeom(self, radius):
 		self.geom = OdeSphereGeom(self.worldManager.getSpace(), radius)
-		
+
 		if self.visualize:
 			self.visualization = wireGeom().generate("sphere", radius = radius)
 			self.visualization.reparentTo(render)
 			if self.nodePath:
 				self.visualization.setPos(self.nodePath.getPos(render))
-		
+
 		self.synchPosQuatToNode()
-		
+
 
 """
 The kinematic object class. This type of object it meant to be animated
@@ -355,29 +355,29 @@ class kinematicObject(staticObject):
 	def __init__(self, worldManager):
 		staticObject.__init__(self, worldManager)
 		self.objectType = "kinematic"
-		
-		self.linearVel = Vec3(0,0,0)
-		self.prevPos = Vec3(0,0,0)
-	
+
+		self.linearVel = Vec3(0, 0, 0)
+		self.prevPos = Vec3(0, 0, 0)
+
 	"""
 	Get linear velocity
 	"""
 	def getLinearVel(self):
 		return self.linearVel
-	
+
 	def update(self, stepSize):
 		quat = self.nodePath.getQuat(render)
 		pos = self.nodePath.getPos(render)
-		
+
 		self.linearVel = (pos - self.prevPos) / self.worldManager.stepSize
-		
+
 		self.geom.setPosition(pos)
 		self.geom.setQuaternion(quat)
-		
+
 		if self.visualization:
 			self.visualization.setQuat(quat)
 			self.visualization.setPos(pos)
-		
+
 		self.prevPos = pos
 
 """
@@ -392,10 +392,10 @@ class dynamicObjectNoCCD(staticObject):
 	def __init__(self, worldManager):
 		staticObject.__init__(self, worldManager)
 		self.objectType = "dynamic"
-	
+
 	def getLinearVel(self):
 		return self.body.getLinearVel()
-	
+
 	"""
 	Setting a standard body with Box mass.
 	It uses setBoxTotal instead of setBox, so give weight and not
@@ -408,7 +408,7 @@ class dynamicObjectNoCCD(staticObject):
 		if not self.nodePath:
 			print "you must set nodepath before setting body"
 			return False
-		
+
 		"""
 		IMPORTANT
 		
@@ -424,17 +424,17 @@ class dynamicObjectNoCCD(staticObject):
 			if s > maxSize:
 				maxSize = s
 		bodySize = Vec3(maxSize, maxSize, maxSize)
-		
+
 		self.mass = OdeMass()
 		self.mass.setBoxTotal(weight, bodySize)
-		
+
 		self.body = OdeBody(self.worldManager.world)
 		self.body.setMass(self.mass)
 		self.body.setPosition(self.nodePath.getPos(render))
 		self.body.setQuaternion(self.nodePath.getQuat(render))
-		
+
 		self.geom.setBody(self.body)
-	
+
 	"""
 	Setting a standard body with Sphere mass.
 	It uses setSphereTotal instead of setSphere, so give weight and not
@@ -447,37 +447,37 @@ class dynamicObjectNoCCD(staticObject):
 		if not self.nodePath:
 			print "you must set nodepath before setting body"
 			return False
-			
+
 		self.mass = OdeMass()
 		self.mass.setSphereTotal(weight, radius)
-		
+
 		self.body = OdeBody(self.worldManager.world)
 		self.body.setMass(self.mass)
 		self.body.setPosition(self.nodePath.getPos(render))
 		self.body.setQuaternion(self.nodePath.getQuat(render))
-		
+
 		self.geom.setBody(self.body)
-		
+
 	def getBody(self):
 		return self.body
-		
-	def setPos(self, pos=None):
+
+	def setPos(self, pos = None):
 		staticObject.setPos(self, pos)
 		if pos is None:
 			self.body.setPosition(self.nodePath.getPos(render))
 		else:
 			self.body.setPosition(pos)
-	
+
 	"""
 	Update the node's position accordingly to the geom's position.
 	"""
 	def update(self, stepSize):
 		pos = Vec3(self.geom.getPosition())
 		quat = Quat(self.geom.getQuaternion())
-		
+
 		self.nodePath.setPosQuat(render, pos, quat)
 		self.previousPos = pos
-		
+
 	def destroy(self):
 		staticObject.destroy(self)
 		self.body.destroy()
@@ -524,17 +524,17 @@ Also, be aware that this class is much slower than the version without CCD!
 class dynamicObjectCCD(dynamicObjectNoCCD):
 	def __init__(self, worldManager):
 		dynamicObjectNoCCD.__init__(self, worldManager)
-		
+
 		"""
 		This object is handled by the World Manager in the exact same way as a normal Dynamic Object.
 		"""
 		self.objectType = "dynamic"
-		
+
 		"""
 		The CCD process can be visualized.
 		"""
 		self.showCCD = False
-		
+
 		"""
 		Two crucial variables.
 		
@@ -546,13 +546,13 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 		"""
 		self.previousPos = None
 		self.ccdCollidingGeomPos = None
-		
+
 		"""
 		ccDist is the distance between the helper geoms. It's set to it's
 		actual value later, automatically.
 		"""
 		self.ccdDist = 0.0
-		
+
 		"""
 		With this variable you can control the precision of the CCD process.
 		
@@ -562,7 +562,7 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 		The higher this value is, the more expensive the CCD process it.
 		"""
 		self.ccdDistMultiplier = 3.0
-		
+
 		"""
 		NEW IN VERSION 1.2.0
 		
@@ -608,18 +608,18 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 		self.nextFrame = False
 		self.ccdCollisionSpace = 4
 		self.ccdSlidingAngle = [80.0, 100.0]
-		
+
 		"""
 		The list that holds the helper objects.
 		"""
 		self.helperObjects = []
-	
+
 	"""
 	Reimplementation of the dynamicObjectNoCCD.setBoxGeom method
 	"""
 	def setBoxGeom(self, size):
 		dynamicObjectNoCCD.setBoxGeom(self, size)
-		
+
 		"""
 		Automatically find the CCD Distance by searching for the
 		shortest edge of the box.
@@ -629,34 +629,34 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 			if len < self.ccdDist:
 				self.ccdDist = len
 		return True
-	
+
 	"""
 	Reimplementation of the dynamicObjectNoCCD.setSphereGeom method
 	"""
 	def setSphereGeom(self, radius):
 		dynamicObjectNoCCD.setSphereGeom(self, radius)
-		
+
 		"""
 		Set the CCD Distance to the sphere's radius.
 		I multiply it by 1.7 for better results -- just out of observation.
 		"""
 		self.ccdDist = radius * 1.7
-		
+
 	def setBoxBody(self, weight, size):
 		dynamicObjectNoCCD.setBoxBody(self, weight, size)
 		self.previousPos = self.nodePath.getPos(render)
-		
+
 	def setSphereBody(self, weight, radius):
 		dynamicObjectNoCCD.setSphereBody(self, weight, radius)
 		self.previousPos = self.nodePath.getPos(render)
-	
+
 	"""
 	What the exception says
 	"""
 	def setTrimeshGeom(self, model):
 		raise Exception("Trimesh is not supported for ccd!!")
 		return False
-	
+
 	"""
 	The callback method for Helper Geom objects.
 	
@@ -670,12 +670,12 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 		"""
 		if object2 is self or object2.objectType == "ccd":
 			return
-		
+
 		"""
 		For convenience
 		"""
 		geom = object1.geom
-		
+
 		"""
 		New in 1.2.0
 		Make sure the object slides correctly. When the CCD visualization is enabled it
@@ -684,12 +684,12 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 		normal = entry.getContactGeom(0).getNormal()
 		linVel = self.body.getLinearVel()
 		linVel.normalize()
-		
+
 		"""
 		...As you can see the angle is calculated between the normal and the object's linear velocity...
 		"""
 		angle = abs(Vec3(normal).signedAngleDeg(Vec3(linVel), Vec3(normal)))
-		
+
 		"""
 		...and when the angle's absolute value is between the min and max of the ccdSlidingAngle variable
 		the CCD is omited. NOTE that ALL OF IT. Unlike the ccdCollisionSpace mechanism this one doesn't do
@@ -702,28 +702,28 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 			if self.showCCD:
 				self.placeDebug(geom.getPosition(), Vec4(0, 0, 0, 1))
 			return
-		
+
 		"""
 		If there was no previous collision, default to this one and return.
 		"""
 		if self.ccdCollidingGeomPos is None:
 			self.ccdCollidingGeomPos = geom.getPosition()
 			return
-		
+
 		"""
 		Get the distance between this helper collision and the previous
 		position of this object.
 		"""
 		vNew = self.previousPos - geom.getPosition()
 		dNew = vNew.length()
-		
+
 		"""
 		Get the distance between the previous nearest helper collision
 		and the previous position of this object.
 		"""
 		vOld = self.previousPos - self.ccdCollidingGeomPos
 		dOld = vOld.length()
-		
+
 		"""
 		If the new collision is nearer to the previous position than the
 		previous nearest collision, switch them.
@@ -733,7 +733,7 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 		"""
 		if dNew > dOld:
 			self.ccdCollidingGeomPos = geom.getPosition()
-	
+
 	"""
 	New in 1.2.0
 	
@@ -750,15 +750,15 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 			How many helper geoms are needed?
 			"""
 			amount = dist / self.ccdDist * self.ccdDistMultiplier
-			
+
 			"""
 			The distance (vector) between the helper geoms
 			"""
 			vec = pos - self.previousPos
 			vecPart = vec / amount
-			
+
 			amount = int(amount)
-			
+
 			"""
 			If it's the next frame after a collision was detected, then start putting
 			the CCD helpers ccdCollisionSpace-away from the previousPos.
@@ -769,7 +769,7 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 				r = range(self.ccdCollisionSpace, amount)
 			else:
 				r = range(amount)
-			
+
 			"""
 			Start placing the helpers.
 			"""
@@ -779,7 +779,7 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 				"""
 				castPos = self.previousPos + (vecPart * float(i))
 				self.createSingleHelper(castPos)
-	
+
 	"""
 	New in 1.2.0
 	
@@ -791,39 +791,39 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 	def createSingleHelper(self, castPos, debugColor = Vec4(0.8, 0.8, 0.8, 1)):
 		"""
 		Create the helper object.
-		"""		
+		"""
 		obj = staticObject(self.worldManager)
-		
+
 		"""
 		A special object type for ccd helper geoms, which gives them
 		privileges in World Manager collision handling.
 		"""
 		obj.objectType = "ccd"
-		
+
 		"""
 		Set the collision callback to point to this dynamicObjects's
 		castCollision method. That way we can get the collisions from
 		the helper object.
 		"""
 		obj.collisionCallback = self.castCollision
-		
+
 		"""
 		Set the geoms and place the debug wiregeoms.
 		"""
 		if str(self.geom.getClassType()) == "OdeBoxGeom":
 			obj.setBoxGeom(self.geom.getLengths())
-		
+
 		elif str(self.geom.getClassType()) == "OdeSphereGeom":
 			obj.setSphereGeom(self.geom.getRadius())
-		
+
 		if self.showCCD:
 			self.placeDebug(castPos, debugColor)
-		
+
 		"""
 		Set the cat/col bit masks to the same value as this object's
 		"""
 		obj.setCatColBits(self.bitsName)
-		
+
 		"""
 		Set the helper's position, quaternion, append it to the
 		geomCast list and add it, along with it's data,
@@ -831,23 +831,23 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 		"""
 		obj.setPos(castPos)
 		obj.setQuat(self.geom.getQuaternion())
-		
+
 		self.helperObjects.append(obj)
 		self.worldManager.addObject(obj)
-	
+
 	"""
 	Completely different update callback then the one from dynamicObjectNoCCD
 	"""
 	def update(self, stepSize):
 		quat = Quat(self.geom.getQuaternion())
-		
+
 		"""
 		Getn the distance the object traveled in this frame.
 		"""
 		vel = self.body.getLinearVel()
 		speed = vel.length()
 		dist = speed * stepSize
-		
+
 		"""
 		Destroy all Helper Geoms and empty the geomCast list.
 		"""
@@ -856,32 +856,32 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 			obj.collisionCallback = None
 			obj.destroy()
 		self.helperObjects = []
-		
+
 		if self.ccdCollidingGeomPos:
 			"""
 			There was a collision detected by one of the helper geoms, stop
 			the CCD process.
 			"""
-			
+
 			"""
 			For convenience.
 			"""
 			pos = self.ccdCollidingGeomPos
-			
+
 			"""
 			Red debug wiregeom, meant to show the place where the CCD detected
 			the collision.
 			"""
 			if self.showCCD:
 				self.placeDebug(pos, Vec4(1, 0, 0, 1))
-			
+
 			"""
 			Set the position of the geom AND THE BODY to the one detected
 			by helper geoms.
 			"""
 			self.geom.setPosition(pos)
 			self.body.setPosition(pos)
-			
+
 			"""
 			Previously in here the object's velocity was cut down to prevent
 			the CCD from making the object stick permanently to a surface.
@@ -890,12 +890,12 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 			the helpers for the next frame.
 			"""
 			self.nextFrame = True
-			
+
 		else:
 			"""
 			The helper geoms detected no collision, start/continue the CCD process.
 			"""
-			
+
 			"""
 			A debug geom meant to show the current position of the body. Useful
 			for tweaking the CCD variables as it shows how much the object moved
@@ -903,21 +903,21 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 			"""
 			#if self.showCCD:
 			#	self.placeDebug(self.body.getPosition(), Vec4(0, 1, 1, 1))
-			
+
 			pos = Vec3(self.geom.getPosition())
-			
+
 			"""
 			Self explanatory, I guess. Before the whole process was done here, but
 			I moved it out for convenience.
 			"""
 			self.createHelpers(pos, dist)
-			
+
 			"""
 			This MUST be here or the CCD won't work at all as it would think
 			it's 1 frame after a collision all the time.
 			"""
 			self.nextFrame = False
-		
+
 		"""
 		Update the geom's position, clear the colliding (helper) geom position
 		variable and set previous position to current position for the next frame.
@@ -925,11 +925,11 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 		self.nodePath.setPosQuat(render, pos, quat)
 		self.ccdCollidingGeomPos = None
 		self.previousPos = pos
-		
+
 		if self.visualization:
 			self.visualization.setQuat(quat)
 			self.visualization.setPos(pos)
-	
+
 	"""
 	Place the debug wiregeoms using the fantastic FenrirWolf's code.
 	"""
@@ -938,14 +938,14 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 			np = wireGeom().generate("box", extents = list(self.geom.getLengths() * 0.5))
 		elif str(self.geom.getClassType()) == "OdeSphereGeom":
 			np = wireGeom().generate("sphere", radius = self.geom.getRadius())
-		
+
 		np.reparentTo(render)
-		
+
 		np.setPos(render, pos)
 		np.setQuat(render, self.geom.getQuaternion())
-		
+
 		np.setColor(color)
-	
+
 	def destroy(self):
 		"""
 		Make sure we remove the helper objects.
@@ -956,9 +956,9 @@ class dynamicObjectCCD(dynamicObjectNoCCD):
 				obj.nodePath = None
 			obj.destroy()
 		self.helperObjects = []
-		
+
 		dynamicObjectNoCCD.destroy(self)
-		
+
 		del self.helperObjects
 
 """
@@ -972,12 +972,12 @@ class rayObject(physicalObject):
 	def __init__(self, worldManager):
 		physicalObject.__init__(self, worldManager)
 		self.objectType = "ray"
-		
+
 	def setRayGeom(self, length, rayAttribs = None):
 		self.geom = OdeRayGeom(self.worldManager.getSpace(), length)
 		if rayAttribs is not None:
 			self.geom.set(*rayAttribs)
-			
+
 		self.synchPosQuatToNode()
 
 """
@@ -993,28 +993,28 @@ class explosion(kinematicObject):
 		like I would with OdeGeomData previously. That's because the
 		self.collisionCallback method is used (same with all other objects).
 		"""
-		
+
 		kinematicObject.__init__(self, worldManager)
-		
+
 		"""
 		Note that previously (with OdeGeomData) this was done with isTrigger
 		variable. Now it's just a separate object type.
 		"""
 		self.objectType = "trigger"
-		
+
 		self.timeElapsed = 0.0
 		self.speed = 2000.0
 		self.force = force
 		self.currentForce = 0.0
 		self.radius = radius
-		
+
 		self.collisions = []
-		
+
 		self.setSphereGeom(radius)
 		self.setPos(pos)
-		
+
 		self.worldManager.addObject(self)
-		
+
 	"""
 	Get all geoms within the range
 	
@@ -1023,26 +1023,26 @@ class explosion(kinematicObject):
 	"""
 	def collisionCallback(self, entry, object1, object2):
 		self.collisions.append([object2, entry.getContactGeom(0).getNormal(), entry.getContactPoint(0)])
-		
+
 	def update(self, timeStep):
 		self.timeElapsed += timeStep
-		
+
 		if self.timeElapsed > .1:
 			self.worldManager.removeObject(self)
 			self.destroy()
 			return
-		
-		force = self.force - self.geom.getRadius()/10.0
-		
+
+		force = self.force - self.geom.getRadius() / 10.0
+
 		for obj, normal, point in self.collisions:
 			if obj.body:
 				forceVector = -normal * force
 				obj.body.enable()
 				obj.body.addForce(forceVector)
-				
-		self.radius += self.speed * self.timeElapsed**2
+
+		self.radius += self.speed * self.timeElapsed ** 2
 		self.geom.setRadius(self.radius)
-		
+
 		self.collisions = []
 
 """
@@ -1052,7 +1052,7 @@ class odeWorldManager(object):
 	def __init__(self):
 		self.world = OdeWorld()
 		self.world.setGravity(0, 0, -9.81)
-		
+
 		"""
 		An important optimization. Manipulate the values to get the correct behaviour,
 		but I advice not to turn it off.
@@ -1065,18 +1065,18 @@ class odeWorldManager(object):
 		self.world.setAutoDisableLinearThreshold(0.1)
 		self.world.setAutoDisableSteps(30)
 		self.world.setAutoDisableTime(0.0)
-		
+
 		"""
 		Standard ODE stuff
 		"""
 		self.contactGroup = OdeJointGroup()
 		self.space = OdeSimpleSpace()
-		
+
 		"""
 		it's set later, here it's just initialized.
 		"""
 		self.stepSize = None
-		
+
 		"""
 		The list of objects in the simulation.
 		
@@ -1085,7 +1085,7 @@ class odeWorldManager(object):
 		*Object classes above.
 		"""
 		self.objects = []
-		
+
 		"""
 		This is used to get objects by it's geom surface type. It's needed because
 		of ditching the odeGeomData. Basically this move made all object code MUCH
@@ -1098,19 +1098,19 @@ class odeWorldManager(object):
 		"""
 		self.lastGeomIndex = 0
 		self.objectGeomIndexes = {}
-		
+
 		"""
 		Convenient way to pause the world.
 		"""
 		base.accept("pause", self.pause)
 		base.accept("unpause", self.unpause)
-	
+
 	def pause(self):
 		self.stopSimulation()
-		
+
 	def unpause(self):
 		self.startSimulation(self.stepSize)
-	
+
 	"""
 	This function gets the size of a Node's bounding box. It's used to create OdeBoxGeoms
 	from Nodes in physicalObject.setBoxGeomFromNodePath method.
@@ -1122,38 +1122,38 @@ class odeWorldManager(object):
 	def extractSizeForBoxGeom(self, node):
 		quat = node.getQuat(render)
 		node.setHpr(render, Vec3(0, 0, 0))
-		
+
 		p1, p2 = node.getTightBounds()
-		
+
 		sx = abs(p1.getX() - p2.getX())
 		sy = abs(p1.getY() - p2.getY())
 		sz = abs(p1.getZ() - p2.getZ())
-		
+
 		node.setQuat(render, quat)
-		
+
 		return Vec3(sx, sy, sz)
-	
+
 	def getSpace(self):
 		return self.space
-		
+
 	def destroy(self):
 		self.stopSimulation()
 		for object in self.objects:
 			self.removeObject(object)
-		
+
 		self.contactGroup.empty()
 		self.space.destroy()
 		self.contactGroup.destroy()
 		self.world.destroy()
-		
+
 		del self.space
 		del self.contactGroup
 		del self.world
-		
+
 		del self.objects
-		
+
 		return True
-	
+
 	"""
 	Collide only one object against the rest of the space. I use it to check
 	whether an object can be dropped somewhere.
@@ -1165,45 +1165,45 @@ class odeWorldManager(object):
 	CONSIDER THIS METHOD DEPRECATED. There is no replacement for it because it generally
 	should not be needed, actually.
 	"""
-	def collideSelected(self, selected, exclude=[]):
+	def collideSelected(self, selected, exclude = []):
 		entries = []
-		
+
 		selCat = selected.getCategoryBits()
 		selCol = selected.getCollideBits()
-		
+
 		for idx in range(self.space.getNumGeoms()):
 			geom = self.space.getGeom(idx)
-			
+
 			# Check bitmasks
 			geomCat = geom.getCategoryBits()
 			geomCol = geom.getCollideBits()
 			if (selCat & geomCol) | (geomCat & selCol) == BitMask32(0):
 				continue
-			
+
 			if not geom.isEnabled():
 				continue
 			if geom in exclude:
 				continue
 			if self.getObjectByGeomSurfaceIndex(geom).objectType in ["trigger", "ccd", "ray"]:
 				continue
-			
+
 			entry = OdeUtil.collide(selected, geom, 1)
 			if entry.getNumContacts():
 				entries.append(entry)
 		return entries
-	
+
 	"""
 	Do a raycast against the space using an existing ray.
 	"""
-	def doRaycast(self, ray, exclude=[]):
+	def doRaycast(self, ray, exclude = []):
 		ray.enable()
-		
+
 		closestEntry = None
 		closestGeom = None
-		
+
 		rayCat = ray.getCategoryBits()
 		rayCol = ray.getCollideBits()
-		
+
 		for idx in range(self.space.getNumGeoms()):
 			geom = self.space.getGeom(idx)
 			if not geom.isEnabled():
@@ -1224,34 +1224,34 @@ class odeWorldManager(object):
 				elif depth < closestEntry.getContactGeom(0).getDepth():
 					closestEntry = entry
 					closestGeom = geom
-		
+
 		ray.disable()
-		
+
 		if closestGeom:
 			closestobject = self.getObjectByGeomSurfaceIndex(closestGeom)
 		else:
 			closestobject = None
-		
+
 		return (closestEntry, closestobject)
-	
+
 	"""
 	Create a ray and do a raycast against the space with it.
-	"""	
-	def doRaycastNew(self, bitMaskName, length, rayAttribs, exclude=[]):
+	"""
+	def doRaycastNew(self, bitMaskName, length, rayAttribs, exclude = []):
 		print "RAYCASTING new"
-		
+
 		ray = OdeRayGeom(self.space, length)
 		ray.set(*rayAttribs)
 		ray.setCollideBits(bitMaskDict[bitMaskName][0])
 		ray.setCategoryBits(bitMaskDict[bitMaskName][1])
-		
+
 		closestEntry, closestObject = self.doRaycast(ray, exclude)
-		
+
 		ray.destroy()
 		del ray
-		
+
 		return (closestEntry, closestObject)
-	
+
 	"""
 	Long live long and descriptive method names. Ok, to the point.
 	
@@ -1268,7 +1268,7 @@ class odeWorldManager(object):
 	def getObjectByGeomSurfaceIndex(self, geom):
 		idx = self.space.getSurfaceType(geom)
 		return self.objectGeomIndexes[idx]
-	
+
 	"""
 	A more flexible replacement for AutoCollide. In this version getting a major overhaul and optimization (yay).
 	
@@ -1287,10 +1287,10 @@ class odeWorldManager(object):
 	"""
 	def handleCollisions(self, arg, geom1, geom2):
 		entry = OdeUtil.collide(geom1, geom2)
-		
+
 		if entry.isEmpty():
 			return
-		
+
 		"""
 		Get the physical objects that use those geoms using their surface type.
 		I gotta make a request for pythonTags on odeGeoms... seriously.
@@ -1299,26 +1299,26 @@ class odeWorldManager(object):
 		"""
 		object1 = self.getObjectByGeomSurfaceIndex(geom1)
 		object2 = self.getObjectByGeomSurfaceIndex(geom2)
-		
+
 		"""
 		No collisions between "naked" geoms are permited. Physical objects have a monopoly on collisions here.
 		"""
 		if object1 is None or object2 is None:
 			return
-		
+
 		"""
 		Get the types of the two objects for convenience and better readability.
 		"""
 		type1 = object1.objectType
 		type2 = object2.objectType
-		
+
 		"""
 		Ignore collisions when both objects are tiggers or static objects.
 		"""
 		ignoredTypes = ["trigger", "static"]
 		if type1 in ignoredTypes and type2 in ignoredTypes:
 			return
-		
+
 		"""
 		Ignore collisions between rays, ccd helpers and/or triggers.
 		Note that we've already sorted out collisions between triggers and statics,
@@ -1333,13 +1333,13 @@ class odeWorldManager(object):
 		ignoredTypes = ["ray", "ccd", "trigger"]
 		if type1 in ignoredTypes and type2 in ignoredTypes:
 			return
-		
+
 		"""
 		Get the bodies of the two objects for convenience and better readability.
 		"""
 		body1 = object1.body
 		body2 = object2.body
-		
+
 		"""
 		And now we add statics to ignored types to get the total of:
 		["ray", "ccd", "trigger", "static"].
@@ -1350,7 +1350,7 @@ class odeWorldManager(object):
 		collision callbacks called.
 		"""
 		ignoredTypes += ["static"]
-		
+
 		"""
 		Create collision joints between certain objects.
 		"""
@@ -1364,7 +1364,7 @@ class odeWorldManager(object):
 				return
 			if body2 and not body2.isEnabled() and type1 == "static":
 				return
-			
+
 			"""
 			Make sure a collision between a kinematic object and a dynamic one
 			wakes up the later.
@@ -1373,12 +1373,12 @@ class odeWorldManager(object):
 				body1.enable()
 			if body2 and type1 == "kinematic":
 				body2.enable()
-			
+
 			"""
 			The standard ODE contact joint setting voodoo starts here.
 			"""
 			surfaceParams = OdeSurfaceParameters()
-			
+
 			"""
 			Be carefull with those flags. softERP and softCFM for example don't like
 			it when approx is enabled. If you want to make water, for example, you gonna
@@ -1392,12 +1392,12 @@ class odeWorldManager(object):
 			# Enable a more accurate friction model (approx)
 			# Flags: mu2, fdir1, bounce, softERP, softCFM, motion1, motion2, slip1, slip2, approx1, approx2, approx
 			surfaceParams.setMode(0b111000110111)
-			
+
 			surfaceParams.setMu(object1.surfaceFriction)
 			surfaceParams.setMu2(object2.surfaceFriction)
 			surfaceParams.setSlip1(object1.surfaceSlip)
 			surfaceParams.setSlip2(object2.surfaceSlip)
-			
+
 			"""
 			Honestly, I'm not sure I'm doing that the correct way, but simply found it to be the best
 			way I've tried so feel free to experiment with the bounce values and their handling ;).
@@ -1405,20 +1405,20 @@ class odeWorldManager(object):
 			bounce = object1.surfaceBounce * object2.surfaceBounce
 			if bounce > 1.0:
 				bounce = 1.0
-			
+
 			surfaceParams.setBounce(bounce)
 			surfaceParams.setBounceVel(object1.surfaceBounceVel * object2.surfaceBounceVel)
-			
+
 			numContacts = entry.getNumContacts()
-			
+
 			for i in range(numContacts):
 				cgeom = entry.getContactGeom(i)
-				
+
 				contactPoint = entry.getContactPoint(i)
-				
+
 				contact = OdeContact()
 				contact.setGeom(cgeom)
-				
+
 				"""
 				Pass the bodies and other stuff to the appropriate methods to handle
 				the friction.
@@ -1431,12 +1431,12 @@ class odeWorldManager(object):
 					self.handleCollisionsFriction(body1, object2, contact, surfaceParams)
 				elif body2:
 					self.handleCollisionsFriction(body2, object1, contact, surfaceParams)
-				
+
 				contact.setSurface(surfaceParams)
-				
+
 				contactJoint = OdeContactJoint(self.world, self.contactGroup, contact)
 				contactJoint.attach(body1, body2)
-		
+
 		"""
 		Call the collision callbacks on both objects. Note the positions of object1 and object2
 		in both callbacks. They depend on which object we call the collision callback on.
@@ -1445,7 +1445,7 @@ class odeWorldManager(object):
 		"""
 		object1.collisionCallback(entry, object1, object2)
 		object2.collisionCallback(entry, object2, object1)
-	
+
 	def handleCollisionsFriction(self, body, object, contact, surfaceParams):
 		"""
 		This (in conjuction with the motion1 and *2 flags) allows the dynamic objects
@@ -1456,25 +1456,25 @@ class odeWorldManager(object):
 			Get the object's linear velocity.
 			"""
 			objLinVel = object.getLinearVel()
-			
+
 			"""
 			Tell ode that the collision surface moves. Yes, the linear velocity must be squared.
 			"""
 			surfaceParams.setMotion1(objLinVel.lengthSquared())
-			
+
 			"""
 			Set the friction direction one to the linear velocity of the kinematic object.
 			The friction direction two is calculated automatically by ODE.
 			"""
 			contact.setFdir1(objLinVel)
-		
+
 		else:
 			"""
 			Set the friction direction one to the linear velocity of a body.
 			The friction direction two is calculated automatically by ODE.
 			"""
 			contact.setFdir1(body.getLinearVel())
-	
+
 	"""
 	Add object (*Object class' instance) to the simulation
 	
@@ -1485,29 +1485,29 @@ class odeWorldManager(object):
 	"""
 	def addObject(self, obj):
 		geom = obj.getGeom()
-		
+
 		self.lastGeomIndex += 1
 		self.space.setSurfaceType(geom, self.lastGeomIndex)
-		
+
 		self.objectGeomIndexes[self.lastGeomIndex] = obj
-		
+
 		self.objects.append(obj)
-	
+
 	"""
 	Remove object from simulation
 	"""
 	def removeObject(self, object):
 		if object not in self.objects:
 			return False
-		
+
 		geomIndex = self.space.getSurfaceType(object.geom)
 		del self.objectGeomIndexes[geomIndex]
-		
+
 		idx = self.objects.index(object)
 		self.objects.pop(idx)
-		
+
 		return True
-	
+
 	"""
 	Step the simulation
 	"""
@@ -1515,18 +1515,18 @@ class odeWorldManager(object):
 		self.space.collide("", self.handleCollisions)
 		self.world.quickStep(self.stepSize)
 		self.contactGroup.empty()
-		
+
 		"""
 		Update the objects in the simulation
 		"""
 		for object in self.objects:
 			object.update(self.stepSize)
-				
+
 		return task.again
-	
+
 	def startSimulation(self, stepSize):
 		self.stepSize = stepSize
 		taskMgr.doMethodLater(stepSize, self.simulationTask, "ODE_simulationTask")
-		
+
 	def stopSimulation(self):
 		taskMgr.remove("ODE_simulationTask")

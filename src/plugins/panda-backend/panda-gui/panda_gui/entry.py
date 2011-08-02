@@ -23,7 +23,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jul 2, 2011 3:20:40 PM$"
+__date__ = "$Jul 2, 2011 3:20:40 PM$"
 
 
 import panda3d.core
@@ -39,7 +39,7 @@ import widget
 
 class EntryView(widget.WidgetView):
 
-    def __init__(self, text = '', position = None, length = 15):
+    def __init__(self, text = '', position = None, length = 20):
 
         font = loader.loadFont('cmtt12')
 
@@ -61,5 +61,8 @@ class EntryView(widget.WidgetView):
 
         def fget(self):
             return self._widget.get(plain = True)
+
+        def fset(self, new_text):
+            self._widget.enterText(new_text)
 
         return locals()

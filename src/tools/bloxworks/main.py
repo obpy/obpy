@@ -16,7 +16,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jul 26, 2011 1:14:56 PM$"
+__date__ = "$Jul 26, 2011 1:14:56 PM$"
 
 
 import os
@@ -28,54 +28,51 @@ import obengine.math
 import obengine.cfg
 import obengine.async
 import obengine.plugin
+import obengine.world
 import obengine.gui
+import obengine.elementfactory
+
+import bloxworks.project
+import bloxworks.commands.brick
+import bloxworks.gui.propertyeditor
+import bloxworks.gui.toolbars
 
 
-def create_gui():
 
-    property_editor_form = widget_factory.make(
-    'container',
-    layout_manager = obengine.gui.VerticalLayoutManager,
-    position = obengine.math.Vector2D(75, -60))
+def make_brick(window):
 
-    property_editor_form.add(widget_factory.make('checkbox', 'Collide'))
+    world = obengine.world.World(1, 'World')
+    project = bloxworks.project.Project(world, 'openblocks', '0.7.0')
 
-    property_editor_form.add(widget_factory.make('checkbox', 'Anchored'))
-    
-    property_editor_form.add(widget_factory.make('entry'))
+    element_factory = obengine.elementfactory.ElementFactory()
+    element_factory.set_window(window)
 
-    property_editor_form.add(widget_factory.make(
-    'label',
-    'Rotation'))
+    obengine.plugin.require('core.physics')
+    import obplugin.core.physics
+    physics_sandbox = obplugin.core.physics.World()
+    physics_sandbox.load()
+    element_factory.set_sandbox(physics_sandbox)
 
-    property_editor_form.add(widget_factory.make('entry'))
+    add_brick_command = bloxworks.commands.brick.AddBrickCommand(project, element_factory, 'Brick')
+    add_brick_command.execute()
 
-    property_editor_form.add(widget_factory.make(
-    'label',
-    'Size'))
+def create_gui(window):
 
-    property_editor_form.add(widget_factory.make('entry'))
+    property_editor = bloxworks.gui.propertyeditor.PropertyEditor()
+    side_toolbar = bloxworks.gui.toolbars.SideToolbar()
+    bottom_toolbar = bloxworks.gui.toolbars.BottomToolbar()
+    top_toolbar = bloxworks.gui.toolbars.TopToolbar()
 
-    property_editor_form.add(widget_factory.make(
-    'label',
-    'Color'))
+    make_brick(window)
 
-    property_editor_form.add(widget_factory.make('entry'))
 
-    property_editor_form.add(widget_factory.make(
-    'label',
-    'Name'
-    ))
-
-    
-    
 
 def create_window(scheduler):
-    
+
     obengine.plugin.require('core.graphics')
 
     import obplugin.core.graphics
-    
+
     window = obplugin.core.graphics.Window('BloxWorks', scheduler)
     window.on_loaded += window.start_rendering
     window.load()
@@ -90,7 +87,7 @@ def main():
 
     sched = obengine.async.Scheduler()
     window = create_window(sched)
-    window.on_loaded += create_gui
+    window.on_loaded += lambda: create_gui(window)
 
     sched.loop()
 

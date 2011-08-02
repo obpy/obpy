@@ -66,7 +66,7 @@ class ButtonView(widget.TextWidgetView):
         def fset(self, new_image):
 
             old_size = self.size
-            self._widget['image'] = Filename.fromOsSpecific(new_image)
+            self._widget['image'] = str(Filename.fromOsSpecific(new_image))
 
             if new_image is not None:
                 self._widget['image_pos'] = (-2.5, 0, 0)

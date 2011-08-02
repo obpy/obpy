@@ -21,7 +21,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$May 2, 2011 5:37:04 PM$"
+__date__ = "$May 2, 2011 5:37:04 PM$"
 
 
 import uuid
@@ -57,7 +57,7 @@ class Model(PandaResource):
         self.window = window
         self._showing = False
         self.on_click = obengine.event.Event()
-        
+
         self._texture = None
         self._parent = None
         self._position = position or obengine.gfx.math.Vector()
@@ -242,13 +242,13 @@ class Model(PandaResource):
 
         self.load_okay = True
         self._uuid = str(uuid.uuid1())
-        
+
         self.panda_node = model
         self.panda_node.setTransparency(TransparencyAttrib.MAlpha)
         self.panda_node.setTag('clickable-flag', self._uuid)
         self.window.panda_window.accept('mouse1', self._check_mouse)
         self.showing = True
-        
+
         self.on_loaded()
 
 
@@ -419,10 +419,10 @@ class Window(object):
         self.scheduler = scheduler
 
     def start_rendering(self):
-        self.scheduler.add(obengine.async.LoopingCall(self.panda_window.taskMgr.step, priority=Window.RENDER_PRIORITY))
+        self.scheduler.add(obengine.async.LoopingCall(self.panda_window.taskMgr.step, priority = Window.RENDER_PRIORITY))
 
     def load(self):
-        self.scheduler.add(obengine.async.Task(self._actual_load, priority=Window.LOAD_PRIORITY))
+        self.scheduler.add(obengine.async.Task(self._actual_load, priority = Window.LOAD_PRIORITY))
 
     @obengine.datatypes.nested_property
     def title():
@@ -454,7 +454,7 @@ class Window(object):
 
         self.panda_window = ShowBase()
         self.panda_window.setFrameRateMeter(self.show_frame_rate)
-        self.panda_window.setBackgroundColor(0.4, 0.4, 0.4, 1)
+        self.panda_window.setBackgroundColor(1, 1, 1, 1)
         self.panda_window.win.requestProperties(self.window_properties)
         self.panda_window.render.setShaderAuto()
 
@@ -500,5 +500,5 @@ class Camera(object):
 
         if isinstance(pos, tuple):
             pos = obengine.gfx.math.Vector(*pos)
-            
+
         self.camera.setPos(pos.x, pos.y, pos.z)

@@ -24,7 +24,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Aug 9, 2010 11:04:13 PM$"
+__date__ = "$Aug 9, 2010 11:04:13 PM$"
 
 
 import functools
@@ -129,7 +129,7 @@ class BlockBrickView(BrickView):
             return brick_size
 
         def fset(self, new_size):
-            
+
             self.model.scale = (
             new_size.x / DEFAULT_X_SIZE,
             new_size.y / DEFAULT_Y_SIZE,
@@ -146,7 +146,7 @@ class BlockBrickView(BrickView):
 
         def fset(self, new_rot):
             self.model.rotation = new_rot
-            
+
         return locals()
 
     @obengine.datatypes.nested_property
@@ -178,12 +178,12 @@ class BlockBrickView(BrickView):
 
 
 class BrickPresenter(obengine.element.Element):
-    
+
     def __init__(self, name, position, color, size, rotation, view, phys_rep):
 
         obengine.element.Element.__init__(self, name)
         self.set_extension('xml', XmlBrickExtension)
-        
+
         self.view = view
         self.on_click = self.view.on_click
 
@@ -246,6 +246,17 @@ class BrickPresenter(obengine.element.Element):
         return locals()
 
     @obengine.datatypes.nested_property
+    def color():
+
+        def fget(self):
+            return self.view.color
+
+        def fset(self, new_color):
+            self.view.color = new_color
+
+        return locals()
+
+    @obengine.datatypes.nested_property
     def anchored():
 
         def fget(self):
@@ -290,7 +301,7 @@ class XmlBrickExtension(object):
 
     @property
     def xml_element(self):
-        
+
         attributes = {
         'name' : self._brick.name,
         'coords' : self._vector_str(self._brick.position),

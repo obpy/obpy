@@ -34,7 +34,7 @@ class MemoryFS(basefs.BaseFS):
     def __init__(self):
         self.fs = {}
 
-    def open(self, path, mode='r'):
+    def open(self, path, mode = 'r'):
 
         # The algorithm we use to open the given path is quite simple:
         # * For each directory in the given path:
@@ -57,7 +57,7 @@ class MemoryFS(basefs.BaseFS):
             components = path.split(basefs.SEPERATOR)
 
             filename = components.pop(-1)
-            
+
             for index, node in enumerate(components):
 
                 # Does the directory we're examining contain this directory?
@@ -68,10 +68,10 @@ class MemoryFS(basefs.BaseFS):
 
                     # We're in write mode, so create the directory
                     if cur_node != self.fs:
-                        self._mkdir(node, components[index - 1])
+                        self.mkdir(node, components[index - 1])
 
                     else:
-                        self._mkdir(node)
+                        self.mkdir(node)
 
                 # "Change directories" to this directory
                 cur_node = cur_node[node]
@@ -94,9 +94,9 @@ class MemoryFS(basefs.BaseFS):
 
         # The default case (occurs when we're in read mode and the given path exists)
         return self._return_file(cur_node[filename])
-      
+
     def mkdir(self, path):
-        
+
         components = path.split(basefs.SEPERATOR)
         cur_node = self.fs
 
@@ -109,11 +109,11 @@ class MemoryFS(basefs.BaseFS):
 
             else:
                 cur_node[directory] = {}
-                
+
             cur_node = cur_node[directory]
 
     def rmdir(self, path):
-        
+
         try:
             del self.fs[path]
 
@@ -124,7 +124,7 @@ class MemoryFS(basefs.BaseFS):
 
         if path == basefs.SEPERATOR:
             return self.fs.keys()
-         
+
         try:
 
             cur_node = self.fs

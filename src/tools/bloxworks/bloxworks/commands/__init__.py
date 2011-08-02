@@ -25,21 +25,4 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jul 25, 2011 7:16:15 PM$"
-
-
-import os
-
-import obengine.vfs
-import obengine.depman
-
-
-obengine.depman.gendeps()
-BLOXWORKS_DATA_DIR = obengine.vfs.SEPERATOR.join([
-os.path.dirname(__file__),
-os.pardir,
-'data'])
-
-
-def init():
-    obengine.vfs.mount('/bloxworks-data', obengine.vfs.RealFS(BLOXWORKS_DATA_DIR))
+__date__ = "$Jul 25, 2011 7:16:15 PM$"

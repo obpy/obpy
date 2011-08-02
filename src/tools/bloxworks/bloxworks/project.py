@@ -23,7 +23,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jul 14, 2011 4:19:44 PM$"
+__date__ = "$Jul 14, 2011 4:19:44 PM$"
 
 
 import ConfigParser
@@ -45,7 +45,6 @@ class Project(object):
         self.author = author
         self.ob_version = ob_version
         self.world = world
-        self.path = path
 
     def accept(self, visitor):
         visitor.visit(self)
@@ -77,7 +76,7 @@ class ProjectCommand(object):
 class ProjectLoader(object):
 
     def __init__(self, element_factory, path):
-        
+
         self._parser = ConfigParser.ConfigParser()
         self.path = path
 

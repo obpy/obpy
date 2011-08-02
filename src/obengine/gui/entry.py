@@ -24,7 +24,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 14, 2011 2:26:44 AM$"
+__date__ = "$Jun 14, 2011 2:26:44 AM$"
 
 
 import obengine.event
@@ -52,7 +52,7 @@ class EntryPresenter(TextWidgetPresenter):
         TextWidgetPresenter.__init__(self, entry_model, entry_view)
 
         self._view.on_submitted += self._update_model_text
-        self._view.on_submitted += self._model.submit
+        self._view.on_submitted += self._submit_model
 
         self.on_submitted = self._model.on_submitted
         self.on_text_changed = self._model.on_text_changed
@@ -60,14 +60,17 @@ class EntryPresenter(TextWidgetPresenter):
     def submit(self):
         self._view.submit()
 
-    def _update_model_text(self):
-        self._model.text = self._view.text
+    def _update_model_text(self, new_text):
+        self._model.text = new_text
+
+    def _submit_model(self, _):
+        self._model.submit()
 
 
 class MockEntryView(MockTextWidgetView):
 
     def __init__(self, initial_text = '', position = None):
-        
+
         MockTextWidgetView.__init__(self, initial_text, position)
         self.on_submitted = obengine.event.Event()
 
