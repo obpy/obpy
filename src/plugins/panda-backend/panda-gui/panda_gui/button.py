@@ -23,11 +23,11 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 30, 2011 12:06:54 AM$"
+__date__ = "$Jun 30, 2011 12:06:54 AM$"
 
 
 import panda3d.core
-from panda3d.core import TransparencyAttrib, Filesystem
+from panda3d.core import TransparencyAttrib, Filename
 
 import direct.gui
 import direct.gui.DirectGui
@@ -43,7 +43,7 @@ class ButtonView(widget.TextWidgetView):
     def __init__(self, text = '', position = None, icon = None):
 
         self.on_click = obengine.event.Event()
-        
+
         self._widget = direct.gui.DirectGui.DirectButton(
         scale = widget.WIDGET_SCALE,
         text_align = panda3d.core.TextNode.ACenter,
@@ -54,7 +54,7 @@ class ButtonView(widget.TextWidgetView):
 
         if icon is not None:
             self.icon = icon
-            
+
         widget.TextWidgetView.__init__(self, text, position)
 
     @obengine.datatypes.nested_property
@@ -66,7 +66,7 @@ class ButtonView(widget.TextWidgetView):
         def fset(self, new_image):
 
             old_size = self.size
-            self._widget['image'] = Filesystem.fromOsSpecific(new_image)
+            self._widget['image'] = Filename.fromOsSpecific(new_image)
 
             if new_image is not None:
                 self._widget['image_pos'] = (-2.5, 0, 0)
