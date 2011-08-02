@@ -3,15 +3,16 @@
 # Sphinx-embedded doctests (and doctests inside OpenBlox plugins)
 # from Py.Test
 
-def pytest_configure(config):
+def pytest_configure(_):
 
-   import sys
-   import os
+    import sys
+    import os
 
-   # Since Py.Test is run from the root OpenBlox directory,
-   # and since the obengine Python package (that contains
-   # all the OpenBlox code) is also there, we just add
-   # the "current directory", i.e, the directory Py.Test
-   # was started from.
-   
-   sys.path.append(os.path.abspath(os.curdir))
+    # Since Py.Test is run from the root OpenBlox directory,
+    # and since the obengine Python package (that contains
+    # all the OpenBlox code) is also there, we just add
+    # the "current directory", i.e, the directory Py.Test
+    # was started from.
+
+    sys.path.append(os.path.abspath(os.curdir))
+
