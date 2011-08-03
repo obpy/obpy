@@ -39,6 +39,12 @@ import obengine.gfx.math
 from obplugin.panda_utils import PandaResource, COLOR_SCALER
 
 
+CLICKABLE_BITMASK = BitMask32(0x101)
+
+# TODO: Get rid of the need for this variable - it's very ugly!
+loaded_models = {}
+
+
 class Model(PandaResource):
     """
     Represents a Panda3D model.
@@ -46,7 +52,7 @@ class Model(PandaResource):
     
     """
 
-    def __init__(self, model_path, window, position = None, rotation = None, scale = None, color = None):
+    def __init__(self, model_path, window, position = None, rotation = None, scale = None, color = None, clickable = True):
 
         PandaResource.__init__(self)
 
@@ -68,6 +74,8 @@ class Model(PandaResource):
         self._setup_rotation()
         self._scale = scale or obengine.gfx.math.Vector()
         self._setup_scale()
+
+        self._clickable = clickable
 
     def load(self, async = True):
         """
@@ -236,18 +244,22 @@ class Model(PandaResource):
             picked_node_uuid = picked_node.getTag('clickable-flag')
 
             if picked_node_uuid == self._uuid:
+                print 'Firing on_click() event for node', picked_node
                 self.on_click()
 
     def _set_load_okay(self, model):
 
         self.load_okay = True
         self._uuid = str(uuid.uuid1())
+        loaded_models[self._uuid] = self
 
         self.panda_node = model
         self.panda_node.setTransparency(TransparencyAttrib.MAlpha)
         self.panda_node.setTag('clickable-flag', self._uuid)
-        self.window.panda_window.accept('mouse1', self._check_mouse)
         self.showing = True
+
+        if self._clickable is True:
+            self.panda_node.setCollideMask(CLICKABLE_BITMASK)
 
         self.on_loaded()
 
@@ -418,6 +430,8 @@ class Window(object):
         self._title = window_title
         self.scheduler = scheduler
 
+        self._on_mouse_clicked = obengine.event.Event()
+
     def start_rendering(self):
         self.scheduler.add(obengine.async.LoopingCall(self.panda_window.taskMgr.step, priority = Window.RENDER_PRIORITY))
 
@@ -460,17 +474,36 @@ class Window(object):
 
         picker_node = CollisionNode('mouse_ray')
         picker_nodepath = self.panda_window.camera.attachNewNode(picker_node)
-        picker_node.setFromCollideMask(GeomNode.getDefaultCollideMask())
+        picker_node.setFromCollideMask(CLICKABLE_BITMASK)
         self.picker_ray = CollisionRay()
         picker_node.addSolid(self.picker_ray)
         self.mouse_traverser = CollisionTraverser()
         self.collision_queue = CollisionHandlerQueue()
         self.mouse_traverser.addCollider(picker_nodepath, self.collision_queue)
+        self.panda_window.accept('mouse1', self._pick_mouse)
 
         getModelPath().appendPath(self.search_path)
         self.on_loaded()
 
         return task.STOP
+
+    def _pick_mouse(self):
+
+        if self.panda_window.mouseWatcherNode.hasMouse() is False:
+            return
+
+        mouse = self.panda_window.mouseWatcherNode.getMouse()
+        self.picker_ray.setFromLens(self.panda_window.camNode, mouse.getX(), mouse.getY())
+
+        self.mouse_traverser.traverse(self.panda_window.render)
+
+        if self.collision_queue.getNumEntries() > 0:
+
+            self.collision_queue.sortEntries()
+            picked_node = self.collision_queue.getEntry(0).getIntoNodePath().findNetTag('clickable-flag')
+
+            loaded_models[picked_node.getTag('clickable-flag')].on_click()
+
 
 
 class Camera(object):

@@ -24,7 +24,7 @@
 #
 
 __author__ = "openblocks"
-__date__  = "$Jan 23, 2011 7:57:35 AM$"
+__date__ = "$Jan 23, 2011 7:57:35 AM$"
 
 import obengine.async
 import obengine.gfx.element3d
@@ -84,7 +84,7 @@ class ElementFactory(object):
         return handler(*args, **kwargs)
 
     def make_brick(self, name, coords = None, color = None, size = None, rotation = None, anchored = False):
-        
+
         import obplugin.core.physics
 
         coords = coords or obengine.gfx.math.Vector(0, 0, 0)
@@ -102,11 +102,11 @@ class ElementFactory(object):
 
         phys_rep = obplugin.core.physics.Box(view.model, self.sandbox, None, scheduler, anchored)
         phys_rep.load()
-        
+
         while phys_rep.loaded is False:
             scheduler.step()
 
-        controller = obengine.gfx.element3d.BrickPresenter(name, coords, color, size, rotation, view,  phys_rep)
+        controller = obengine.gfx.element3d.BrickPresenter(name, coords, color, size, rotation, view, phys_rep)
         return controller
 
     def make_skybox(self, texture = None):
@@ -114,13 +114,12 @@ class ElementFactory(object):
         import obplugin.core.graphics
         from obengine.gfx.element3d import SkyboxElement
 
-        camera = obplugin.core.graphics.Camera(self.window)
-        element = SkyboxElement(self.window, camera, texture)
-        
+        element = SkyboxElement(self.window, texture)
+
         return element
 
     def make_script(self, name, code, filename = None):
-        
+
         from obengine.scripting.element import ScriptElement
 
         element = ScriptElement(name, self.window.scheduler, filename, code)

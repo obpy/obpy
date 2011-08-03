@@ -23,7 +23,7 @@
 #
 
 __author__ = "openblocks"
-__date__  = "$May 4, 2011 8:08:03 PM$"
+__date__ = "$May 4, 2011 8:08:03 PM$"
 
 
 import collections
@@ -83,7 +83,7 @@ class AttrDict(dict):
 
 
 class Borg(object):
-    
+
     __shared_state = {}
 
     def __new__(cls):
@@ -145,14 +145,15 @@ class EventAttrDict(EventDict, AttrDict):
 
 class ExtensibleObjectMixin(object):
 
-    _extensions = {}
+    def __init__(self):
+        self._extensions = {}
 
     def get_extension(self, name):
         return self._extensions[name](self)
 
     def set_extension(self, name, extension):
-        self.__class__._extensions[name] = extension
-        
+        self._extensions[name] = extension
+
 
 class orderedset(collections.MutableSet):
     """Ordered set - like a set, but remembers insertion order
@@ -175,56 +176,56 @@ class orderedset(collections.MutableSet):
         ...
         T h e   q u i c k b r o w n f x . 5 2
     """
-    
+
     KEY, PREV, NEXT = range(3)
-    
+
     def __init__(self, iterable = None):
-        
+
         self._end = end = []
         end += [None, end, end]
         self._map = {}
-        
+
         if iterable is not None:
             self |= iterable
-            
+
     def add(self, key):
-        
+
         if key not in self:
-            
+
             end = self._end
             curr_key = end[orderedset.PREV]
             curr_key[orderedset.NEXT] = end[orderedset.PREV] = self._map[key] = [key, curr_key, end]
-            
+
     def discard(self, key):
-        
+
         if key in self:
-            
+
             key, prev_key, next_key = self._map.pop(key)
             prev_key[orderedset.NEXT] = next_key
             next_key[orderedset.PREV] = prev_key
-            
+
     def pop(self, last = True):
-        
+
         if not self:
             raise KeyError('orderedset is empty')
-        
+
         key = next(reversed(self)) if last else next(iter(self))
         self.discard(key)
         return key
-        
+
     def __len__(self):
         return len(self._map)
-    
+
     def __contains__(self, key):
         return key in self._map
-    
+
     def __reversed__(self):
-        
+
         end = self._end
         curr_key = end[orderedset.PREV]
-        
+
         while curr_key is not end:
-            
+
             yield curr_key[orderedset.KEY]
             curr_key = curr_key[orderedset.PREV]
 
@@ -237,21 +238,21 @@ class orderedset(collections.MutableSet):
 
             yield curr_key[orderedset.KEY]
             curr_key = curr_key[orderedset.NEXT]
-            
+
     def __repr__(self):
-        
+
         if not self:
             return '%s()' % (self.__class__.__name__,)
-        
+
         return '%s(%r)' % (self.__class__.__name__, list(self))
-    
+
     def __eq__(self, other):
-        
+
         if isinstance(other, self.__class__):
             return len(self) == len(other) and list(self) == list(other)
-        
+
         return set(self) == set(other)
-    
+
     def __del__(self):
         self.clear()
 
@@ -322,21 +323,21 @@ class heap(collections.Sequence):
 
 
 def nested_property(func):
-    
+
     func_locals = func()
     func_locals['doc'] = func.__doc__
-    
+
     return property(**func_locals)
 
 
 def wrap_callable(func, before, after):
-    
+
     def wrapper(*args, **kwargs):
 
         try:
 
             before(*args, **kwargs)
             return func(*args, **kwargs)
-        
+
         finally:
             after(*args, **kwargs)

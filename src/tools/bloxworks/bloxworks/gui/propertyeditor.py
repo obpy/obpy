@@ -26,6 +26,8 @@ __author__ = "openblocks"
 __date__ = "Aug 1, 2011 8:03:51 PM"
 
 
+import functools
+
 import obengine.math
 import obengine.vfs
 import obengine.gui
@@ -45,8 +47,12 @@ class PropertyEditor(object):
 
         ENTRY_LENGTH = 35
 
-        self._collide_checkbox = widget_factory.make('checkbox', 'Collide')
-        self._form.add(self._collide_checkbox)
+#        self._collide_checkbox = widget_factory.make('checkbox', 'Collide')
+#        self._form.add(self._collide_checkbox)
+
+        self._hide_button = widget_factory.make('button', 'Hide')
+        self._hide_button.on_click += self._form.hide
+        self._form.add(self._hide_button)
 
         self._anchored_checkbox = widget_factory.make('checkbox', 'Anchored')
         self._form.add(self._anchored_checkbox)
@@ -82,12 +88,15 @@ class PropertyEditor(object):
         self._form.add(self._name_label)
 
         self._brick = None
+        self.reset()
 
         obengine.vfs.open('/bloxworks-registry/property-editor', 'w').write(self)
 
     def populate(self, brick):
 
         self.reset()
+
+        self._form.showing = True
 
         self._brick = brick
 
@@ -122,6 +131,8 @@ class PropertyEditor(object):
         self._size_entry.text = ''
 
         self._brick = None
+
+        self._form.showing = False
 
     def _set_brick_name(self):
         if self._brick is not None:
@@ -228,8 +239,8 @@ class PropertyEditorProjectVisitor(bloxworks.project.ProjectVisitor):
 
     def accept(self, project):
 
-        for element in project.element.nodes.itervalues():
+        for element in project.world.element.nodes.itervalues():
 
             # TODO: Replace the below condition with something more general!
             if element.__class__.__name__ == 'BrickPresenter':
-                element.on_clicked += lambda: self._property_editor.populate(element)
+                element.on_click += functools.partial(self._property_editor.populate, element)

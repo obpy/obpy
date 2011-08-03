@@ -36,11 +36,11 @@ class AddBrickCommand(bloxworks.commands.element.AddElementCommand):
         bloxworks.commands.element.AddElementCommand.__init__(self, project, factory)
 
         self._element_type = 'brick'
-        self._factory_kwargs = {
-        'name' : name,
-        'coords' : position,
-        'rgb' : color,
-        'size' : size,
-        'rotation' : rotation,
-        'anchored' : anchored
-        }
+        self._factory_args = [
+        name,
+        position,
+        color,
+        size,
+        rotation,
+        anchored
+        ]

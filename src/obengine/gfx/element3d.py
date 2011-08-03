@@ -62,6 +62,7 @@ class BrickView(object):
 
         import obplugin.core.graphics
         self.model = obplugin.core.graphics.Model(self.type, window)
+        self.on_click = self.model.on_click
 
         self.on_loaded = self.model.on_loaded
         self.on_loaded += functools.partial(self._init_attrs, size, rotation, color)
@@ -96,7 +97,6 @@ class BrickView(object):
         self.size = size
         self.rotation = rotation
         self.color = color
-        self.on_click = self.model.on_click
 
 
 class BlockBrickView(BrickView):
@@ -175,6 +175,36 @@ class BlockBrickView(BrickView):
     @obengine.deprecated.deprecated
     def set_color(self, rgb):
         self.color = rgb
+
+
+class XmlElementExtension(object):
+
+    def _vector_str(self, vector):
+
+        vector_str = str(vector)
+        vector_str = vector_str[len('Vector') + 1:len(vector_str) - 1]
+
+        return vector_str
+
+    def _color_str(self, color):
+
+        color_str = str(color)
+        color_str = color_str[len('Color') + 1:len(color_str) - 1]
+
+        return color_str
+
+    def _euler_str(self, angle):
+
+        euler_str = str(angle)
+        euler_str = euler_str[len('EulerAngle') + 1:len(euler_str) - 1]
+
+        return euler_str
+
+    def _bool_str(self, bool):
+
+        conv_dict = {True : 'yes', False : 'no'}
+        return conv_dict[bool]
+
 
 
 class BrickPresenter(obengine.element.Element):
@@ -294,7 +324,7 @@ class BrickPresenter(obengine.element.Element):
         self.phys_rep.disable()
 
 
-class XmlBrickExtension(object):
+class XmlBrickExtension(XmlElementExtension):
 
     def __init__(self, brick):
         self._brick = brick
@@ -305,6 +335,7 @@ class XmlBrickExtension(object):
         attributes = {
         'name' : self._brick.name,
         'coords' : self._vector_str(self._brick.position),
+        'rgb' : self._color_str(self._brick.color),
         'orientation' : self._euler_str(self._brick.rotation),
         'size' : self._vector_str(self._brick.size),
         'anchored' : self._bool_str(self._brick.anchored)
@@ -314,36 +345,15 @@ class XmlBrickExtension(object):
 
         return element
 
-    def _vector_str(self, vector):
-
-        vector_str = str(vector)
-        vector_str = vector_str[len('Vector3') + 1:len(vector_str) - 1]
-
-        return vector_str
-
-    def _euler_str(self, angle):
-
-        euler_str = str(angle)
-        euler_str = euler_str[len('EulerAngle') + 1:len(euler_str) - 1]
-
-        return euler_str
-
-    def _bool_str(self, bool):
-
-        conv_dict = {True : 'yes', False : 'no'}
-        return conv_dict[bool]
-
 
 class SkyboxElement(obengine.element.Element):
 
-    def __init__(self, window, camera, texture = None):
+    def __init__(self, window, texture = None):
 
         obengine.element.Element.__init__(self, 'Skybox')
         self.set_extension('xml', XmlSkyboxExtension)
 
         self._window = window
-        self._camera = camera
-
         self._texture = texture
 
         # Create the skybox (although the actual model is currently a skysphere!)
@@ -352,7 +362,7 @@ class SkyboxElement(obengine.element.Element):
 
         import obplugin.core.graphics
 
-        self.view = obplugin.core.graphics.Model('sky', self._window)
+        self.view = obplugin.core.graphics.Model('sky', self._window, clickable = False)
 
         self.on_add += self.sky_on_add
         self.on_remove += self.sky_on_remove
@@ -364,13 +374,15 @@ class SkyboxElement(obengine.element.Element):
         while self.view.load_okay is False:
             self._window.scheduler.step()
 
-        self.view.parent = self._camera
+        #self.view.parent = self._camera
         self.view.scale = obengine.math.Vector(5000, 5000, 5000)
 
         # TODO: Replace the below code with something not Panda-specific!
 
         self.view.panda_node.setShaderOff()
         self.view.panda_node.setLightOff()
+        self.view.panda_node.setBin('background', 0)
+        self.view.panda_node.setDepthWrite(False)
         self.view.panda_node.setEffect(CompassEffect.make(self._window.panda_window.render))
 
         # Did the user specifiy a texture?
@@ -382,7 +394,7 @@ class SkyboxElement(obengine.element.Element):
         self.sky.hide()
 
 
-class XmlSkyboxExtension(object):
+class XmlSkyboxExtension(XmlElementExtension):
 
     def __init__(self, skybox):
         self._skybox = skybox
@@ -404,6 +416,7 @@ class LightElement(obengine.element.Element):
     def __init__(self, name, window, light_type = None, color = None, cast_shadows = False, rotation = None):
 
         obengine.element.Element.__init__(self, name)
+        self.set_extension('xml', XmlLightExtension)
 
         obengine.plugin.require('core.graphics')
         import obplugin.core.graphics
@@ -466,3 +479,22 @@ class LightElement(obengine.element.Element):
     @property
     def light_type(self):
         return self._light.light_type
+
+
+class XmlLightExtension(XmlElementExtension):
+
+    def __init__(self, light):
+        self._light = light
+
+    @property
+    def xml_element(self):
+
+        attributes = {
+                      'name' : self._light.name,
+                      'rgb' : self._color_str(self._light.color),
+                      'type' : self._light.light_type,
+                      'orientation' : self._euler_str(self._light.rotation)
+                      }
+
+        element = xmlparser.Element('light', attributes)
+        return element

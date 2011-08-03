@@ -21,40 +21,58 @@ __date__ = "$Jul 26, 2011 1:14:56 PM$"
 
 import os
 import sys
+import ConfigParser
 
 sys.path.append(os.path.abspath(os.path.join(os.pardir, os.pardir)))
 
-import obengine.math
+import obengine.vfs
 import obengine.cfg
 import obengine.async
 import obengine.plugin
 import obengine.world
-import obengine.gui
 import obengine.elementfactory
 
 import bloxworks.project
 import bloxworks.commands.brick
 import bloxworks.gui.propertyeditor
 import bloxworks.gui.toolbars
+import bloxworks.gui.project
+import bloxworks.gui.brick
 
 
+def save_project():
 
-def make_brick(window):
+    try:
+        project = obengine.vfs.open('/bloxworks-registry/project').read()
+    except obengine.vfs.ReadError:
+        return
 
-    world = obengine.world.World(1, 'World')
-    project = bloxworks.project.Project(world, 'openblocks', '0.7.0')
+    outfile = os.path.join(
+                           obengine.vfs.getsyspath('/bloxworks-games/' + project.world.name),
+                           bloxworks.project.WORLD_XML_FILE)
 
-    element_factory = obengine.elementfactory.ElementFactory()
-    element_factory.set_window(window)
+    print 'Saving game data to', outfile
 
-    obengine.plugin.require('core.physics')
-    import obplugin.core.physics
-    physics_sandbox = obplugin.core.physics.World()
-    physics_sandbox.load()
-    element_factory.set_sandbox(physics_sandbox)
+    saver = bloxworks.project.ProjectSaverVisitor(outfile)
+    saver.accept(project)
 
-    add_brick_command = bloxworks.commands.brick.AddBrickCommand(project, element_factory, 'Brick')
-    add_brick_command.execute()
+
+def package_project():
+
+    try:
+        project = obengine.vfs.open('/bloxworks-registry/project').read()
+    except obengine.vfs.ReadError:
+        return
+
+    outfile = os.path.join(
+                           obengine.vfs.getsyspath('/bloxworks-games/' + project.world.name),
+                           project.world.name + '.zip')
+
+    print 'Packaging game to', outfile
+
+    packager = bloxworks.project.ProjectPackagerVisitor(outfile)
+    packager.accept(project)
+
 
 def create_gui(window):
 
@@ -63,8 +81,17 @@ def create_gui(window):
     bottom_toolbar = bloxworks.gui.toolbars.BottomToolbar()
     top_toolbar = bloxworks.gui.toolbars.TopToolbar()
 
-    make_brick(window)
+    lpd = bloxworks.gui.project.LoadProjectDialog(window)
+    top_toolbar.on_open_button_clicked += lpd.show
 
+    npd = bloxworks.gui.project.NewProjectDialog(window)
+    top_toolbar.on_new_button_clicked += npd.show
+
+    abd = bloxworks.gui.brick.AddBrickDialog(window)
+    side_toolbar.on_brick_button_clicked += abd.show
+
+    top_toolbar.on_save_button_clicked += save_project
+    top_toolbar.on_pack_button_clicked += package_project
 
 
 def create_window(scheduler):

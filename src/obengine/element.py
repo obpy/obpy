@@ -25,7 +25,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jul 13, 2010 6:13:05 PM$"
+__date__ = "$Jul 13, 2010 6:13:05 PM$"
 
 
 import obengine.datatypes
@@ -42,10 +42,11 @@ class Element(obengine.scenegraph.SceneNode, obengine.datatypes.ExtensibleObject
     def __init__(self, name, parent = None):
 
         obengine.scenegraph.SceneNode.__init__(self, name, parent)
+        obengine.datatypes.ExtensibleObjectMixin.__init__(self)
         self.on_world_loaded = obengine.event.Event()
 
 class BrickElement(Element):
-    
+
     def __init__(self, name, coords, rgb, size, hpr, parent = None):
 
         Element.__init__(self, name, parent)
@@ -59,7 +60,7 @@ class BrickElement(Element):
         self.size = newsize
 
     def set_pos(self, newpos):
-        self.coords =  newpos
+        self.coords = newpos
 
     def set_hpr(self, newhpr):
         self.hpr = newhpr

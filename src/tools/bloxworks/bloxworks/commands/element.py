@@ -47,23 +47,23 @@ class AddElementCommand(bloxworks.project.ProjectCommand):
 
         self.factory = factory
         self._factory_args = []
-        self._factory_kwargs = {}
 
     def execute(self):
 
-        self._element = self.factory.make('brick', self._factory_kwargs['name'])
+        self.element = self.factory.make(self._element_type, *self._factory_args)
 
-        self.project.world.add_element(self._element)
+        self.project.world.add_element(self.element)
 
         try:
             property_editor = obengine.vfs.open('/bloxworks-registry/property-editor').read()
-            self._element.on_click += lambda: property_editor.populate(self._element)
+            self.element.on_click += lambda: property_editor.populate(self.element)
+            property_editor.populate(self.element)
 
         except obengine.vfs.ReadError:
             pass
 
     def undo(self):
-        self.project.world.element.remove_node_by_id(self._element.nid)
+        self.project.world.element.remove_node_by_id(self.element.nid)
 
 
 class RemoveElementCommand(bloxworks.project.ProjectCommand):

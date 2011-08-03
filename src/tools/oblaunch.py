@@ -68,7 +68,7 @@ def load_world(game):
     def create_player():
 
         player_model = obengine.player.Player('OBPlayer')
-        player_view = PlayerView(environ.window, environ.physics_sandbox, Vector(0, 0, 0))
+        player_view = PlayerView(environ.window, environ.physics_sandbox, Vector(0, 0, 10))
         player_controller = KeyboardPlayerController(player_model, player_view)
         player_model.join_world(world)
 
@@ -81,7 +81,7 @@ def load_world(game):
 
     environ.window.on_loaded += lambda: environ.window.start_rendering()
     environ.window.on_loaded += lambda: environ.physics_sandbox.load()
-    
+
     environ.physics_sandbox.on_loaded += lambda: source.parse()
     environ.physics_sandbox.on_loaded += lambda: worldloader.load()
     worldloader.on_world_loaded += lambda: environ.physics_sandbox.unpause()

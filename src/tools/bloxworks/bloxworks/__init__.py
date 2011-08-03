@@ -39,4 +39,7 @@ def init():
     data_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'data')
     obengine.vfs.mount('/bloxworks-data', obengine.vfs.RealFS(data_dir))
 
+    game_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'projects')
+    obengine.vfs.mount('/bloxworks-games', obengine.vfs.RealFS(game_dir))
+
     obengine.vfs.mount('/bloxworks-registry', obengine.vfs.RegistryFS())

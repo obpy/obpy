@@ -20,7 +20,7 @@
 #
 
 __author__ = "openblocks"
-__date__  = "$Jul 13, 2010 6:30:46 PM$"
+__date__ = "$Jul 13, 2010 6:30:46 PM$"
 
 import obengine.scenegraph
 import obengine.datatypes
@@ -56,7 +56,7 @@ class World(object):
         for element in world_source:
             self.add_element(element)
 
-        for element in self.element.itervalues():
+        for element in self.element.nodes.itervalues():
             element.on_world_loaded(self)
 
     def add_element(self, element):
@@ -90,7 +90,7 @@ class World(object):
 
             self.player[player.name] = player
             player.on_joined(self)
-            
+
             self.num_players += 1
 
         else:

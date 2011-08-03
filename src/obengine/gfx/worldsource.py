@@ -23,7 +23,7 @@
 #
 
 __author__ = "openblocks"
-__date__  = "$Aug 9, 2010 10:43:40 PM$"
+__date__ = "$Aug 9, 2010 10:43:40 PM$"
 
 import obengine
 import obengine.math
@@ -40,7 +40,7 @@ class WorldSource(list):
         """
 
         self.factory = factory
-        
+
         self.add_element_handler('brick', self.handle_brick)
         self.add_element_handler('script', self.handle_script)
         self.add_element_handler('skybox', self.handle_skybox)
@@ -79,10 +79,10 @@ class WorldSource(list):
 
         # Remove all empty space first, to make string to number conversion easy
 
-        coordstr = child.attrib['coords'].replace(' ','')
-        rgbstr = child.attrib['rgb'].replace(' ','')
-        orient_str = child.attrib['orientation'].replace(' ','')
-        size_str = child.attrib['size'].replace(' ','')
+        coordstr = child.attrib['coords'].replace(' ', '')
+        rgbstr = child.attrib['rgb'].replace(' ', '')
+        orient_str = child.attrib['orientation'].replace(' ', '')
+        size_str = child.attrib['size'].replace(' ', '')
         name = child.attrib['name']
 
         # Is the brick anchored?
@@ -99,18 +99,18 @@ class WorldSource(list):
         coords.y = float(coordstr.split(',')[1])
         coords.z = float(coordstr.split(',')[2])
 
-        rgb.r = int(rgbstr.split(',')[0])
-        rgb.g = int(rgbstr.split(',')[1])
-        rgb.b = int(rgbstr.split(',')[2])
-        rgb.a = int(rgbstr.split(',')[3])
+        rgb.r = float(rgbstr.split(',')[0])
+        rgb.g = float(rgbstr.split(',')[1])
+        rgb.b = float(rgbstr.split(',')[2])
+        rgb.a = float(rgbstr.split(',')[3])
 
         orientation.h = float(orient_str.split(',')[0])
         orientation.p = float(orient_str.split(',')[1])
         orientation.r = float(orient_str.split(',')[2])
 
-        size.x = int(size_str.split(',')[0])
-        size.y = int(size_str.split(',')[1])
-        size.z = int(size_str.split(',')[2])
+        size.x = float(size_str.split(',')[0])
+        size.y = float(size_str.split(',')[1])
+        size.z = float(size_str.split(',')[2])
 
         # Finally, create the brick!
 
@@ -121,7 +121,7 @@ class WorldSource(list):
     def handle_skybox(self, _, child, factory):
 
         # Create a skybox, optionally with a custom texture
-        element = factory.make('skybox', child.attrib.get('src'), )
+        element = factory.make('skybox', child.attrib.get('src'),)
 
         # Add it
         self.append(element)
@@ -168,6 +168,7 @@ class WorldSource(list):
         color = obengine.math.Color(*light_color)
 
         element = factory.make('light', name, type, color, rotation)
+        self.append(element)
 
     def parse(self):
         """
@@ -220,7 +221,7 @@ class FileWorldSource(WorldSource):
         self.path = path
 
     def retrieve(self):
-        return open(self.path,'r')
+        return open(self.path, 'r')
 
 
 class WorldSourceException(Exception): pass

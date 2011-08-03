@@ -56,7 +56,7 @@ class TopToolbar(object):
         self.on_save_button_clicked = save_button.on_click
 
         pack_button = widget_factory.make('button',
-        icon = obengine.vfs.getsyspath('/bloxworks-data/icons/save.png'))
+        icon = obengine.vfs.getsyspath('/bloxworks-data/icons/pack.png'))
         self._toolbar.add(pack_button)
         self.on_pack_button_clicked = pack_button.on_click
 

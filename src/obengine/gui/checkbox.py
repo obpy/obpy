@@ -38,7 +38,7 @@ obengine.depman.gendeps()
 
 class Checkbox(ClickableWidget, TextWidget):
 
-    NOT_CHECKED, CHECKED = range(2)
+    CHECKED, NOT_CHECKED = range(2)
 
     def __init__(self, text = '', position = None, state = NOT_CHECKED):
 
