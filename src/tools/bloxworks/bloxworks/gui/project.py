@@ -34,6 +34,7 @@ import obengine.gui
 
 import bloxworks.project
 import bloxworks.gui.propertyeditor
+import bloxworks.gui.brick
 
 
 class LoadProjectDialog(object):
@@ -78,10 +79,15 @@ class LoadProjectDialog(object):
     def _actual_load(self, game_path):
 
         bloxworks.project.load_project(game_path, self._window)
+        project = obengine.vfs.open('/bloxworks-registry/project').read()
 
+        property_editor = obengine.vfs.open('/bloxworks-registry/property-editor').read()
         property_editor_visitor = \
-        bloxworks.gui.propertyeditor.PropertyEditorProjectVisitor(obengine.vfs.open('/bloxworks-registry/property-editor').read())
-        property_editor_visitor.accept(obengine.vfs.open('/bloxworks-registry/project').read())
+        bloxworks.gui.propertyeditor.PropertyEditorProjectVisitor(property_editor)
+        project.accept(property_editor_visitor)
+
+        move_tool_visitor = bloxworks.gui.brick.MoveToolProjectVisitor()
+        project.accept(move_tool_visitor)
 
 
 class NewProjectDialog(object):

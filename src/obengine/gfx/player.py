@@ -23,7 +23,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Oct 25, 2010 9:57:22 PM$"
+__date__ = "$Oct 25, 2010 9:57:22 PM$"
 
 
 import obengine.datatypes
@@ -44,8 +44,8 @@ def init():
 
 class PlayerController(object):
 
-    LINEAR_SPEED = 10
-    ROT_SPEED = 4
+    LINEAR_SPEED = 20
+    ROT_SPEED = 8
 
     def __init__(self, model, view):
 
@@ -62,7 +62,7 @@ class PlayerController(object):
 
     def linear_stop(self):
         self._view.linear_velocity.y = 0
-        
+
     def left(self):
         self._view.rotational_velocity.h = self.ROT_SPEED
 
@@ -182,7 +182,7 @@ class PlayerView(object):
         return locals()
 
     def _update(self, task):
-        
+
         self._capsule.linear_velocity = self.linear_velocity
         self._model.position.x = self._capsule.position.x
         self._model.position.y = self._capsule.position.y

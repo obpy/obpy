@@ -26,6 +26,11 @@ __author__ = "openblocks"
 __date__ = "$Jul 25, 2011 7:18:47 PM$"
 
 
+import functools
+
+import obengine.math
+import obengine.vfs
+
 import bloxworks.commands.element
 
 
@@ -44,3 +49,36 @@ class AddBrickCommand(bloxworks.commands.element.AddElementCommand):
         rotation,
         anchored
         ]
+
+    def execute(self):
+
+        bloxworks.commands.element.AddElementCommand.execute(self)
+
+        move_tool = obengine.vfs.open('/bloxworks-registry/move-tool').read()
+        self.element.on_click += functools.partial(move_tool.move, self.element)
+
+        world = obengine.vfs.open('/bloxworks-registry/project').read().world
+
+        for node in world.element.nodes.itervalues():
+
+            try:
+                node.position
+                node.size
+                node.name
+            except AttributeError:
+                continue
+
+            if node.position.z + node.size.z / 2 >= self.element.position.z + self.element.size.z / 2:
+
+                new_pos = self.element.position
+                new_pos.z = node.position.z + node.size.z / 2 + self.element.size.z / 2
+                self.element.position = new_pos
+
+        try:
+            property_editor = obengine.vfs.open('/bloxworks-registry/property-editor').read()
+            self.element.on_click += lambda: property_editor.populate(self.element)
+            property_editor.populate(self.element)
+
+        except obengine.vfs.ReadError:
+            pass
+

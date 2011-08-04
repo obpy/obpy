@@ -29,7 +29,7 @@ to understand them (like objectType variable and collisionCallback method).
 """
 
 class kinematicCharacterController(kinematicObject):
-	def __init__(self, map, charNP=None):
+	def __init__(self, map, charNP = None):
 		kinematicObject.__init__(self, map)
 		"""
 		Those values don't really matter, but they need to be here for
@@ -42,33 +42,33 @@ class kinematicCharacterController(kinematicObject):
 		self.surfaceSoftCFM = 0.00001
 		self.surfaceSlip = 0.0
 		self.surfaceDampen = 2.0
-		
+
 		self.geom = None
 		self.body = None
 		self.objectType = "kinematic"
-		
+
 		"""
 		Since ver. 1.2.0 it now so happens it supports visualization.
 		"""
 		self.visualize = False
-		
+
 		"""
 		FINALLY you can easily set the height, radius and stepping height! Just like that.
 		"""
-		self.setCapsuleData(10, 0, 3.5, 4)
-		
+		self.setCapsuleData(10, 0, 1.5, 3.8)
+
 		"""
 		Initial values
 		"""
 		self.capsuleCurrentLength = self.capsuleWalkLength
 		self.capsuleCurrentLevitation = self.capsuleWalkLevitation
 		self.capsuleCurrentRadius = self.capsuleWalkRadius
-		
+
 		"""
 		Setup the Capsule for the character
 		"""
 		self.geom = OdeCappedCylinderGeom(self.worldManager.getSpace(), self.capsuleCurrentRadius, self.capsuleCurrentLength)
-		
+
 		"""
 		Visualization.
 		"""
@@ -77,17 +77,17 @@ class kinematicCharacterController(kinematicObject):
 			self.visualization.reparentTo(render)
 		else:
 			self.visualization = None
-		
+
 		"""
 		Now the movement parent is a nodepath so you can easily animate the KCC. Or parent geometry to the movementParent to make an NPC.
 		"""
 		self.movementParent = render.attachNewNode("kccMovementParent")
-		
+
 		"""
 		NOTE the default bitmask name has changed. Actually, the KCC's bitmasks changed quite a lot in 1.2.0 so keep them in mind when reading on.
 		"""
 		self.setCatColBits("kccCapsule")
-		
+
 		"""
 		Since 1.2.0 the KCC consists of two capsules instead of one. That's because I need to be able to push stuff around, and when I was doing it
 		with just one levitating capsule it fliped the boxes to their side and stepped on them. To prevent that I introduced another capsule
@@ -99,7 +99,7 @@ class kinematicCharacterController(kinematicObject):
 		self.dynamicCollider.getLinearVel = self.getLinearVel # A hack necessary because this must be a static object (for convenience reasons), however those do not have getLinearVel()
 		self.dynamicCollider.objectType = "kinematic" # The second part of the hack. Tricking the World Manager and other objects to see this as a kinematic object. This way I, quite simply, created a compount kinematic object.
 		self.worldManager.addObject(self.dynamicCollider)
-		
+
 		"""
 		Setup the Ray, which serves as the character's feet, making sure
 		the capsule levitates correctly above the ground.
@@ -109,15 +109,15 @@ class kinematicCharacterController(kinematicObject):
 		"""
 		self.footRay = rayObject(self.worldManager)
 		self.footRay.objectType = "ray"
-		self.footRay.setRayGeom(self.capsuleCurrentLevitation + 0.5, [Vec3(0,0,0), Vec3(0,0,-1)])
-		
+		self.footRay.setRayGeom(self.capsuleCurrentLevitation + 0.5, [Vec3(0, 0, 0), Vec3(0, 0, -1)])
+
 		"""
 		Make sure we grab the collisions from this object.
 		"""
 		self.footRay.collisionCallback = self.footCollision
 		self.footRay.setCatColBits("kccFootRay")
 		self.worldManager.addObject(self.footRay)
-		
+
 		"""
 		Another ray, this time upwards. This makes sure we don't penetrate the
 		ceiling no matter what, and that we don't stand up when there's not
@@ -126,16 +126,16 @@ class kinematicCharacterController(kinematicObject):
 		self.envCheckerRay = rayObject(self.worldManager)
 		self.envCheckerRay.objectType = "ray"
 		self.envCheckerRay.setRayGeom(self.capsuleWalkLength / 2 + self.radius, [Vec3(0, 0, 0), Vec3(0, 0, 1.0)])
-		
+
 		"""
 		Again, redirect the collision callback to this class.
 		"""
 		self.envCheckerRay.collisionCallback = self.envCheckerCollision
 		self.envCheckerRay.setCatColBits("kccEnvCheckerRay") # In case you haven't noticed, the KCC now has 4 bitmasks
 		self.worldManager.addObject(self.envCheckerRay)
-		
+
 		self.worldManager.addObject(self)
-		
+
 		"""
 		Variables used for movement, jumping and falling.
 		"""
@@ -146,33 +146,33 @@ class kinematicCharacterController(kinematicObject):
 		self.fallStartPos = 0.0
 		self.fallSpeed = 0.0
 		self.fallTime = 0.0
-		
+
 		"""
 		State variable which can take one of four values:
 		ground, jumping, falling or fly
 		"""
 		self.state = ""
-		
+
 		"""
 		Crouching is a special kind of a state. It's not a value of the
 		self.state variable because you can, for example, fall while crouching.
 		"""
 		self.isCrouching = False
-		
+
 		"""
 		This is used by stability insurance.
 		"""
 		self.footContactPrevious = None
 		self.footContact = None
 		self.envCheckerContact = None
-		
+
 		"""
 		This controls whether this KCC can or cannot use dynamic objects as moving platforms.
 		I advice disabling that for NPC's or you'll get funny results.
 		"""
 		self.dynamicPlatforms = True
 		self.noclip = False
-	
+
 	"""
 	New in method 1.2.0. About time, you say.
 	
@@ -183,23 +183,23 @@ class kinematicCharacterController(kinematicObject):
 	def setCapsuleData(self, walkH, crouchH, stepH, R):
 		self.capsuleWalkLength, self.capsuleWalkLevitation, self.capsuleWalkRadius = self.setData(walkH, stepH, R)
 		self.capsuleCrouchLength, self.capsuleCrouchLevitation, self.capsuleCrouchRadius = self.setData(crouchH, stepH, R)
-		
+
 		self.stepH = stepH
 		self.crouchH = crouchH
 		self.walkH = walkH
-		
+
 		self.radius = R
-		
+
 		if self.geom is not None:
 			self.geom.setParams(self.capsuleWalkRadius, self.capsuleWalkLength)
 			self.dynamicCollider.geom.setParams(self.capsuleWalkRadius, self.walkH - self.capsuleWalkRadius * 2.0 - 0.1)
 			self.capsuleCurrentLevitation = self.capsuleWalkLevitation
-			
+
 			self.footRay.geom.setLength(self.capsuleWalkLevitation + 0.5)
 			self.envCheckerRay.geom.setLength(self.capsuleWalkLength / 2 + self.radius)
-		
+
 		return True
-	
+
 	"""
 	This method is used by the method above.
 	"""
@@ -211,48 +211,48 @@ class kinematicCharacterController(kinematicObject):
 		else:
 			length = (fullH - stepH) - (2.0 * R)
 			lev = fullH - (length / 2.0) - R
-		
+
 		return length, lev, R
-	
+
 	def getCapsuleData(self):
 		return self.stepH, self.crouchH, self.walkH, self.radius
-	
+
 	def getGeom(self):
 		return self.geom
-	
+
 	def setCatColBits(self, name):
 		self.bitsName = name
 		self.geom.setCollideBits(bitMaskDict[name][0])
 		self.geom.setCategoryBits(bitMaskDict[name][1])
-	
+
 	def destroy(self):
 		self.worldManager.removeObject(self)
-		
+
 		self.worldManager.removeObject(self)
 		self.geom.destroy()
-		
+
 		self.worldManager.removeObject(self.dynamicCollider)
 		self.dynamicCollider.destroy()
-		
+
 		self.worldManager.removeObject(self.footRay)
 		self.footRay.destroy()
-		
+
 		self.worldManager.removeObject(self.envCheckerRay)
 		self.envCheckerRay.destroy()
-		
+
 		del self.worldManager
 		del self.geom
 		del self.footRay
 		del self.envCheckerRay
 		del self.dynamicCollider
-		
+
 	def setPos(self, pos):
 		self.geom.setPosition(pos)
 		self.currentPos = pos
-	
+
 	def getPos(self):
 		return self.currentPos
-	
+
 	"""
 	Convenience method for setting the capsule's heading.
 	"""
@@ -262,13 +262,13 @@ class kinematicCharacterController(kinematicObject):
 		hpr[0] = h
 		quat.setHpr(hpr)
 		self.setQuat(quat)
-		
+
 	def setQuat(self, quat):
 		self.movementParent.setQuat(render, Quat(quat))
-		
+
 	def getQuat(self):
 		return self.movementParent.getQuat(render)
-	
+
 	"""
 	Start crouching
 	"""
@@ -278,19 +278,19 @@ class kinematicCharacterController(kinematicObject):
 			self.capsuleCurrentLength = self.capsuleCrouchLength
 			self.capsuleCurrentRadius = self.capsuleCrouchRadius
 			self.geom.setParams(self.capsuleCurrentRadius, self.capsuleCurrentLength)
-			
+
 			self.isCrouching = True
 			return True
 		else:
 			return False
-	
+
 	"""
 	Stop crouching
 	"""
 	def crouchStop(self):
 		if not self.isCrouching:
 			return False
-		
+
 		"""
 		Did the envCheckerRay detect any collisions? If so, prevent the
 		KCC from standing up as there's not enough space for that.
@@ -299,29 +299,29 @@ class kinematicCharacterController(kinematicObject):
 		"""
 		if self.envCheckerContact is not None:
 			return False
-		
+
 		self.capsuleCurrentLevitation = self.capsuleWalkLevitation
 		self.capsuleCurrentLength = self.capsuleWalkLength
 		self.capsuleCurrentRadius = self.capsuleWalkRadius
-		
+
 		self.geom.setParams(self.capsuleCurrentRadius, self.capsuleCurrentLength)
-		
+
 		self.isCrouching = False
 		return True
-		
+
 	"""
 	Handle a collision of the capsule.
 	"""
 	def collisionCallback(self, entry, object1, object2):
 		if self.noclip:
 			return False
-		
+
 		if not entry.getNumContacts() or object2.objectType in ["trigger", "ray", "ccd"]:
 			return False
-		
+
 		if object2.objectType != "dynamic":
 			prevNormal = None
-			
+
 			for i in range(entry.getNumContacts()):
 				"""
 				Handling a contact of the same normal twice (or more) is almost always pointless.
@@ -341,21 +341,21 @@ class kinematicCharacterController(kinematicObject):
 				"""
 				geom = entry.getContactGeom(i)
 				normal = geom.getNormal()
-				
+
 				if prevNormal == normal:
 					continue
 				prevNormal = normal
-				
+
 				point = entry.getContactPoint(i)
 				depth = geom.getDepth()
-				
+
 				if entry.getGeom1() == self.geom:
 					for i in range(3):
 						self.currentPos[i] += depth * normal[i]
 				else:
 					for i in range(3):
 						self.currentPos[i] -= depth * normal[i]
-				
+
 				"""
 				Stop the jump if the KCC hits a ceiling.
 				"""
@@ -366,46 +366,46 @@ class kinematicCharacterController(kinematicObject):
 						self.fallTime = 0.0
 						self.state = "falling"
 		return True
-	
+
 	"""
 	Handle a collision involving the environment checker ray.
 	"""
 	def envCheckerCollision(self, entry, object1, object2):
 		if self.noclip:
 			return
-		
+
 		if not entry.getNumContacts():
 			return
 		if object2 is self:
 			return
-		
+
 		"""
 		Get the lowest contact.
 		"""
 		for i in range(entry.getNumContacts()):
 			contact = entry.getContactPoint(i)[2]
-			
+
 			if self.envCheckerContact is None or (contact < self.envCheckerContact):
 				self.envCheckerContact = contact
-	
+
 	"""
 	Handle a collision of the foot ray.
 	"""
 	def footCollision(self, entry, object1, object2):
 		if self.noclip:
 			return
-		
+
 		if not entry.getNumContacts():
 			return
 		if object2 is self:
 			return
-		
+
 		for i in range(entry.getNumContacts()):
 			contact = entry.getContactPoint(i)[2]
-			
+
 			if self.footContact is None or (contact > self.footContact[0]):
 				self.footContact = [contact, object2]
-	
+
 	"""
 	UPDATE THE KCC
 	"""
@@ -419,46 +419,46 @@ class kinematicCharacterController(kinematicObject):
 			self.linearVelocity = self.movementParent.getQuat(render).xform(self.linearVelocity)
 
                 self.currentPos += self.linearVelocity * stepSize
-		
+
 		"""
 		Since 1.2.0 this code is a lot cleaner. Also, all hardcoded stuff was removed.
 		"""
 		capsuleCurrentElevation = None
-		
+
 		if self.footContact is not None:
 			capsuleCurrentElevation = self.geom.getPosition()[2] - self.footContact[0]
-		
+
 		if self.envCheckerContact is not None:
 			spaceHeight = self.envCheckerContact - self.currentPos[2]
-			
+
 			if spaceHeight < self.walkH and capsuleCurrentElevation < self.capsuleCurrentLevitation:
 				self.crouch()
-				
+
 			elif spaceHeight < self.crouchH and capsuleCurrentElevation < self.capsuleCrouchLevitation:
 				self.footContact = self.footContactPrevious
-		
+
 		# Process possible states
 		if self.state == "fly" and self.footContact and capsuleCurrentElevation < self.capsuleCurrentLevitation and self.linearVelocity.getZ() < 0:
 			self.currentPos[2] = self.footContact[0]
-			
+
 		elif self.state == "fly":
 			pass
-			
+
 		elif self.state == "jumping":
 			self.currentPos[2] = self.processJump(self.currentPos, stepSize, self.footContact)
-		
+
 		elif capsuleCurrentElevation is None:
 			self.currentPos = self.fall(self.currentPos, stepSize, self.footContact)
-			
+
 		elif capsuleCurrentElevation > self.capsuleCurrentLevitation + 0.01 and capsuleCurrentElevation < self.capsuleCurrentLevitation + 0.65 and self.state == "ground":
 			self.currentPos = self.stickToGround(self.currentPos, stepSize, self.footContact)
-		
+
 		elif capsuleCurrentElevation > self.capsuleCurrentLevitation + 0.01:
 			self.currentPos = self.fall(self.currentPos, stepSize, self.footContact)
-			
+
 		elif capsuleCurrentElevation <= self.capsuleCurrentLevitation + 0.01:
 			self.currentPos = self.stickToGround(self.currentPos, stepSize, self.footContact)
-		
+
 		"""
 		NEW IN 1.2.0
 		
@@ -472,35 +472,35 @@ class kinematicCharacterController(kinematicObject):
 				platformSpeed = self.footContact[1].getLinearVel()
 				self.currentPos[0] += platformSpeed[0] * self.worldManager.stepSize
 				self.currentPos[1] += platformSpeed[1] * self.worldManager.stepSize
-		
+
 		# MOVE THE KCC
 		self.movementParent.setPos(render, self.currentPos)
-		
+
 		self.dynamicCollider.setPos(self.currentPos + Vec3(0, 0, self.walkH * 0.5))
-		
+
 		# Put the KCC elements on their new positions
 		newElementsPos = Vec3(self.currentPos)
 		newElementsPos[2] += self.capsuleCurrentLevitation
-		
+
 		self.geom.setPosition(newElementsPos)
 		self.envCheckerRay.setPos(newElementsPos)
 		if self.visualization:
 			self.visualization.setPos(newElementsPos)
-		
+
 		rayPos = Vec3(newElementsPos)
 		self.footRay.setPos(rayPos)
-		
+
 		self.footContactPrevious = self.footContact
 		self.footContact = None
 		self.envCheckerContact = None
-	
+
 	def getLinearVel(self):
 		"""
 		This is correct. For collisions with other objects the KCC must have such function,
 		but it shouldn't really return any other value.
 		"""
 		return Vec3(0, 0, 0)
-		
+
 	"""
 	METHODS FOR PROCESSING STATES
 	
@@ -508,28 +508,28 @@ class kinematicCharacterController(kinematicObject):
 	"""
 	def processJump(self, newPos, stepSize, footContact):
 		self.jumpTime += stepSize
-		
+
 		self.fallSpeed = self.jumpSpeed * self.jumpTime + (-9.81) * (self.jumpTime) ** 2
-		
+
 		np = self.jumpStartPos + self.fallSpeed
-		
+
 		if footContact is not None and np <= footContact[0]:
 			self.state = "ground"
 			return footContact[0]
 		else:
 			return np
-		
+
 	def stickToGround(self, newPos, stepSize, footContact):
 		self.state = "ground"
-		
+
 		if self.fallSpeed:
 			self.fallCallback(self.fallSpeed)
 		self.fallSpeed = 0.0
-		
+
 		newPos[2] = footContact[0]
-		
+
 		return newPos
-		
+
 	def fall(self, newPos, stepSize, footContact):
 		if self.state != "falling":
 			self.fallStartPos = self.currentPos[2]
@@ -541,18 +541,18 @@ class kinematicCharacterController(kinematicObject):
 			self.fallSpeed = (-9.81) * (self.fallTime) ** 2
 		newPos[2] = self.fallStartPos + self.fallSpeed
 		return newPos
-	
+
 	"""
 	This is called when the KCC hits the ground after a fall.
 	Here you can put health related stuff.
 	"""
 	def fallCallback(self, speed):
 		pass #print "A character has hit the ground with speed:", speed
-	
+
 	def setSpeed(self, x, y):
 		self.speed[0] = x
 		self.speed[1] = y
-	
+
 	"""
 	Start a jump
 	"""

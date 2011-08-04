@@ -89,6 +89,10 @@ class BrickView(object):
         return locals()
 
     @property
+    def bounds(self):
+        return self.model.bounds
+
+    @property
     def loaded(self):
         return self.model.load_okay
 
@@ -198,13 +202,13 @@ class XmlElementExtension(object):
         euler_str = str(angle)
         euler_str = euler_str[len('EulerAngle') + 1:len(euler_str) - 1]
 
-        return euler_str
+        # TODO: There has to be a better solution than this!
+        return euler_str or '0.0, 0.0, 0.0'
 
     def _bool_str(self, bool):
 
         conv_dict = {True : 'yes', False : 'no'}
         return conv_dict[bool]
-
 
 
 class BrickPresenter(obengine.element.Element):
@@ -222,6 +226,8 @@ class BrickPresenter(obengine.element.Element):
 
         self.phys_rep = phys_rep
         self.phys_rep.owner = self
+        self.on_collision = self.phys_rep.on_collision
+
         self.position = position
         self.color = color
         self.rotation = rotation
@@ -235,6 +241,22 @@ class BrickPresenter(obengine.element.Element):
 
         self.view.show()
         self.phys_rep.enable()
+
+    @obengine.datatypes.nested_property
+    def showing():
+
+        def fget(self):
+            return self.view.showing
+
+        def fset(self, showing):
+
+            if showing is True:
+                self.show()
+
+            else:
+                self.hide()
+
+        return locals()
 
     @obengine.datatypes.nested_property
     def size():
@@ -297,6 +319,10 @@ class BrickPresenter(obengine.element.Element):
 
         return locals()
 
+    @property
+    def bounds(self):
+        return self.view.bounds
+
     @obengine.deprecated.deprecated
     def set_size(self, size):
         self.size = size
@@ -320,7 +346,7 @@ class BrickPresenter(obengine.element.Element):
 
     def _on_remove(self):
 
-        self.model.showing = False
+        self.showing = False
         self.phys_rep.disable()
 
 

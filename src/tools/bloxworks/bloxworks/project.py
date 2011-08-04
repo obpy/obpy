@@ -62,7 +62,7 @@ class Project(object):
 
 class ProjectVisitor(object):
 
-    def accept(self, project):
+    def visit(self, project):
         # Override this in a subclass
         raise NotImplementedError
 
@@ -156,7 +156,7 @@ def load_project(path, window):
     element_factory.set_window(window)
     obengine.plugin.require('core.physics')
     import obplugin.core.physics
-    physics_sandbox = obplugin.core.physics.World()
+    physics_sandbox = obplugin.core.physics.World(gravity = 0)
     physics_sandbox.load()
     element_factory.set_sandbox(physics_sandbox)
 
@@ -192,6 +192,6 @@ def create_new_project(window, name, author):
 
     obengine.plugin.require('core.physics')
     import obplugin.core.physics
-    physics_sandbox = obplugin.core.physics.World()
+    physics_sandbox = obplugin.core.physics.World(gravity = 0)
     physics_sandbox.load()
     obengine.vfs.open('/bloxworks-registry/sandbox', 'w').write(physics_sandbox)

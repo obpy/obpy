@@ -36,7 +36,8 @@ import obengine.async
 import obengine.vfs
 import obengine.plugin
 import obengine.gfx.math
-from obplugin.panda_utils import PandaResource, COLOR_SCALER
+from obplugin.panda_utils import PandaResource, PandaConverter, COLOR_SCALER
+from obplugin.panda_hardware import MouseEvent
 
 
 CLICKABLE_BITMASK = BitMask32(0x101)
@@ -86,6 +87,18 @@ class Model(PandaResource):
         """
 
         self.window.panda_window.loader.loadModel(self.panda_model_path, callback = self._set_load_okay)
+
+    @property
+    def bounds(self):
+
+        point1, point2 = self.panda_node.calcTightBounds()
+        point1 = PandaConverter.convert_vec3(point1)
+        point2 = PandaConverter.convert_vec3(point2)
+#
+#        point3 = obengine.gfx.math.Vector(point1.x, point2.y, point1.z)
+#        point4 = obengine.gfx.math.Vector(point2.x, point1.y, point2.z)
+
+        return point1, point2
 
     @property
     def showing(self):
@@ -244,7 +257,6 @@ class Model(PandaResource):
             picked_node_uuid = picked_node.getTag('clickable-flag')
 
             if picked_node_uuid == self._uuid:
-                print 'Firing on_click() event for node', picked_node
                 self.on_click()
 
     def _set_load_okay(self, model):
@@ -480,7 +492,13 @@ class Window(object):
         self.mouse_traverser = CollisionTraverser()
         self.collision_queue = CollisionHandlerQueue()
         self.mouse_traverser.addCollider(picker_nodepath, self.collision_queue)
-        self.panda_window.accept('mouse1', self._pick_mouse)
+        mouse_button = MouseEvent.LEFT_MOUSE
+        mouse_event_type = MouseEvent.TYPE_DOWN
+        self._click_event = MouseEvent(
+                                       self,
+                                       mouse_button,
+                                       mouse_event_type)
+        self._click_event += self._pick_mouse
 
         getModelPath().appendPath(self.search_path)
         self.on_loaded()

@@ -33,6 +33,7 @@ import obengine.vfs
 import obengine.gui
 
 import bloxworks.project
+import bloxworks.commands.element
 
 
 class PropertyEditor(object):
@@ -53,6 +54,10 @@ class PropertyEditor(object):
         self._hide_button = widget_factory.make('button', 'Hide')
         self._hide_button.on_click += self._form.hide
         self._form.add(self._hide_button)
+
+        self._remove_button = widget_factory.make('button', 'Remove brick')
+        self._remove_button.on_click += self._remove_brick
+        self._form.add(self._remove_button)
 
         self._anchored_checkbox = widget_factory.make('checkbox', 'Anchored')
         self._form.add(self._anchored_checkbox)
@@ -222,6 +227,14 @@ class PropertyEditor(object):
         rotation = obengine.math.EulerAngle(*rotation_components)
         self._brick.rotation = rotation
 
+    def _remove_brick(self):
+
+        project = obengine.vfs.open('/bloxworks-registry/project').read()
+        nid = self._brick.nid
+        bloxworks.commands.element.RemoveElementCommand(project, nid = nid).execute()
+
+        self.reset()
+
     def _vector_to_str(self, vector):
         return str('%s, %s, %s' % (vector.x, vector.y, vector.z))
 
@@ -237,7 +250,7 @@ class PropertyEditorProjectVisitor(bloxworks.project.ProjectVisitor):
     def __init__(self, property_editor):
         self._property_editor = property_editor
 
-    def accept(self, project):
+    def visit(self, project):
 
         for element in project.world.element.nodes.itervalues():
 

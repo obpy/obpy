@@ -51,16 +51,7 @@ class AddElementCommand(bloxworks.project.ProjectCommand):
     def execute(self):
 
         self.element = self.factory.make(self._element_type, *self._factory_args)
-
         self.project.world.add_element(self.element)
-
-        try:
-            property_editor = obengine.vfs.open('/bloxworks-registry/property-editor').read()
-            self.element.on_click += lambda: property_editor.populate(self.element)
-            property_editor.populate(self.element)
-
-        except obengine.vfs.ReadError:
-            pass
 
     def undo(self):
         self.project.world.element.remove_node_by_id(self.element.nid)

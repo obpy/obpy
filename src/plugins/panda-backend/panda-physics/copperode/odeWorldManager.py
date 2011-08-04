@@ -243,9 +243,9 @@ class physicalObject(object):
 		if self.visualization:
 			self.visualization.remove()
 		self.geom.destroy()
-		#del self.visualization
-		#del self.geom
-		#del self.nodePath
+		del self.visualization
+		del self.geom
+		del self.nodePath
 		del self
 
 
@@ -1049,9 +1049,9 @@ class explosion(kinematicObject):
 Most important class which... well, manages the world.
 """
 class odeWorldManager(object):
-	def __init__(self):
+	def __init__(self, gravity = -9.81):
 		self.world = OdeWorld()
-		self.world.setGravity(0, 0, -9.81)
+		self.world.setGravity(0, 0, gravity)
 
 		"""
 		An important optimization. Manipulate the values to get the correct behaviour,

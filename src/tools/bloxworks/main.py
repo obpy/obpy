@@ -21,7 +21,6 @@ __date__ = "$Jul 26, 2011 1:14:56 PM$"
 
 import os
 import sys
-import ConfigParser
 
 sys.path.append(os.path.abspath(os.path.join(os.pardir, os.pardir)))
 
@@ -29,11 +28,8 @@ import obengine.vfs
 import obengine.cfg
 import obengine.async
 import obengine.plugin
-import obengine.world
-import obengine.elementfactory
 
 import bloxworks.project
-import bloxworks.commands.brick
 import bloxworks.gui.propertyeditor
 import bloxworks.gui.toolbars
 import bloxworks.gui.project
@@ -51,8 +47,6 @@ def save_project():
                            obengine.vfs.getsyspath('/bloxworks-games/' + project.world.name),
                            bloxworks.project.WORLD_XML_FILE)
 
-    print 'Saving game data to', outfile
-
     saver = bloxworks.project.ProjectSaverVisitor(outfile)
     saver.accept(project)
 
@@ -67,8 +61,6 @@ def package_project():
     outfile = os.path.join(
                            obengine.vfs.getsyspath('/bloxworks-games/' + project.world.name),
                            project.world.name + '.zip')
-
-    print 'Packaging game to', outfile
 
     packager = bloxworks.project.ProjectPackagerVisitor(outfile)
     packager.accept(project)
@@ -92,6 +84,10 @@ def create_gui(window):
 
     top_toolbar.on_save_button_clicked += save_project
     top_toolbar.on_pack_button_clicked += package_project
+
+    move_tool = bloxworks.gui.brick.MoveBrickTool(window)
+
+    bottom_toolbar.on_move_button_clicked += move_tool.toggle_activation
 
 
 def create_window(scheduler):

@@ -20,11 +20,11 @@
 #
 
 __author__ = "openblocks"
-__date__  = "$May 2, 2011 12:30:08 PM$"
+__date__ = "$May 2, 2011 12:30:08 PM$"
 
 
 from copperode import odeWorldManager
-from copperode import staticObject, dynamicObjectNoCCD, kinematicCharacterController
+from copperode import staticObject, dynamicObject, kinematicCharacterController
 
 import obengine.event
 import obengine.datatypes
@@ -36,13 +36,15 @@ from obplugin.panda_utils import PandaConverter
 
 
 class World(object):
-    
-    def __init__(self):
+
+    def __init__(self, gravity = -9.81):
 
         self.on_loaded = obengine.event.Event()
         self.on_body_added = obengine.event.Event()
         self.on_paused = obengine.event.Event()
         self.on_unpaused = obengine.event.Event()
+
+        self._gravity = gravity
 
         self.loaded = False
 
@@ -50,8 +52,8 @@ class World(object):
 
         # It is the perversity of Panda3D's __builtin__ assignments that means
         # a Panda3D window must be created before this method can be called
-        
-        self.world_manager = odeWorldManager()
+
+        self.world_manager = odeWorldManager(self._gravity)
         self.world_manager.stepSize = 1 / 60.0
 
         self.loaded = True
@@ -83,7 +85,6 @@ class Box(object):
         self.scheduler = scheduler
 
         self.world = world
-        self.owner = owner
         self._anchored = anchored
         self.weight = weight or ((self.model.scale.x or 1.0) * (self.model.scale.y or 1.0) * (self.model.scale.z or 1.0))
 
@@ -96,7 +97,7 @@ class Box(object):
 
         if self._anchored is False:
 
-            self.object = dynamicObjectNoCCD(self.world.world_manager)
+            self.object = dynamicObject(self.world.world_manager)
             self._init_dynamic_object()
 
         else:
@@ -107,7 +108,7 @@ class Box(object):
         self._general_init()
 
         self._loaded = True
-        
+
         self.world.add(self)
         self.on_loaded()
 
@@ -116,9 +117,13 @@ class Box(object):
         self.destroy()
 
         if self._anchored is False:
+
+            self.object = dynamicObject(self.world.world_manager)
             self._init_dynamic_object()
 
         elif self._anchored is True:
+
+            self.object = staticObject(self.world.world_manager)
             self._init_static_object()
 
     def enable(self):
@@ -159,19 +164,35 @@ class Box(object):
         def fset(self, anchored):
 
             self._anchored = anchored
+            self.destroy()
 
-            if self._anchored is True:
+            if self._anchored is False:
+
+                self.object = dynamicObject(self.world.world_manager)
                 self._init_dynamic_object()
 
             else:
+
+                self.object = staticObject(self.world.world_manager)
                 self._init_static_object()
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def owner():
+
+        def fget(self):
+            return self.object.owner
+
+        def fset(self, new_owner):
+            self.object.owner = new_owner
 
         return locals()
 
     def _general_init(self):
 
         self.object.collisionCallback = self._translate_collision_cb
-        self.object.owner = self.owner
+        # self.world.world_manager.addObject(self.object)
 
     def _init_dynamic_object(self):
 
@@ -203,7 +224,7 @@ class Box(object):
         except AttributeError:
             second_subject = object2
 
-        self.on_collision(first_subject, second_subject)
+        self.on_collision(second_subject)
 
 
 class CharacterCapsule(object):

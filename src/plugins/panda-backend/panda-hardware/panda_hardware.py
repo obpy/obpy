@@ -21,8 +21,10 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 1, 2011 7:55:43 PM$"
+__date__ = "$Jun 1, 2011 7:55:43 PM$"
 
+
+from panda3d.core import Point3
 
 import obengine.cfg
 import obengine.math
@@ -147,13 +149,18 @@ class MouseEvent(obengine.event.Event):
     LEFT_MOUSE = 0
     RIGHT_MOUSE = 1
     MIDDLE_MOUSE = 2
+    MOUSE_WHEEL = 3
 
-    _mouse_conv = ['mouse1', 'mouse2', 'mouse3']
+    _mouse_conv = ['mouse1', 'mouse3', 'mouse2', 'wheel']
 
     TYPE_DOWN = 0
     TYPE_UP = 1
+    TYPE_WHEEL_UP = 2
+    TYPE_WHEEL_DOWN = 3
 
-    _type_conv = ['', '-up']
+    _type_conv = ['', '-up', '_up', '_down']
+    _created_handlers = {}
+
 
     def __init__(self, window, button, event_type, *args):
 
@@ -167,10 +174,15 @@ class MouseEvent(obengine.event.Event):
         self._event_type = event_type
         self._method_args = args
 
-        self._window.panda_window.accept(
-        '%s%s' % (self._panda_button, self._panda_event_type),
-        self.fire,
-        self._method_args)
+        panda_str = '%s%s' % (self._panda_button, self._panda_event_type)
+        if panda_str not in MouseEvent._created_handlers:
+
+            MouseEvent._created_handlers[panda_str] = self
+            self._window.panda_window.accept(
+                                             panda_str,
+                                             self.fire)
+        else:
+            MouseEvent._created_handlers[panda_str] += self
 
     @property
     def button(self):
@@ -186,23 +198,23 @@ class MouseMotionEvent(obengine.event.Event):
     COORD_2D = 0
     COORD_3D = 1
 
-    def __init__(self, window, coord_space = COORD_2D, *args):
+    def __init__(self, window, coord_space = COORD_2D, z_value = 0):
 
         obengine.event.Event.__init__(self)
 
         self._window = window
         self._coord_space = coord_space
-        self._method_args = args
+        self.z_value = z_value
 
         self._old_mouse_x = 0
         self._old_mouse_y = 0
         self._old_mouse_z = 0
-        
+
         self._window.scheduler.add(obengine.async.Task(self._update_mouse_pos))
 
-    def _update_mouse_pos(self):
-        
-        if self._window.panda_window.mouseWatcherNode.hasMouse() is False:
+    def _update_mouse_pos(self, task):
+
+        if not self._window.panda_window.mouseWatcherNode.hasMouse():
             return task.AGAIN
 
         mouse_pos_x = self._window.panda_window.mouseWatcherNode.getMouseX()
@@ -215,10 +227,15 @@ class MouseMotionEvent(obengine.event.Event):
             mouse_pos_x,
             mouse_pos_y)
 
-            mouse_pos = self._window.panda_window.render.getRelativePoint(
+            near_point = self._window.panda_window.render.getRelativePoint(
             self._window.panda_window.camera,
             self._window.picker_ray.getOrigin())
 
+            near_vector = self._window.panda_window.render.getRelativeVector(
+            self._window.panda_window.camera,
+            self._window.picker_ray.getOrigin())
+
+            mouse_pos = point_at_z(self.z_value, near_point, near_vector)
             mouse_pos = obplugin.panda_utils.PandaConverter.convert_vec3(mouse_pos)
 
             if mouse_pos.x != self._old_mouse_x or mouse_pos.y != self._old_mouse_y or mouse_pos.z != self._old_mouse_z:
@@ -226,7 +243,7 @@ class MouseMotionEvent(obengine.event.Event):
                 self._old_mouse_x = mouse_pos.x
                 self._old_mouse_y = mouse_pos.y
                 self._old_mouse_z = mouse_pos.z
-                
+
                 self.fire(mouse_pos)
 
         else:
@@ -242,3 +259,14 @@ class MouseMotionEvent(obengine.event.Event):
                 self._old_mouse_y = mouse_pos.y
 
                 self.fire(mouse_pos)
+
+        return task.AGAIN
+
+
+def point_at_z(z_value, point3, vec3):
+
+    try:
+        return point3 + vec3 * ((z_value - point3.getZ()) / vec3.getZ())
+
+    except ZeroDivisionError:
+        return Point3(0, 0, 0)
