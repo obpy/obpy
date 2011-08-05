@@ -68,14 +68,17 @@ class AddBrickCommand(bloxworks.commands.element.AddElementCommand):
                 node.position
                 node.size
                 node.name
+
             except AttributeError:
                 continue
 
             if node.position.z + node.size.z / 2 >= self.element.position.z + self.element.size.z / 2:
+                if node.position.x + node.size.x / 2 >= self.element.position.x + self.element.size.x / 2:
+                    if node.position.y + node.size.y / 2 >= self.element.position.y + self.element.size.y / 2:
 
-                new_pos = self.element.position
-                new_pos.z = node.position.z + node.size.z / 2 + self.element.size.z / 2
-                self.element.position = new_pos
+                        new_pos = self.element.position
+                        new_pos.z = node.position.z + node.size.z / 2 + self.element.size.z / 2
+                        self.element.position = new_pos
 
         try:
             property_editor = obengine.vfs.open('/bloxworks-registry/property-editor').read()

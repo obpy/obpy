@@ -246,10 +246,12 @@ class PropertyEditor(object):
 
     def _clone_brick(self):
 
+        name = self._brick.name
         size = self._brick.size
         anchored = self._brick.anchored
         color = self._brick.color
         rotation = self._brick.rotation
+        position = self._brick.position
 
         factory = obengine.elementfactory.ElementFactory()
         factory.set_window(self._window)
@@ -260,7 +262,8 @@ class PropertyEditor(object):
 
         command = bloxworks.commands.brick.AddBrickCommand(project,
                                                            factory,
-                                                           'Cloned Brick',
+                                                           name = name,
+                                                           position = position,
                                                            size = size,
                                                            anchored = anchored,
                                                            color = color,
