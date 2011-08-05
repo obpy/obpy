@@ -303,12 +303,20 @@ class ResizeBrickTool(object):
         copied_size.z = max(1, copied_size.z)
         self._brick.size = copied_size
 
+        new_position = self._brick.position
+        new_position.z += 1
+        self._brick.position = new_position
+
     def _resize_brick_z_down(self):
 
         copied_size = copy.copy(self._brick.size)
         copied_size.z -= 1
         copied_size.z = max(1, copied_size.z)
         self._brick.size = copied_size
+
+        new_position = self._brick.position
+        new_position.z -= 1
+        self._brick.position = new_position
 
 
 class ResizeToolProjectVisitor(object):

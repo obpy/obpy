@@ -55,7 +55,7 @@ class kinematicCharacterController(kinematicObject):
 		"""
 		FINALLY you can easily set the height, radius and stepping height! Just like that.
 		"""
-		self.setCapsuleData(10, 0, 1.5, 3.8)
+		self.setCapsuleData(10, 0, 3, 3)
 
 		"""
 		Initial values
@@ -142,7 +142,7 @@ class kinematicCharacterController(kinematicObject):
 		self.linearVelocity = Vec3(0, 0, 0)
 		self.jumpStartPos = 0.0
 		self.jumpTime = 0.0
-		self.jumpSpeed = 10.0
+		self.jumpSpeed = 15.0
 		self.fallStartPos = 0.0
 		self.fallSpeed = 0.0
 		self.fallTime = 0.0
