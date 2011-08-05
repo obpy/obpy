@@ -23,7 +23,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 22, 2011 6:45:12 PM$"
+__date__ = "$Jun 22, 2011 6:45:12 PM$"
 
 
 import obengine.datatypes
@@ -55,14 +55,14 @@ class Radio(Widget):
 
     ENABLED, DISABLED = range(2)
 
-    def __init__(self, label, position = None):
+    def __init__(self, label, position = None, state = None):
 
         Widget.__init__(self, position)
 
         self.on_state_changed = obengine.event.Event()
         self.on_text_changed = obengine.event.Event()
 
-        self._state = Radio.DISABLED
+        self._state = state or Radio.DISABLED
         self._text = label
 
     @obengine.datatypes.nested_property
@@ -73,7 +73,7 @@ class Radio(Widget):
 
         def fset(self, new_state):
             self.set_state(new_state)
-            
+
         return locals()
 
     @obengine.datatypes.nested_property
@@ -91,6 +91,8 @@ class Radio(Widget):
 
     def set_state(self, new_state, propagate = True):
 
+        print 'Setting state to', bool(new_state)
+
         if new_state == self.state:
             return
 
@@ -107,7 +109,7 @@ class Radio(Widget):
                     except AttributeError:
                         continue
 
-                    child.set_state(not self.state, False)
+                    child.set_state(not new_state, False)
 
 
 class RadioPresenter(WidgetPresenter):
@@ -121,6 +123,14 @@ class RadioPresenter(WidgetPresenter):
 
         self.on_text_changed += self._update_view_text
         self.on_state_changed += self._update_view_state
+
+        self._view.on_state_changed += self._update_model_state
+
+        self.on_click = self._view.on_click
+
+    def set_state(self, state, propagate = True):
+
+        self._model.set_state(int(state), propagate)
 
     @obengine.datatypes.nested_property
     def text():
@@ -144,11 +154,25 @@ class RadioPresenter(WidgetPresenter):
 
         return locals()
 
+    @obengine.datatypes.nested_property
+    def icon():
+
+        def fget(self):
+            return self._view.icon
+
+        def fset(self, new_icon):
+            self._view.icon = new_icon
+
+        return locals()
+
     def _update_view_state(self, new_state):
         self._view.state = new_state
 
     def _update_view_text(self, new_text):
         self._view.text = new_text
+
+    def _update_model_state(self, new_state):
+        self._model.state = new_state
 
 
 class MockRadioView(MockWidgetView):
@@ -162,7 +186,7 @@ class MockRadioView(MockWidgetView):
 
         self._text = text
         self._state = Radio.DISABLED
-        
+
         self.size = obengine.math.Vector2D(
         len(self.text) * MockRadioView._TEXT_SCALE,
         MockRadioView._VERTICAL_TEXT_SIZE

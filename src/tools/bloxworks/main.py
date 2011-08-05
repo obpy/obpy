@@ -68,7 +68,7 @@ def package_project():
 
 def create_gui(window):
 
-    property_editor = bloxworks.gui.propertyeditor.PropertyEditor()
+    property_editor = bloxworks.gui.propertyeditor.PropertyEditor(window)
     side_toolbar = bloxworks.gui.toolbars.SideToolbar()
     bottom_toolbar = bloxworks.gui.toolbars.BottomToolbar()
     top_toolbar = bloxworks.gui.toolbars.TopToolbar()
@@ -86,8 +86,10 @@ def create_gui(window):
     top_toolbar.on_pack_button_clicked += package_project
 
     move_tool = bloxworks.gui.brick.MoveBrickTool(window)
-
     bottom_toolbar.on_move_button_clicked += move_tool.toggle_activation
+
+    resize_tool = bloxworks.gui.brick.ResizeBrickTool(window)
+    bottom_toolbar.on_scale_button_clicked += resize_tool.toggle_activation
 
 
 def create_window(scheduler):

@@ -117,6 +117,9 @@ class MoveBrickTool(object):
 
         obengine.vfs.open('/bloxworks-registry/move-tool', 'w').write(self)
 
+    def set_state(self, state):
+        self._activated = state
+
     def toggle_activation(self):
         self._activated = not self._activated
 
@@ -194,3 +197,127 @@ class MoveToolProjectVisitor(object):
         for element in world.element.nodes.itervalues():
             if element.__class__.__name__ == 'BrickPresenter':
                 element.on_click += functools.partial(move_tool.move, element)
+
+
+class ResizeBrickTool(object):
+
+    def __init__(self, window):
+
+        self._resizing = False
+        self._activated = False
+        self._brick = None
+
+        obengine.plugin.require('core.hardware')
+        import obplugin.core.hardware
+
+        mouse_wheel = obplugin.core.hardware.MouseEvent.MOUSE_WHEEL
+        wheel_up = obplugin.core.hardware.MouseEvent.TYPE_WHEEL_UP
+        self._move_z_up_event = obplugin.core.hardware.MouseEvent(
+                                                                  window,
+                                                                  mouse_wheel,
+                                                                  wheel_up)
+
+        wheel_down = obplugin.core.hardware.MouseEvent.TYPE_WHEEL_DOWN
+        self._move_z_down_event = obplugin.core.hardware.MouseEvent(
+                                                                    window,
+                                                                    mouse_wheel,
+                                                                    wheel_down)
+
+        coord_space = obplugin.core.hardware.MouseMotionEvent.COORD_3D
+        self._mouse_motion_event = obplugin.core.hardware.MouseMotionEvent(
+                                                                           window,
+                                                                           coord_space)
+
+        mouse_button = obplugin.core.hardware.MouseEvent.LEFT_MOUSE
+        mouse_event_type = obplugin.core.hardware.MouseEvent.TYPE_DOWN
+        self._stop_event = obplugin.core.hardware.MouseEvent(
+                                                             window,
+                                                             mouse_button,
+                                                             mouse_event_type)
+
+        obengine.vfs.open('/bloxworks-registry/resize-tool', 'w').write(self)
+
+    def set_state(self, state):
+        self._activated = state
+
+    def toggle_activation(self):
+        self._activated = not self._activated
+
+    def deactivate(self):
+        self._activated = False
+
+    def activate(self):
+        self._activated = True
+
+    def resize(self, brick):
+
+        if self._activated is False:
+            return
+
+        if self._resizing is True:
+
+            self.reset()
+            return
+
+        self._resizing = True
+
+        self._brick = brick
+
+        self._mouse_motion_event.z_value = self._brick.position.z
+        self._mouse_motion_event += self._resize_brick
+
+        self._move_z_up_event += self._resize_brick_z_up
+        self._move_z_down_event += self._resize_brick_z_down
+
+    def reset(self):
+
+        self._brick = None
+        self._resizing = False
+
+        if self._resize_brick in self._mouse_motion_event.handlers:
+
+            self._mouse_motion_event -= self._resize_brick
+            self._move_z_up_event -= self._resize_brick_z_up
+            self._move_z_down_event -= self._resize_brick_z_down
+
+    def _resize_brick(self, mouse_pos):
+
+        mouse_x_delta = mouse_pos.x - self._mouse_motion_event._old_mouse_x
+        mouse_y_delta = mouse_pos.y - self._mouse_motion_event._old_mouse_y
+
+        copied_size = copy.copy(self._brick.size)
+        copied_size.x += round(mouse_x_delta)
+        copied_size.x = abs(copied_size.x)
+        copied_size.y += round(mouse_y_delta)
+        copied_size.y = abs(copied_size.y)
+
+        copied_size.x = max(1, copied_size.x)
+        copied_size.y = max(1, copied_size.y)
+
+        self._brick.size = copied_size
+
+    def _resize_brick_z_up(self):
+
+        copied_size = copy.copy(self._brick.size)
+        copied_size.z += 1
+        copied_size.z = max(1, copied_size.z)
+        self._brick.size = copied_size
+
+    def _resize_brick_z_down(self):
+
+        copied_size = copy.copy(self._brick.size)
+        copied_size.z -= 1
+        copied_size.z = max(1, copied_size.z)
+        self._brick.size = copied_size
+
+
+class ResizeToolProjectVisitor(object):
+
+    def visit(self, project):
+
+        resize_tool = obengine.vfs.open('/bloxworks-registry/resize-tool').read()
+        world = obengine.vfs.open('/bloxworks-registry/project').read().world
+
+        for element in world.element.nodes.itervalues():
+            if element.__class__.__name__ == 'BrickPresenter':
+                element.on_click += functools.partial(resize_tool.resize, element)

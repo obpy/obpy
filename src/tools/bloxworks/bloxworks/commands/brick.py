@@ -57,6 +57,9 @@ class AddBrickCommand(bloxworks.commands.element.AddElementCommand):
         move_tool = obengine.vfs.open('/bloxworks-registry/move-tool').read()
         self.element.on_click += functools.partial(move_tool.move, self.element)
 
+        resize_tool = obengine.vfs.open('/bloxworks-registry/resize-tool').read()
+        self.element.on_click += functools.partial(resize_tool.resize, self.element)
+
         world = obengine.vfs.open('/bloxworks-registry/project').read().world
 
         for node in world.element.nodes.itervalues():

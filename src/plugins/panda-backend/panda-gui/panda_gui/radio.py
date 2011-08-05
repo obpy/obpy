@@ -23,10 +23,11 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jul 4, 2011 2:26:23 PM$"
+__date__ = "$Jul 4, 2011 2:26:23 PM$"
 
 
 import panda3d.core
+from panda3d.core import Filename, TransparencyAttrib
 
 import direct.gui.DirectGui
 import direct.gui.DirectGuiGlobals
@@ -39,19 +40,26 @@ import widget
 
 class RadioView(widget.TextWidgetView):
 
-    def __init__(self, text = '', state = None, position = None):
-        
+    def __init__(self, text = '', position = None, state = None, icon = None):
+
         self.on_click = obengine.event.Event()
+        self.on_state_changed = obengine.event.Event()
+
+        self._old_state = state or obengine.gui.Radio.DISABLED
 
         self._widget = direct.gui.DirectGui.DirectRadioButton(
         scale = widget.WIDGET_SCALE,
         text_align = panda3d.core.TextNode.ACenter,
         #relief = direct.gui.DirectGuiGlobals.FLAT,
         textMayChange = True,
-        command = self.on_click
+        command = self._fire
         )
 
         self.state = state or obengine.gui.Radio.DISABLED
+
+        if icon is not None:
+            self.icon = icon
+
         widget.TextWidgetView.__init__(self, text, position)
 
     @obengine.datatypes.nested_property
@@ -64,7 +72,11 @@ class RadioView(widget.TextWidgetView):
             1 : obengine.gui.Radio.ENABLED
             }
 
-            return  panda_to_openblox_state[self._widget['state']]
+            try:
+                return panda_to_openblox_state[self._widget['indicatorValue']]
+
+            except AttributeError:
+                return obengine.gui.Radio.DISABLED
 
         def fset(self, new_state):
 
@@ -80,3 +92,39 @@ class RadioView(widget.TextWidgetView):
             self._widget.setIndicatorValue()
 
         return locals()
+
+    @obengine.datatypes.nested_property
+    def icon():
+
+        def fget(self):
+            return self._widget['image']
+
+        def fset(self, new_image):
+
+            old_size = self.size
+            self._widget['image'] = str(Filename.fromOsSpecific(new_image))
+
+            if new_image is not None:
+                self._widget['image_pos'] = (-2.5, 0, 0)
+
+            else:
+                self._widget['image_pos'] = (0, 0, 0)
+
+            self._widget.setImage()
+
+            for state in range(0, 4):
+                self._widget.component('image' + str(state)).setTransparency(TransparencyAttrib.MAlpha)
+
+            self._check_size(old_size)
+
+        return locals()
+
+    def _fire(self):
+
+        self.on_click()
+
+        cur_state = self.state
+        if cur_state != self._old_state:
+            self.on_state_changed(cur_state)
+
+        self._old_state = cur_state

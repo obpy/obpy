@@ -90,12 +90,12 @@ class WidgetFactory(object):
 
         return presenter
 
-    def _make_radio(self, text, position = None):
+    def _make_radio(self, text = None, position = None, state = None, icon = None):
 
         import obplugin.core.gui
 
-        model = Radio(text, position)
-        view = obplugin.core.gui.RadioView(text, position)
+        model = Radio(text, position, state)
+        view = obplugin.core.gui.RadioView(text, position, state, icon)
         presenter = RadioPresenter(model, view)
 
         return presenter

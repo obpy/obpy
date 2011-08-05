@@ -240,11 +240,11 @@ class MouseMotionEvent(obengine.event.Event):
 
             if mouse_pos.x != self._old_mouse_x or mouse_pos.y != self._old_mouse_y or mouse_pos.z != self._old_mouse_z:
 
+                self.fire(mouse_pos)
+
                 self._old_mouse_x = mouse_pos.x
                 self._old_mouse_y = mouse_pos.y
                 self._old_mouse_z = mouse_pos.z
-
-                self.fire(mouse_pos)
 
         else:
 

@@ -89,6 +89,9 @@ class LoadProjectDialog(object):
         move_tool_visitor = bloxworks.gui.brick.MoveToolProjectVisitor()
         project.accept(move_tool_visitor)
 
+        resize_tool_visitor = bloxworks.gui.brick.ResizeToolProjectVisitor()
+        project.accept(resize_tool_visitor)
+
 
 class NewProjectDialog(object):
 

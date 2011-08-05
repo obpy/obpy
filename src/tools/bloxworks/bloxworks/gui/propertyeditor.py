@@ -29,16 +29,19 @@ __date__ = "Aug 1, 2011 8:03:51 PM"
 import functools
 
 import obengine.math
+import obengine.async
 import obengine.vfs
 import obengine.gui
+import obengine.elementfactory
 
 import bloxworks.project
 import bloxworks.commands.element
+import bloxworks.commands.brick
 
 
 class PropertyEditor(object):
 
-    def __init__(self):
+    def __init__(self, window):
 
         widget_factory = obengine.gui.WidgetFactory()
         self._form = widget_factory.make(
@@ -51,9 +54,15 @@ class PropertyEditor(object):
 #        self._collide_checkbox = widget_factory.make('checkbox', 'Collide')
 #        self._form.add(self._collide_checkbox)
 
+        self._window = window
+
         self._hide_button = widget_factory.make('button', 'Hide')
         self._hide_button.on_click += self._form.hide
         self._form.add(self._hide_button)
+
+        self._clone_button = widget_factory.make('button', 'Clone brick')
+        self._clone_button.on_click += self._clone_brick
+        self._form.add(self._clone_button)
 
         self._remove_button = widget_factory.make('button', 'Remove brick')
         self._remove_button.on_click += self._remove_brick
@@ -234,6 +243,29 @@ class PropertyEditor(object):
         bloxworks.commands.element.RemoveElementCommand(project, nid = nid).execute()
 
         self.reset()
+
+    def _clone_brick(self):
+
+        size = self._brick.size
+        anchored = self._brick.anchored
+        color = self._brick.color
+        rotation = self._brick.rotation
+
+        factory = obengine.elementfactory.ElementFactory()
+        factory.set_window(self._window)
+        sandbox = obengine.vfs.open('/bloxworks-registry/sandbox').read()
+        factory.set_sandbox(sandbox)
+
+        project = obengine.vfs.open('/bloxworks-registry/project').read()
+
+        command = bloxworks.commands.brick.AddBrickCommand(project,
+                                                           factory,
+                                                           'Cloned Brick',
+                                                           size = size,
+                                                           anchored = anchored,
+                                                           color = color,
+                                                           rotation = rotation)
+        self._window.scheduler.add(obengine.async.AsyncCall(command.execute, 5))
 
     def _vector_to_str(self, vector):
         return str('%s, %s, %s' % (vector.x, vector.y, vector.z))
