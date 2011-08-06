@@ -80,7 +80,7 @@ def create_gui(window):
     top_toolbar.on_new_button_clicked += npd.show
 
     abd = bloxworks.gui.brick.AddBrickDialog(window)
-    side_toolbar.on_brick_button_clicked += abd.show
+    side_toolbar.on_brick_button_clicked += abd.execute
 
     top_toolbar.on_save_button_clicked += save_project
     top_toolbar.on_pack_button_clicked += package_project

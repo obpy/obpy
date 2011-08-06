@@ -553,3 +553,16 @@ class Camera(object):
             pos = obengine.gfx.math.Vector(*pos)
 
         self.camera.setPos(pos.x, pos.y, pos.z)
+
+    @obengine.datatypes.nested_property
+    def rotation():
+
+        def fget(self):
+            return PandaConverter.convert_quat(self.camera.getQuat())
+
+        def fset(self, new_angle):
+
+            quat = PandaConvert.convert_angle(new_angle)
+            self.camera.setQuat(quat)
+
+        return locals()

@@ -29,10 +29,10 @@ __date__ = "Aug 2, 2011 7:11:56 PM"
 import functools
 import copy
 
+import obengine.math
 import obengine.async
 import obengine.vfs
 import obengine.plugin
-import obengine.gui
 import obengine.elementfactory
 
 import bloxworks.commands.brick
@@ -46,37 +46,18 @@ class AddBrickDialog(object):
         self._factory = obengine.elementfactory.ElementFactory()
         self._factory.set_window(self._window)
 
-        widget_factory = obengine.gui.WidgetFactory()
-        self._dialog = widget_factory.make('container', layout_manager = obengine.gui.VerticalLayoutManager)
-
-        self._cancel_button = widget_factory.make('button', 'Cancel')
-        self._cancel_button.on_click += self.hide
-        self._dialog.add(self._cancel_button)
-
-        self._name_entry = widget_factory.make('entry', 'Name', length = 30)
-        self._name_entry.on_submitted += self._create_brick
-        self._dialog.add(self._name_entry)
-
-        self.hide()
-
-    def show(self):
-        self._dialog.show()
-
-    def hide(self):
-        self._dialog.hide()
+    def execute(self):
+        self._create_brick()
 
     def _create_brick(self):
 
         self._factory.set_sandbox(obengine.vfs.open('/bloxworks-registry/sandbox').read())
-        brick_name = self._name_entry.text
-        self._window.scheduler.add(obengine.async.AsyncCall(self._actual_create, 5, brick_name))
+        self._window.scheduler.add(obengine.async.AsyncCall(self._actual_create, 5))
 
-    def _actual_create(self, brick_name):
+    def _actual_create(self):
 
         project = obengine.vfs.open('/bloxworks-registry/project').read()
-        bloxworks.commands.brick.AddBrickCommand(project, self._factory, brick_name).execute()
-
-        self.hide()
+        bloxworks.commands.brick.AddBrickCommand(project, self._factory, 'Brick', color = obengine.math.Color(75, 75, 75)).execute()
 
 
 class MoveBrickTool(object):

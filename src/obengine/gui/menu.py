@@ -24,7 +24,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 14, 2011 11:16:52 AM$"
+__date__ = "$Jun 14, 2011 11:16:52 AM$"
 
 
 import obengine.datatypes
@@ -51,17 +51,6 @@ class Menu(Container):
         self.on_click += self.show
 
     @obengine.datatypes.nested_property
-    def text():
-
-        def fget(self):
-            return self._button.text
-
-        def fset(self, new_text):
-            self._button.text = new_text
-
-        return locals()
-
-    @obengine.datatypes.nested_property
     def position():
 
         def fget(self):
@@ -75,19 +64,8 @@ class Menu(Container):
             # Note that the menu display's position is used for
             # Widget.on_position_changed, insted of our button's position.
             # This might cause problems!
-            
+
             self.on_position_changed(self._position)
-
-        return locals()
-
-    @obengine.datatypes.nested_property
-    def text():
-
-        def fget(self):
-            return self._button.text
-
-        def fset(self, new_text):
-            self._button.text = new_text
 
         return locals()
 

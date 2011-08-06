@@ -49,7 +49,7 @@ class LoadProjectDialog(object):
         self._cancel_button.on_click += self.hide
         self._dialog.add(self._cancel_button)
 
-        self._name_entry = widget_factory.make('entry', length = 40)
+        self._name_entry = widget_factory.make('entry', 'Project name', length = 40)
         self._dialog.add(self._name_entry)
         self._name_entry.on_submitted += self._load_project
         self.hide()

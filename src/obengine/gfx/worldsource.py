@@ -22,13 +22,16 @@
 #     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
 __author__ = "openblocks"
 __date__ = "$Aug 9, 2010 10:43:40 PM$"
 
-import obengine
-import obengine.math
 
 import xml.etree.ElementTree as xmlparser
+
+import obengine.math
+import obengine.gfx.element3d
+
 
 class WorldSource(list):
 
@@ -195,6 +198,8 @@ class WorldSource(list):
         # Run over all the children of the top-level "world" tag
         for child in rootnode:
             self._handle_node(child)
+
+        self.append(obengine.gfx.element3d.CameraElement(self.factory.window))
 
     def _handle_node(self, node):
 

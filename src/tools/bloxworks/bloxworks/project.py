@@ -120,7 +120,8 @@ class ProjectSaverVisitor(ProjectVisitor):
         for scene_node in scene_graph.nodes.itervalues():
 
             xml_node = scene_node.get_extension('xml').xml_element
-            root_node.append(xml_node)
+            if xml_node is not None:
+                root_node.append(xml_node)
 
         xml_tree = xml.etree.ElementTree.ElementTree(root_node)
         xml_tree.write(self.outfile)

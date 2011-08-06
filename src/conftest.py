@@ -3,7 +3,7 @@
 # Sphinx-embedded doctests (and doctests inside OpenBlox plugins)
 # from Py.Test
 
-def pytest_configure(_):
+def pytest_configure(config):
 
     import sys
     import os

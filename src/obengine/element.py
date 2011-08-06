@@ -43,7 +43,20 @@ class Element(obengine.scenegraph.SceneNode, obengine.datatypes.ExtensibleObject
 
         obengine.scenegraph.SceneNode.__init__(self, name, parent)
         obengine.datatypes.ExtensibleObjectMixin.__init__(self)
+
+        self.set_extension('xml', NullXmlExtension)
         self.on_world_loaded = obengine.event.Event()
+
+
+class NullXmlExtension(object):
+
+    def __init__(self, _):
+        pass
+
+    @property
+    def xml_element(self):
+        return None
+
 
 class BrickElement(Element):
 

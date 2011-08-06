@@ -23,7 +23,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jul 16, 2011 11:06:26 PM$"
+__date__ = "$Jul 16, 2011 11:06:26 PM$"
 
 
 import xml.etree.ElementTree
@@ -33,7 +33,7 @@ import bloxworks.project
 
 
 class ProjectPackagerVisitor(bloxworks.project.ProjectVisitor):
-    
+
     def __init__(self, outfile):
         self.outfile = outfile
 
@@ -45,7 +45,9 @@ class ProjectPackagerVisitor(bloxworks.project.ProjectVisitor):
         for scene_node in scene_graph.nodes.itervalues():
 
             xml_node = scene_node.get_extension('xml').xml_element
-            root_node.append(xml_node)
+
+            if xml_node is not None:
+                root_node.append(xml_node)
 
         xml_tree = xml.etree.ElementTree.ElementTree(root_node)
         xml_tree.write(self.outfile)

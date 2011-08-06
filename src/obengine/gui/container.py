@@ -24,7 +24,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 9, 2011 8:00:27 PM$"
+__date__ = "$Jun 9, 2011 8:00:27 PM$"
 
 
 import obengine.math
@@ -98,7 +98,7 @@ class Container(Widget):
 
         if len(self.children) > 1:
             self._layout_manager.adjust_widgets_after_add(widget)
-            
+
         self._layout_manager.adjust_size(self._size)
 
     def remove(self, widget):
@@ -108,7 +108,7 @@ class Container(Widget):
 
         if len(self.children) > 1:
             self._layout_manager.adjust_widgets_after_remove(widget)
-            
+
         self._layout_manager.adjust_size(self._size)
 
     @property
@@ -132,10 +132,10 @@ class Container(Widget):
 
 
 class VerticalLayoutManager(object):
-    
+
     def __init__(self, owning_container):
         self._owning_container = owning_container
-        
+
     def find_space_for_widget(self, widget):
 
         best_point = obengine.math.Vector2D(
@@ -152,14 +152,17 @@ class VerticalLayoutManager(object):
             best_point.y += self._owning_container.margin
 
         return best_point
-        
+
     def adjust_widgets_after_add(self, new_widget):
 
         new_widget_y = new_widget.size.y / 2.0
 
         for child_widget in self._owning_container.children:
-            child_widget.position.y -= new_widget_y
-            
+
+            new_pos = child_widget.position
+            new_pos.y -= new_widget_y
+            child_widget.position = new_pos
+
     def adjust_widgets_after_remove(self, removed_widget):
 
         removed_widget_y = removed_widget.size.y / 2.0
@@ -176,15 +179,14 @@ class VerticalLayoutManager(object):
             child_widget.position.y
             )
 
-            new_child_position.x += new_pos.x - self._owning_container.position.x
-            new_child_position.y += new_pos.y - self._owning_container.position.y
+            new_child_position.x += new_pos.x - new_child_position.x
+            new_child_position.y += new_pos.y - new_child_position.y
 
             child_widget.position = new_child_position
 
 
-            
     def adjust_size(self, size):
-        
+
         size.y = sum(map(
         lambda w: w.size.y + self._owning_container.margin,
         self._owning_container.children))
@@ -237,17 +239,18 @@ class HorizontalLayoutManager(object):
             child_widget.position.y
             )
 
-            new_child_position.x += new_pos.x - self._owning_container.position.x
-            new_child_position.y += new_pos.y - self._owning_container.position.y
+            new_child_position.x += new_pos.x - new_child_position.x
+            new_child_position.y += new_pos.y - new_child_position.y
 
             child_widget.position = new_child_position
+
 
     def adjust_size(self, size):
 
         size.x = sum(map(
         lambda w: w.size.x + self._owning_container.margin,
         self._owning_container.children))
-        
+
         size.y = max(map(
         lambda w: w.size.y,
         self._owning_container.children))

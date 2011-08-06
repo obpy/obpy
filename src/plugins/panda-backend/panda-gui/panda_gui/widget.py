@@ -23,7 +23,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jul 1, 2011 2:57:27 PM$"
+__date__ = "$Jul 1, 2011 2:57:27 PM$"
 
 
 import uuid
@@ -67,7 +67,7 @@ class WidgetView(object):
             self._position = new_pos
             panda_vector = utils.openblox_to_panda_pos(new_pos)
 
-            if self._widget.getParent() == aspect2d:
+            if True or self._widget.getParent() == aspect2d:
                 self._widget.setPos(render2d, panda_vector)
 
             else:
@@ -146,6 +146,6 @@ class TextWidgetView(WidgetView):
             self._widget.resetFrameSize()
 
             self._check_size(old_size)
-            
+
 
         return locals()

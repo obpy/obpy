@@ -524,3 +524,40 @@ class XmlLightExtension(XmlElementExtension):
 
         element = xmlparser.Element('light', attributes)
         return element
+
+
+class CameraElement(obengine.element.Element):
+
+    def __init__(self, window):
+
+        obengine.element.Element.__init__(self, 'camera')
+
+        obengine.plugin.require('core.graphics')
+        import obplugin.core.graphics
+
+        self.camera = obplugin.core.graphics.Camera(window)
+
+    def look_at(self, element):
+        self.camera.look_at(element.view)
+
+    @obengine.datatypes.nested_property
+    def position():
+
+        def fget(self):
+            return self.camera.position
+
+        def fset(self, new_pos):
+            self.camera.position = new_pos
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def rotation():
+
+        def fget(self):
+            return self.camera.rotation
+
+        def fset(self, new_angle):
+            self.camera.rotation = new_angle
+
+        return locals()
