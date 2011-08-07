@@ -26,7 +26,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$May 28, 2011 11:24:13 PM$"
+__date__ = "$May 28, 2011 11:24:13 PM$"
 
 
 import obengine.async
@@ -38,7 +38,7 @@ obengine.depman.gendeps()
 
 
 def init():
-    
+
     obengine.plugin.require('core.graphics')
     obengine.plugin.require('core.physics')
 
@@ -54,7 +54,7 @@ class Environment(object):
 
         self._eid = Environment._next_avail_id
         Environment._next_avail_id += 1
-        
+
         self.scheduler = obengine.async.Scheduler()
         self.window = obplugin.core.graphics.Window(window_title, self.scheduler)
         self.physics_sandbox = obplugin.core.physics.World()

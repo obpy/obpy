@@ -22,7 +22,12 @@
 #
 
 __author__ = "openblocks"
-__date__  = "$Jun 1, 2011 7:39:39 PM$"
+__date__ = "$Jun 1, 2011 7:39:39 PM$"
+
+
+# This module shadows Python's built-in module "math", so allow modules that
+# want the built-in "math" module to work
+from math import *
 
 from obengine.math.color import *
 from obengine.math.euler import *

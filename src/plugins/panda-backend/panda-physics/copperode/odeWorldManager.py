@@ -232,6 +232,7 @@ class physicalObject(object):
 	"""
 	def setCatColBits(self, name):
 		self.bitsName = name
+		print 'Name:', self.bitsName
 		self.geom.setCollideBits(bitMaskDict[name][0])
 		self.geom.setCategoryBits(bitMaskDict[name][1])
 
@@ -261,7 +262,7 @@ class staticObject(physicalObject):
 		so that it can be used by many objects, like bitMasks,
 		but I didn't want to delay the release because of this.
 		"""
-		self.surfaceFriction = 100.0
+		self.surfaceFriction = 500.0
 		self.surfaceBounce = 0.3
 		self.surfaceBounceVel = 0.5
 		self.surfaceSoftCFM = 0.1

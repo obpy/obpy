@@ -26,6 +26,8 @@ __author__ = "openblocks"
 __date__ = "$Oct 25, 2010 9:57:22 PM$"
 
 
+from math import pi, sin, cos
+
 import obengine.datatypes
 import obengine.math
 import obengine.async
@@ -45,7 +47,7 @@ def init():
 class PlayerController(object):
 
     LINEAR_SPEED = 20
-    ROT_SPEED = 8
+    ROT_SPEED = 2
 
     def __init__(self, model, view):
 
@@ -142,9 +144,13 @@ class PlayerView(object):
         import obplugin.core.physics
 
         self.window = window
+        self.window.panda_window.disableMouse()
         self._scheduler = self.window.scheduler
         self._model = obplugin.core.graphics.Model('avatar', self.window)
         self._model.load()
+
+        self.linear_velocity = obengine.math.Vector()
+        self.rotational_velocity = obengine.math.EulerAngle()
 
         while self._model.load_okay is False:
             self._scheduler.step()
@@ -152,17 +158,16 @@ class PlayerView(object):
         self._capsule = obplugin.core.physics.CharacterCapsule(
         sandbox, self, self._scheduler)
         self._capsule.load()
-
         while self._capsule.loaded is False:
             self._scheduler.step()
+        self._scheduler.add(obengine.async.Task(self._update_velocity, priority = 5))
 
         if position is not None:
             self._model.position = position
         self._capsule.position = position or obengine.math.Vector()
 
-        self._scheduler.add(obengine.async.Task(self._update, priority = 5))
-        self.linear_velocity = obengine.math.Vector()
-        self.rotational_velocity = obengine.math.EulerAngle()
+        self._camera = obplugin.core.graphics.Camera(self.window)
+        self._scheduler.add(obengine.async.Task(self._update_camera, priority = 5))
 
     def show(self):
         self._model.showing = True
@@ -181,7 +186,7 @@ class PlayerView(object):
 
         return locals()
 
-    def _update(self, task):
+    def _update_velocity(self, task):
 
         self._capsule.linear_velocity = self.linear_velocity
         self._model.position.x = self._capsule.position.x
@@ -190,5 +195,27 @@ class PlayerView(object):
 
         self._capsule.rotational_velocity = self.rotational_velocity
         self._model.rotation = self._capsule.rotation
+
+        return task.AGAIN
+
+    def _update_camera(self, task):
+
+        DISTANCE_FROM_AVATAR = 60
+        Z_OFFSET = 10
+
+        model_rotation = self._model.rotation
+        model_heading_radians = model_rotation.h * (pi / 180.0)
+
+        cam_position = obengine.math.Vector(
+                                            self._model.position.x,
+                                            self._model.position.y,
+                                            self._model.position.z)
+
+        cam_position.x += DISTANCE_FROM_AVATAR * sin(model_heading_radians)
+        cam_position.y += -DISTANCE_FROM_AVATAR * cos(model_heading_radians)
+        cam_position.z += Z_OFFSET
+
+        self._camera.position = cam_position
+        self._camera.look_at(self._model)
 
         return task.AGAIN

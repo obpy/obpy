@@ -24,7 +24,7 @@ __date__ = "$May 2, 2011 12:30:08 PM$"
 
 
 from copperode import odeWorldManager
-from copperode import staticObject, dynamicObject, kinematicCharacterController
+from copperode import staticObject, dynamicObjectNoCCD, kinematicCharacterController
 
 import obengine.event
 import obengine.datatypes
@@ -86,7 +86,10 @@ class Box(object):
 
         self.world = world
         self._anchored = anchored
-        self.weight = weight or ((self.model.scale.x or 1.0) * (self.model.scale.y or 1.0) * (self.model.scale.z or 1.0))
+        self.weight = weight or (
+                                 (self.model.scale.x * 5 or 1.0) * \
+                                 (self.model.scale.y * 5 or 1.0) * \
+                                 (self.model.scale.z * 5 or 1.0))
 
         self._loaded = False
 
@@ -97,7 +100,7 @@ class Box(object):
 
         if self._anchored is False:
 
-            self.object = dynamicObject(self.world.world_manager)
+            self.object = dynamicObjectNoCCD(self.world.world_manager)
             self._init_dynamic_object()
 
         else:
@@ -118,7 +121,7 @@ class Box(object):
 
         if self._anchored is False:
 
-            self.object = dynamicObject(self.world.world_manager)
+            self.object = dynamicObjectNoCCD(self.world.world_manager)
             self._init_dynamic_object()
 
         elif self._anchored is True:
@@ -168,7 +171,7 @@ class Box(object):
 
             if self._anchored is False:
 
-                self.object = dynamicObject(self.world.world_manager)
+                self.object = dynamicObjectNoCCD(self.world.world_manager)
                 self._init_dynamic_object()
 
             else:
