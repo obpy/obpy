@@ -232,7 +232,6 @@ class physicalObject(object):
 	"""
 	def setCatColBits(self, name):
 		self.bitsName = name
-		print 'Name:', self.bitsName
 		self.geom.setCollideBits(bitMaskDict[name][0])
 		self.geom.setCategoryBits(bitMaskDict[name][1])
 

@@ -167,7 +167,7 @@ class PlayerView(object):
         self._capsule.position = position or obengine.math.Vector()
 
         self._camera = obplugin.core.graphics.Camera(self.window)
-        self._scheduler.add(obengine.async.Task(self._update_camera, priority = 5))
+        self._scheduler.add(obengine.async.Task(self._update_camera, priority = 30))
 
     def show(self):
         self._model.showing = True
