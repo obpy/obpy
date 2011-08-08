@@ -28,6 +28,7 @@ import uuid
 
 from panda3d.core import *
 from direct.showbase.ShowBase import ShowBase
+from direct.filter.CommonFilters import *
 
 import obengine.cfg
 import obengine.log
@@ -418,15 +419,15 @@ class Light(PandaResource):
         self.panda_light = DirectionalLight(self._name)
         self.panda_light.setColor(self.convert_color(self._color))
 
-        if self._casting_shadows == True:
-            self.panda_light.setShadowCaster(True, 512, 512)
+        if self._casting_shadows is True:
+           self.panda_light.setShadowCaster(True, 256, 256)
 
     def _init_ambient_light(self):
 
         self.panda_light = AmbientLight(self._name)
         self.panda_light.setColor(self.convert_color(self._color))
 
-        if self._casting_shadows == True:
+        if self._casting_shadows is True:
             obengine.utils.warn('Tried to turn on shadows for an ambient light')
 
 

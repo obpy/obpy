@@ -22,7 +22,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$May 2, 2011 1:15:36 AM$"
+__date__ = "$May 2, 2011 1:15:36 AM$"
 
 
 import sys
@@ -142,19 +142,22 @@ class ScriptEngine(object):
         If the script is invalid, error_cb is called.
         """
         try:
-
             self.lua.execute(string)
-            self._update_globals()
 
         except Exception, message:
             self.on_error(message)
-    def expose(self, obj):
+
+    def expose(self, obj, name = None):
         """Exposes obj to the Lua interpreter.
         If obj has a __tolua__ method, the return value of that method is used as the exposed
         name. Otherwise, obj's class name is used.
         """
         if hasattr(obj, '__tolua__'):
             self.lua.globals()[obj.__tolua__()] = obj
+
+        elif name is not None:
+            self.lua.globals()[name] = obj
+
         else:
             self.lua.globals()[obj.__class__.__name__] = obj
 

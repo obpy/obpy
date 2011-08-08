@@ -22,13 +22,12 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jan 23, 2011 8:10:16 AM$"
+__date__ = "$Jan 23, 2011 8:10:16 AM$"
 
 
 import xml.etree.ElementTree as xmlparser
 
 from obengine.element import Element
-import obengine.plugin
 import obengine.depman
 
 obengine.depman.gendeps()
@@ -67,12 +66,13 @@ class ScriptElement(Element):
         import obengine.elementfactory
 
         self.script_engine = obplugin.core.scripting.ScriptEngine(self.name)
-        
+
         self.script_engine.expose(self.world)
         self.script_engine.expose(self)
         self.script_engine.expose(obengine.elementfactory.ElementFactory())
         self.script_engine.expose(LuaFactory())
         self.script_engine.execute(self.code)
+        self.script_engine.expose(obengine.vfs.filesystem, 'Filesystem')
 
     def __tolua__(self):
         return 'Script'
@@ -101,11 +101,18 @@ class LuaFactory(object):
     def __init__(self):
 
         import obengine.math
+        import obengine.async
 
         self.factory_items = {
         'Vector' : obengine.math.Vector,
         'Color' : obengine.math.Color,
-        'EulerAngle' : obengine.math.EulerAngle
+        'EulerAngle' : obengine.math.EulerAngle,
+
+        'Task' : obengine.async.Task,
+        'DelayedTask' : obengine.async.DelayedTask,
+        'PeriodicTask' : obengine.async.PeriodicTask,
+        'LoopingCall' : obengine.async.LoopingCall,
+        'AsyncCall' : obengine.async.AsyncCall
         }
 
     def make(self, item, *args):

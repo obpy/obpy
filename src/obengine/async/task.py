@@ -21,7 +21,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$May 4, 2011 11:24:29 AM$"
+__date__ = "$May 4, 2011 11:24:29 AM$"
 
 
 import time
@@ -91,7 +91,7 @@ class Task(object):
     def __cmp__(self, other):
 
         if hasattr(other, 'priority'):
-            return -cmp(self.priority, other.priority)
+            return - cmp(self.priority, other.priority)
 
         return 0
 

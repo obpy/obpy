@@ -400,7 +400,6 @@ class SkyboxElement(obengine.element.Element):
         while self.view.load_okay is False:
             self._window.scheduler.step()
 
-        #self.view.parent = self._camera
         self.view.scale = obengine.math.Vector(5000, 5000, 5000)
 
         # TODO: Replace the below code with something not Panda-specific!
