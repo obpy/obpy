@@ -563,7 +563,7 @@ class Camera(object):
 
         def fset(self, new_angle):
 
-            quat = PandaConvert.convert_angle(new_angle)
+            quat = PandaConverter.convert_angle(new_angle)
             self.camera.setQuat(quat)
 
         return locals()

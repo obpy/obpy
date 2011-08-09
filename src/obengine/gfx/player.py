@@ -30,6 +30,7 @@ from math import pi, sin, cos
 
 import obengine.datatypes
 import obengine.math
+import obengine.cfg
 import obengine.async
 import obengine.plugin
 import obengine.depman
@@ -55,6 +56,11 @@ class PlayerController(object):
         self._view = view
 
         self._model.on_joined += lambda _: self._view.show()
+
+        view_mode = obengine.cfg.Config().get_str('view-mode', 'core.gfx', 'third-person')
+
+        if view_mode == 'isometric':
+            self.ROT_SPEED = 6
 
     def forward(self):
         self._view.linear_velocity.y = self.LINEAR_SPEED
@@ -200,22 +206,46 @@ class PlayerView(object):
 
     def _update_camera(self, task):
 
-        DISTANCE_FROM_AVATAR = 60
-        Z_OFFSET = 10
-
-        model_rotation = self._model.rotation
-        model_heading_radians = model_rotation.h * (pi / 180.0)
+        view_mode = obengine.cfg.Config().get_str('view-mode', 'core.gfx', 'third-person')
 
         cam_position = obengine.math.Vector(
                                             self._model.position.x,
                                             self._model.position.y,
                                             self._model.position.z)
 
-        cam_position.x += DISTANCE_FROM_AVATAR * sin(model_heading_radians)
-        cam_position.y += -DISTANCE_FROM_AVATAR * cos(model_heading_radians)
-        cam_position.z += Z_OFFSET
+        if view_mode == 'third-person':
 
-        self._camera.position = cam_position
-        self._camera.look_at(self._model)
+            DISTANCE_FROM_AVATAR = 60
+            Z_OFFSET = 10
+
+            model_rotation = self._model.rotation
+            model_heading_radians = model_rotation.h * (pi / 180.0)
+
+            cam_position.x += DISTANCE_FROM_AVATAR * sin(model_heading_radians)
+            cam_position.y += -DISTANCE_FROM_AVATAR * cos(model_heading_radians)
+            cam_position.z += Z_OFFSET
+
+            self._camera.position = cam_position
+            self._camera.look_at(self._model)
+
+        elif view_mode == 'isometric':
+
+            X_OFFSET = 50
+            Y_OFFSET = 60
+            Z_OFFSET = 40
+
+            cam_position.x += X_OFFSET
+            cam_position.y += Y_OFFSET
+            cam_position.z += Z_OFFSET
+
+            self._camera.position = cam_position
+            self._camera.look_at(self._model)
+
+        elif view_mode == 'fps':
+
+            HEAD_OFFSET = 3
+            cam_position.z += HEAD_OFFSET
+            self._camera.position = cam_position
+            self._camera.rotation = self._model.rotation
 
         return task.AGAIN
