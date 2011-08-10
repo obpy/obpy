@@ -9,11 +9,14 @@ a message to OpenBlox (http://openblox.sf.net/users/openblox).
 
 .. note::
 
-    If you haven't already, read the :doc:`OpenBlox CLA (Contributor License Agreement) </core-dev/cla>`.
+    If you haven't already,
+    read the :doc:`OpenBlox CLA (Contributor License Agreement) </core-dev/cla>`.
 
 General
 =======
 
+* All variable/module/class/file names, in addition to comments,
+  are written with American English.
 * Indentation is done with 4 spaces. Never, *ever*, use tabs.
 * Use UNIX-style newline endings for all files you create/modfiy.
 
@@ -97,7 +100,7 @@ directory.
 Example::
 
     This is an example unit test comment. It is ignored by the test runner.
-    The next two lines are run by the test runner, as they both start with
+    The next three lines are run by the test runner, as they both start with
     ">>> ".
     >>> import obengine.cfg
     >>> cfg = obengine.cfg.Config()
@@ -125,8 +128,10 @@ Examples::
 Coding Constructs
 ------------------
 
-* All conditional and loop constructs are followed by a blank line, unless the following code is only one logical line.
-* If the following logical line is a conditional or loop construct as well, the construct is *not* followed by a blank line.
+* All conditional and loop constructs are followed by a blank line,
+  unless the following code is only one logical line.
+* If the following logical line is a conditional or loop construct as well,
+  the construct is *not* followed by a blank line.
 
 Examples::
 
@@ -140,10 +145,10 @@ Examples::
       x += 5
       print x
 
-   # Nested loops with single logical lines
+   # Nested loops with single logical line
    for x in range(0, 5):
       for y in range(0, 5):
-         print 'Nested loops with one-loop instruction should look like this!'
+         print 'Nested loops with only one logical line should look like this!'
 
    # Nested loops with multiple logical lines
    for x in range(0, 5):
@@ -159,9 +164,11 @@ Methods/Functions
 
 * Methods are named ``like_this``.
 * Private methods begin with ``_``.
-* Methods are fully documented, which means basic behavior, and each parameter is explained, as well as the expected type.
+* Methods are fully documented, which means basic behavior,
+  and each parameter is explained, as well as the expected type.
 * Documentation is written as a multi-line string, began and terminated with ``"""``.
-* There is a space after every parameter's terminating , character. This also applies to method calls.
+* There is a space after every parameter's terminating , character.
+  This also applies to method calls.
 
 Example::
 
@@ -178,13 +185,19 @@ Classes
 =======
 
 * Classes are titled ``LikeThis``.
-* If the class does not *need* to inherit from anything in partictular, it needs to inherit from object (to ensure compatability with Python 2.6/2.5).
+* If the class does not *need* to inherit from anything in partictular,
+  it needs to inherit from `object` (to ensure compatability with Python 2.6/2.5).
 * The first method defined is *always* ``__init__``.
 * ``__init__`` must always be documented.
 * Every method that is not private is given documentation.
-* Private methods can have doocumentation, but it's not required. Private methods, *at the very least*, have a comment at their beginning explaining how they are supposed to be used.
-* There is also a blank line between the last line of a method, and the def line of the next one.
-* Every class also has documentation, itself. Documentation, like methods, is written as a multi-line string, began and terminated with `"""`.
+* Private methods can have doocumentation, but it's not required.
+  Private methods, *at the very least*, have a comment at
+  their beginning explaining how they are supposed to be used.
+* There is also a blank line between the last line of a method,
+  and the def line of the next one.
+* Every class also has documentation, itself.
+  Documentation, like methods, is written as a multi-line string,
+  began and terminated with `"""`.
 
 Example::
 

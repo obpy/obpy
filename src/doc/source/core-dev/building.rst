@@ -2,13 +2,17 @@
 Building OpenBlox
 ==================
 
+.. warning::
+
+	This document is a work in progress!
+
 .. note::
    Building OpenBlox from source requires a certain amount
    of technical expertise. Specifically, it requires basic knowledge of:
 
    * Your operating system's command line
    * Your operating system's method of program installation
-   * If things go wrong, some knowledge of Python
+   * If things go wrong, possibly some knowledge of Python
 
 .. note::
     All the commands given in this page assume use of a
@@ -26,10 +30,10 @@ and Lua scripting), you might need to install one of the below libraries.
 
 **Optional requirements**:
 
-* Panda3D 1.7.1 or higher (required for 3D rendering, audio, and physics) - download from http://panda3d.org
-* Lupa 0.18 or higher (Mac OSX only, required for Lua scripting) - download from
-  http://pypi.python.org/pypi/lupa
-
+* Panda3D 1.7.1 or higher - 1.7.2 recommended (required for 3D rendering,
+  audio, and physics) - download from http://www.panda3d.org/download.php?sdk
+* Lupa 0.18 or higher - 0.20 recommended (Mac OSX only,
+  required for Lua scripting) - download from http://pypi.python.org/pypi/lupa
 
 .. note::
 

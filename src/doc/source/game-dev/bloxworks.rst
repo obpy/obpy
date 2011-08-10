@@ -2,6 +2,10 @@
 BloxWorks
 =========
 
+.. warning::
+
+	This document is a work in progress!
+
 .. versionadded:: 0.7
 
 BloxWorks is OpenBlox's scene editor [1]_, and thus as of OpenBlox 0.7 the
@@ -43,7 +47,84 @@ press :guilabel:`Enter`!), and then enter your OpenBlox username for the author 
 Now, go back to the Name field and press :guilabel:`Enter`. The dialog will disappear,
 and you'll be greeted with an empty game, containing only a skybox. Congratulations!
 
+Cheat sheet
+===========
 
+Adding a brick
+--------------
+
+Once you've opened BloxWorks and created a new project (or opened an pre-existing one),
+adding a brick is simple: Move your mouse to the left corner to reveal a panel.
+Click the first icon, the one that looks like:
+
+.. image:: images/add-brick.png
+
+Once you've done that, you'll see a gray 2x4x1 brick appear in the center your world.
+
+Removing a brick
+----------------
+
+This is a relatively simple task:
+
+ * Click on the brick you want to remove
+ * Click the :guilabel:`Remove brick` button
+ 
+.. warning::
+
+	Deletion of bricks can currently not be undone!
+
+Moving a brick
+--------------
+
+Move your mouse to the bottom-center of the screen. You'll see a panel be revealed.
+Click the button with the icon that looks like:
+
+.. image:: images/move.png
+
+Now, click on the brick you want to move. Here's how to actually move it around:
+
+ * Moving the mouse across the screen moves the brick in the X-Y axes
+ * Moving the scroll wheel moves the brick in the Z axis (i.e, up and down)
+ 
+To stop moving the brick, click the left mouse button again. To disable the Move tool,
+just click on its icon again.
+
+Resizing a brick
+----------------
+
+Reveal the lower panel, as you did in the "Moving a brick" section. Now, click the
+button that looks like:
+
+.. image:: images/scale.png
+
+Just like with the Move tool, click on the brick you want to resize.
+Here's an explanation of what to do next:
+
+ * Moving the mouse across the screen re-sizes the brick in the X-Y axes
+ * Moving the scroll wheel re-sizes the brick in the Z axis
+ 
+To stop resizing the brick, click the left mouse button again. To disable the
+Resize tool, click on its icon.
+
+Repainting a brick
+------------------
+
+To repaint a brick, click on the brick you want to repaint. In the Color textbox,
+type in the RGBA (Red Green Blue Alpha) color you want to brick to have, with the
+various values separated by commas. When you want to brick to take on
+that color, press Enter.
+
+Since OpenBlox lets you use raw RGBA colors instead of simple named colors,
+you can use/create a lot of different color combinations - 4,228,250,625, to be exact.
+
+.. note::
+
+	For a really comprehensive table of RGB colors, see:
+	http://web.njit.edu/~kevin/rgb.txt.html
+	
+	Also note that that site doesn't list A values - the A (4th number)
+	value controls transparency, so that is left up to you to decide.
+	
 
 .. rubric:: Footnotes
 

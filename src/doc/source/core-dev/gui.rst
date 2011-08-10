@@ -2,6 +2,10 @@
 The OpenBlox GUI toolkit
 ========================
 
+.. warning::
+
+	This document is a work in progress!
+
 .. module:: obengine.gui
 .. versionadded:: 0.7
 

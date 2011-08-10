@@ -27,8 +27,9 @@ __date__ = "$Jul 25, 2011 7:18:47 PM$"
 
 
 import functools
+import copy
 
-import obengine.math
+import obengine.plugin
 import obengine.vfs
 
 import bloxworks.commands.element
@@ -87,4 +88,18 @@ class AddBrickCommand(bloxworks.commands.element.AddElementCommand):
 
         except obengine.vfs.ReadError:
             pass
+
+        obengine.plugin.require('core.graphics')
+        import obplugin.core.graphics
+
+        CAM_MARGIN = 15.0
+
+        camera = obengine.vfs.open('/bloxworks-registry/project').read().world.element.get_node_by_name('camera')
+        cam_pos = copy.copy(self.element.position)
+        cam_pos.x += self.element.size.x / 2.0 + CAM_MARGIN
+        cam_pos.y += self.element.size.y / 2.0 + CAM_MARGIN
+        cam_pos.z += self.element.size.z / 2.0 + CAM_MARGIN
+        camera.position = cam_pos
+        camera.look_at(self.element)
+
 

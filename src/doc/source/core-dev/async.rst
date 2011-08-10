@@ -2,6 +2,10 @@
 OpenBlox's asynchronous system (``obengine.async``)
 =====================================================
 
+.. warning::
+
+	This document is a work in progress!
+
 .. module:: obengine.async
 .. versionadded:: 0.7
 

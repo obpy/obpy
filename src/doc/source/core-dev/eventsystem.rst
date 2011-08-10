@@ -59,6 +59,7 @@ Reference
     .. method:: add_handler(handler)
 
         Adds *handler* to the list of event handlers bound to this event.
+        Nothing is done if *handler* is already bound to this event.
 
         :param handler: The handler to add
         :type handler: any callable object

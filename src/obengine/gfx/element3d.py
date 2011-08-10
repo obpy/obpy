@@ -537,7 +537,7 @@ class CameraElement(obengine.element.Element):
         self.camera = obplugin.core.graphics.Camera(window)
 
     def look_at(self, element):
-        self.camera.look_at(element.view)
+        self.camera.look_at(element.view.model)
 
     @obengine.datatypes.nested_property
     def position():

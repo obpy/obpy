@@ -2,10 +2,6 @@
 OpenBlox scene graph library (`obengine.scenegraph`)
 ====================================================
 
-:synopsis: Basic scene graph library.
-:copyright: 2011 The OpenBlox Project
-:license: GNU GPL v3
-
 .. versionadded:: 0.7
 
 Overview
@@ -28,10 +24,13 @@ Each node on the scene graph has its own unique ID number (node ID/NID) - no two
 have identical ID numbers. So, each node's primary means of identification is through its NID.
 The benefits of using node IDs to access your nodes are:
 
-* O(1) time when using a NID from an `obengine.scenegraph.SceneNode`
-* Each NID will never change - you can refer a node by its NID for the duration of its existence
-* Each NID is globally unique - you can access a node by calling `obengine.scenegraph.SceneGraph.get_node_by_id` *without* having to nest calls to `obengine.scenegraph.SceneNode.get_child_by_id`
-* You can have several scene nodes with identical names, and you can still differentiate between them using their NID
+* O(1) time when finding the owning node of a NID from
+  an `obengine.scenegraph.SceneNode`
+* Each NID will never change - you can refer a node by its NID for
+  the duration of its existence
+* Each NID is globally unique
+* You can have several scene nodes with identical names,
+  and you can still differentiate between them using their NID
 
 There are 2 main weaknesses with NIDs:
 
