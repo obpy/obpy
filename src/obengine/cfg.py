@@ -23,7 +23,7 @@
 #
 
 __author__ = "openblocks"
-__date__  = "$Aug 3, 2010 2:36:03 PM$"
+__date__ = "$Aug 3, 2010 2:36:03 PM$"
 
 import os
 import ConfigParser
@@ -59,6 +59,8 @@ class Config(obengine.datatypes.Borg):
         It must be in INI format (*not* with the extended Windows syntax).
         """
 
+        self._filename = filename
+
         self.parser = ConfigParser.ConfigParser()
         self._root_dir = os.path.abspath(os.path.dirname(filename))
 
@@ -79,8 +81,8 @@ class Config(obengine.datatypes.Borg):
         * section - the section to add the variable in.
         By default, this is `core`.
         """
-        
-        self.options.setdefault(section, {})[name] = val
+
+        self.parser.set(section, name, val)
 
     def get_var(self, name, section = 'core', default = None):
         """Retrieves a configuration variable
@@ -154,6 +156,14 @@ class Config(obengine.datatypes.Borg):
 
         except KeyError:
             raise ValueError('Config variable %s in section %s was not a valid boolean' % (name, section))
+
+    def save(self):
+        self.parser.write(open(self.config_file, 'w'))
+
+    @property
+    def config_file(self):
+        return self._filename
+
 
 class ConfigException(Exception): pass
 class NoSuchOptionError(ConfigException): pass
