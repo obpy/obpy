@@ -99,6 +99,8 @@ with the name ``Node 2`` you wanted: ``n1`` or ``n2``.
 Module reference
 ============================
 
+.. inheritance-diagram:: obengine.scenegraph
+
 .. automodule:: obengine.scenegraph
    :members:
 

@@ -120,11 +120,11 @@ you can use/create a lot of different color combinations - 4,228,250,625, to be 
 .. note::
 
 	For a really comprehensive table of RGB colors, see:
-	http://web.njit.edu/~kevin/rgb.txt.html
+	http://web.njit.edu/~kevin/rgb.txt.html.
 	
 	Also note that that site doesn't list A values - the A (4th number)
-	value controls transparency, so that is left up to you to decide.
-	
+	value controls transparency (255 being completely opaque, 0 being invisible),
+	so that is left up to you to decide.
 
 .. rubric:: Footnotes
 
