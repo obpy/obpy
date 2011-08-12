@@ -34,6 +34,14 @@ press :guilabel:`Play selected game`.
 
  * Move with the arrow keys
  * Jump with the spacebar
+ 
+Some games also use up to 4 keys on your keyboard - their OpenBlox names [1]_,
+along with their default binding, are:
+
+* :guilabel:`A` - by default, :guilabel:`A`
+* :guilabel:`B` - by default, :guilabel:`S`
+* :guilabel:`X` - by default, :guilabel:`X`
+* :guilabel:`Y` - by default, :guilabel:`C`
 
 Installing a game
 =================
@@ -58,3 +66,14 @@ click on its name, and press :guilabel:`Uninstall selected game`.
     The game itself is removed from your hard drive when you uninstall it,
     so make sure you have a copy of the game handy, in case you
     want to reinstall it!
+    
+.. rubric:: Footnotes
+
+.. [1] These names are different from the actual corresponding key names on
+       the keyboard, they're just named so the people can choose a keyboard layout
+       that works for them, and games will still work, even with changed
+       key mappings.
+       
+Configuring OpenBlox
+====================
+

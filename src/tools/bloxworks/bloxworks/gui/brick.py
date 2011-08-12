@@ -263,8 +263,8 @@ class ResizeBrickTool(object):
 
     def _resize_brick(self, mouse_pos):
 
-        mouse_x_delta = mouse_pos.x - self._mouse_motion_event._old_mouse_x
-        mouse_y_delta = mouse_pos.y - self._mouse_motion_event._old_mouse_y
+        mouse_x_delta = mouse_pos.x - self._mouse_motion_event.old_mouse_x
+        mouse_y_delta = mouse_pos.y - self._mouse_motion_event.old_mouse_y
 
         copied_size = copy.copy(self._brick.size)
         copied_size.x += round(mouse_x_delta)

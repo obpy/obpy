@@ -13,10 +13,7 @@ import obengine.gfx.math
 def main():
 
     obengine.cfg.Config().load(os.path.join(os.pardir, os.pardir, 'obconf.cfg'))
-
     obengine.init()
-
-    obengine.plugin.require('core.physics')
     obengine.plugin.require('core.graphics')
 
     import obplugin.core.graphics

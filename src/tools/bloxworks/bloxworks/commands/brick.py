@@ -29,13 +29,15 @@ __date__ = "$Jul 25, 2011 7:18:47 PM$"
 import functools
 import copy
 
-import obengine.plugin
+import obengine.math
 import obengine.vfs
 
 import bloxworks.commands.element
 
 
 class AddBrickCommand(bloxworks.commands.element.AddElementCommand):
+
+    CAM_MARGIN = 30.0
 
     def __init__(self, project, factory, name, position = None, color = None, size = None, anchored = False, rotation = None):
 
@@ -63,12 +65,21 @@ class AddBrickCommand(bloxworks.commands.element.AddElementCommand):
 
         world = obengine.vfs.open('/bloxworks-registry/project').read().world
 
+        try:
+            last_selected_brick_pos = obengine.vfs.open('/bloxworks-registry/property-editor').read()._brick.position
+            self.element.position = obengine.math.Vector(
+                                                         last_selected_brick_pos.x,
+                                                         last_selected_brick_pos.y,
+                                                         last_selected_brick_pos.z - self.element.size.z / 2)
+        except AttributeError:
+            pass
+
+
         for node in world.element.nodes.itervalues():
 
             try:
                 node.position
                 node.size
-                node.name
 
             except AttributeError:
                 continue
@@ -89,17 +100,13 @@ class AddBrickCommand(bloxworks.commands.element.AddElementCommand):
         except obengine.vfs.ReadError:
             pass
 
-        obengine.plugin.require('core.graphics')
-        import obplugin.core.graphics
-
-        CAM_MARGIN = 15.0
-
         camera = obengine.vfs.open('/bloxworks-registry/project').read().world.element.get_node_by_name('camera')
-        cam_pos = copy.copy(self.element.position)
-        cam_pos.x += self.element.size.x / 2.0 + CAM_MARGIN
-        cam_pos.y += self.element.size.y / 2.0 + CAM_MARGIN
-        cam_pos.z += self.element.size.z / 2.0 + CAM_MARGIN
+        cam_pos = obengine.math.Vector(
+                                       self.element.position.x,
+                                       self.element.position.y,
+                                       self.element.position.z)
+        cam_pos.x += self.element.size.x / 2.0 + self.CAM_MARGIN
+        cam_pos.y += self.element.size.y / 2.0 + self.CAM_MARGIN
+        cam_pos.z += self.element.size.z / 2.0 + self.CAM_MARGIN
         camera.position = cam_pos
         camera.look_at(self.element)
-
-

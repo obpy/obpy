@@ -34,6 +34,7 @@ import bloxworks.gui.propertyeditor
 import bloxworks.gui.toolbars
 import bloxworks.gui.project
 import bloxworks.gui.brick
+import bloxworks.gui.camera
 
 
 def save_project():
@@ -90,6 +91,8 @@ def create_gui(window):
 
     resize_tool = bloxworks.gui.brick.ResizeBrickTool(window)
     bottom_toolbar.on_scale_button_clicked += resize_tool.toggle_activation
+
+    camera_controller = bloxworks.gui.camera.CameraController(window)
 
 
 def create_window(scheduler):

@@ -206,9 +206,9 @@ class MouseMotionEvent(obengine.event.Event):
         self._coord_space = coord_space
         self.z_value = z_value
 
-        self._old_mouse_x = 0
-        self._old_mouse_y = 0
-        self._old_mouse_z = 0
+        self.old_mouse_x = 0
+        self.old_mouse_y = 0
+        self.old_mouse_z = 0
 
         self._window.scheduler.add(obengine.async.Task(self._update_mouse_pos))
 
@@ -238,13 +238,13 @@ class MouseMotionEvent(obengine.event.Event):
             mouse_pos = point_at_z(self.z_value, near_point, near_vector)
             mouse_pos = obplugin.panda_utils.PandaConverter.convert_vec3(mouse_pos)
 
-            if mouse_pos.x != self._old_mouse_x or mouse_pos.y != self._old_mouse_y or mouse_pos.z != self._old_mouse_z:
+            if mouse_pos.x != self.old_mouse_x or mouse_pos.y != self.old_mouse_y or mouse_pos.z != self.old_mouse_z:
 
                 self.fire(mouse_pos)
 
-                self._old_mouse_x = mouse_pos.x
-                self._old_mouse_y = mouse_pos.y
-                self._old_mouse_z = mouse_pos.z
+                self.old_mouse_x = mouse_pos.x
+                self.old_mouse_y = mouse_pos.y
+                self.old_mouse_z = mouse_pos.z
 
         else:
 
@@ -253,14 +253,49 @@ class MouseMotionEvent(obengine.event.Event):
 
             mouse_pos = obengine.math.Vector2D(mouse_pos_x, mouse_pos_y)
 
-            if mouse_pos.x != self._old_mouse_x or mouse_pos.y != self._old_mouse_y:
-
-                self._old_mouse_x = mouse_pos.x
-                self._old_mouse_y = mouse_pos.y
+            if mouse_pos.x != self.old_mouse_x or mouse_pos.y != self.old_mouse_y:
 
                 self.fire(mouse_pos)
 
+                self.old_mouse_x = mouse_pos.x
+                self.old_mouse_y = mouse_pos.y
+
         return task.AGAIN
+
+
+class Mouse(object):
+
+    def __init__(self, window):
+        self._window = window
+
+    @obengine.datatypes.nested_property
+    def position():
+
+        def fget(self):
+
+            if not self._window.panda_window.mouseWatcherNode.hasMouse():
+                raise MouseUnavailableError
+
+            mouse_pos_x = self._window.panda_window.mouseWatcherNode.getMouseX()
+            mouse_pos_y = self._window.panda_window.mouseWatcherNode.getMouseY()
+
+            mouse_pos_x *= obplugin.panda_utils.PANDA_TO_OPENBLOX_SCALE
+            mouse_pos_y *= obplugin.panda_utils.PANDA_TO_OPENBLOX_SCALE
+
+            return obengine.math.Vector2D(mouse_pos_x, mouse_pos_y)
+
+        def fset(self, new_pos):
+
+            if not self._window.panda_window.mouseWatcherNode.hasMouse():
+                raise MouseUnavailableError
+
+            mouse_pos_x = int(new_pos.x / obplugin.panda_utils.PANDA_TO_OPENBLOX_SCALE)
+            mouse_pos_y = int(new_pos.y / obplugin.panda_utils.PANDA_TO_OPENBLOX_SCALE)
+
+            if not self._window.panda_window.win.movePointer(0, mouse_pos_x, mouse_pos_y):
+                raise MouseImmovableError
+
+        return locals()
 
 
 def point_at_z(z_value, point3, vec3):
@@ -270,3 +305,11 @@ def point_at_z(z_value, point3, vec3):
 
     except ZeroDivisionError:
         return Point3(0, 0, 0)
+
+
+class MouseUnavailableError(Exception):
+    pass
+
+
+class MouseImmovableError(Exception):
+    pass

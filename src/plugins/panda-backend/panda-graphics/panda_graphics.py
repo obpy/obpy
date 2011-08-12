@@ -484,6 +484,7 @@ class Window(object):
         self.panda_window.setBackgroundColor(1, 1, 1, 1)
         self.panda_window.win.requestProperties(self.window_properties)
         self.panda_window.render.setShaderAuto()
+        self.panda_window.disableMouse()
 
         picker_node = CollisionNode('mouse_ray')
         picker_nodepath = self.panda_window.camera.attachNewNode(picker_node)
@@ -540,6 +541,9 @@ class Camera(object):
 
     def look_at(self, model):
         self.camera.lookAt(model.panda_node)
+
+    def move(self, vector):
+        self.camera.setPos(self.camera, vector.x, vector.y, vector.z)
 
     @property
     def position(self):
