@@ -137,7 +137,17 @@ class CameraController(object):
     def _move_camera(self, mouse_pos):
 
         if self._enabled is False:
+
+            self._on_down_key_down.disable()
+            self._on_left_key_down.disable()
+            self._on_right_key_down.disable()
+            self._on_up_key_down.disable()
             return
+
+        self._on_down_key_down.enable()
+        self._on_left_key_down.enable()
+        self._on_right_key_down.enable()
+        self._on_up_key_down.enable()
 
         mouse_x_delta = self._on_mouse_moved.old_mouse_x - mouse_pos.x
         mouse_y_delta = mouse_pos.y - self._on_mouse_moved.old_mouse_y

@@ -90,6 +90,7 @@ def create_gui():
 
     widget_factory = obengine.gui.WidgetFactory()
     container = widget_factory.make('container',
+                                    position = obengine.math.Vector2D(0, -20),
                                     layout_manager = obengine.gui.VerticalLayoutManager)
 
     save_button = widget_factory.make(
@@ -127,6 +128,36 @@ def create_gui():
 #                         'core.hardware',
 #                         key_validator)
 
+    def bool_validator(bool_str):
+        if bool_str not in ('yes', 'no'):
+            raise ValueError
+
+    use_vsync = ConfigOption(
+                             container,
+                             'Use VSync? (yes, no)',
+                             'use-vsync',
+                             'core.gfx',
+                             bool_validator)
+
+    use_shadows = ConfigOption(
+                               container,
+                               'Use shadows? (yes, no)',
+                               'use-shadows',
+                               'core.gfx',
+                               bool_validator)
+
+    def shading_validator(shading_str):
+        if shading_str not in ('normal', 'toon', 'toon-full'):
+            raise ValueError
+
+    shading_model = ConfigOption(
+                                 container,
+                                 'Shading model (normal, toon, toon-full)',
+                                 'shading',
+                                 'core.gfx',
+                                 shading_validator
+                                 )
+
     def resolution_validator(res_str):
 
         components = res_str.split('x')
@@ -144,13 +175,9 @@ def create_gui():
                               resolution_validator
                               )
 
-    def bool_validator(bool_str):
-        if bool_str not in ('yes', 'no'):
-            raise ValueError
-
     show_frame_rate = ConfigOption(
                                    container,
-                                   'Show frame rate',
+                                   'Show frame rate (yes, no)',
                                    'show-frame-rate',
                                    'core.gfx',
                                    bool_validator
@@ -162,7 +189,7 @@ def create_gui():
 
     view_mode = ConfigOption(
                              container,
-                             'Camera mode',
+                             'Camera mode (third-person, isometric, fps)',
                              'view-mode',
                              'core.gfx',
                              view_mode_validator)

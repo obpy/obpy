@@ -471,6 +471,9 @@ class Window(object):
         self.resolution = map(int, self._config_src.get_str('resolution', 'core.gfx').split('x'))
         self.search_path = self._config_src.get_str('cfgdir') + '/data'
 
+        if self._config_src.get_bool('use-vsync', 'core.gfx', True) is False:
+            loadPrcFileData('', 'sync-video #f')
+
         self.clock = ClockObject.getGlobalClock()
         self.clock.setMode(ClockObject.MLimited)
         self.clock.setFrameRate(self.frame_rate)
@@ -485,6 +488,34 @@ class Window(object):
         self.panda_window.win.requestProperties(self.window_properties)
         self.panda_window.render.setShaderAuto()
         self.panda_window.disableMouse()
+        getModelPath().appendPath(self.search_path)
+
+        if self._config_src.get_str('shading', 'core.gfx', 'normal') == 'toon-full':
+
+            normals_buffer = self.panda_window.win.makeTextureBuffer('Normals Buffer', 0, 0)
+            normals_buffer.setClearColor(Vec4(0.5, 0.5, 0.5, 1))
+            normals_camera = self.panda_window.makeCamera(
+                                                          normals_buffer,
+                                                          lens = self.panda_window.cam.node().getLens())
+            normals_camera.node().setScene(self.panda_window.render)
+            normals_node = NodePath(PandaNode('temp. normals node'))
+            normals_node.setShader(self.panda_window.loader.loadShader('normal-shader.cg'))
+            normals_camera.node().setInitialState(normals_node.getState())
+            edge_detect_scene = normals_buffer.getTextureCard()
+            edge_detect_scene.setTransparency(1)
+            edge_detect_scene.setColor(1, 1, 1, 0)
+            edge_detect_scene.reparentTo(self.panda_window.render2d)
+            ink_shader = self.panda_window.loader.loadShader('ink-shader.cg')
+            edge_detect_scene.setShader(ink_shader)
+            SEPARATION = 0.001
+            edge_detect_scene.setShaderInput('separation', Vec4(SEPARATION, 0, SEPARATION, 0))
+            CUTOFF = 0.3
+            edge_detect_scene.setShaderInput('cutoff', Vec4(CUTOFF, CUTOFF, CUTOFF, CUTOFF))
+
+            self.panda_window.render.setAttrib(LightRampAttrib.makeSingleThreshold(0.4, 0.3))
+
+        elif self._config_src.get_str('shading', 'core.gfx', 'normal') == 'toon':
+            self.panda_window.render.setAttrib(LightRampAttrib.makeSingleThreshold(0.4, 0.3))
 
         picker_node = CollisionNode('mouse_ray')
         picker_nodepath = self.panda_window.camera.attachNewNode(picker_node)
@@ -502,7 +533,6 @@ class Window(object):
                                        mouse_event_type)
         self._click_event += self._pick_mouse
 
-        getModelPath().appendPath(self.search_path)
         self.on_loaded()
 
         return task.STOP

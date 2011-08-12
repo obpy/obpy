@@ -2,6 +2,12 @@
 
 <Comment> { "Egg laid by Chicken for Blender, version R91" }
 
+<Material> Material {
+  <Scalar> specr {0.0}
+  <Scalar> specg {0.0}
+  <Scalar> specb {0.0}
+  <Scalar> shininess {0.0}
+}
 <Group> Cube.001 {
   <Transform> {
     <Matrix4> {
@@ -110,21 +116,27 @@
     }
   }
   <Polygon> {
+    <MRef> { Material }
     <VertexRef> { 0 1 2 3 <Ref> { Cube.001 } }
   }
   <Polygon> {
+    <MRef> { Material }
     <VertexRef> { 4 5 6 7 <Ref> { Cube.001 } }
   }
   <Polygon> {
+    <MRef> { Material }
     <VertexRef> { 8 9 10 11 <Ref> { Cube.001 } }
   }
   <Polygon> {
+    <MRef> { Material }
     <VertexRef> { 12 13 14 15 <Ref> { Cube.001 } }
   }
   <Polygon> {
+    <MRef> { Material }
     <VertexRef> { 16 17 18 19 <Ref> { Cube.001 } }
   }
   <Polygon> {
+    <MRef> { Material }
     <VertexRef> { 20 21 22 23 <Ref> { Cube.001 } }
   }
 }

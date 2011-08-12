@@ -184,6 +184,7 @@ def create_new_project(window, name, author):
     config_writer.write(open(os.path.join(path, PROJECT_CFG_FILE), 'w'))
 
     world = obengine.world.World(0, name)
+    world.element.add_node(obengine.gfx.element3d.CameraElement(window))
     project = Project(world, author, obengine.version_string())
     world.add_element(obengine.gfx.element3d.SkyboxElement(window))
     world.add_element(obengine.gfx.element3d.LightElement('ambient_light', window, 'ambient'))
