@@ -72,6 +72,13 @@ This is a relatively simple task:
 .. warning::
 
 	Deletion of bricks can currently not be undone!
+	
+Controlling the camera
+----------------------
+
+To rotate the camera, hold down the right mouse button and move the mouse.
+To move the camera, hold down the right mouse button and use the arrow keys
+to move the camera in the X-Y plane.
 
 Moving a brick
 --------------

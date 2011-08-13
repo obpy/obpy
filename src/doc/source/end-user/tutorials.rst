@@ -16,12 +16,20 @@ Playing a game
 Open up the OpenBlox game launcher. It's in different locations, depending upon
 which OS you've installed OpenBlox on:
 
-    * On Windows, it's under :guilabel:`Start` > :guilabel:`All Programs` >
-      :guilabel:`OpenBlox` > :guilabel:`OpenBlox`
-    * On Linux (with GNOME, KDE will differ slightly), the OpenBlox game launcher is in
-      :guilabel:`Applications` > :guilabel:`OpenBlox` > :guilabel:`OpenBlox`
-    * On Mac OSX, it's the file ``tools/oblaunchgui.py`` located in the directory
-      you extracted OpenBlox to
+* On Windows, it's under :guilabel:`Start` > :guilabel:`All Programs` >
+  :guilabel:`OpenBlox` > :guilabel:`OpenBlox`
+* On Linux (with GNOME, KDE will differ slightly), the OpenBlox game launcher is in
+  :guilabel:`Applications` > :guilabel:`OpenBlox` > :guilabel:`OpenBlox`
+* On Mac OSX, it's the file ``tools/oblaunchgui.py`` located in the directory
+  you extracted OpenBlox to
+      
+If you've just downloaded a non-final (i.e, alpha or beta) release of OpenBlox,
+you'll find the launcher in one of 2 locations:
+
+* On Windows, it's the batch script ``startlauncher.bat``. Double-click it
+  to start OpenBlox
+* On other systems (Linux, Mac OSX), it's the shell script ``startlauncher.sh``.
+  Double-click it to start OpenBlox
 
 You'll see a window come up that looks something like this:
 
@@ -77,3 +85,10 @@ click on its name, and press :guilabel:`Uninstall selected game`.
 Configuring OpenBlox
 ====================
 
+.. versionadded:: 0.7
+
+OpenBlox 0.7 comes with a new graphical configuration tool, which
+you can start by doing one of the following:
+
+ * On Windows, double-click the file ``tools\startobconfig.bat``
+ * On other systems (Linux, Mac OSX), double-click the file ``tools/startobconfig.sh``

@@ -2,12 +2,17 @@
 OpenBlox Game Engine Readme
 ===========================
 
-------------------------
-For OpenBlox version 0.7
-------------------------
+-----------------------------
+For OpenBlox version 0.7 beta
+-----------------------------
 
 Installing on Windows
 ----------------------
+
+NOTE: If you're using a non-final (i.e, alpha, beta, or bleeding-edge) release,
+      you can safely skip ahead to the "Testing" section, if
+      you've already installed OpenBlox 0.6.2. Otherwise, you
+      need to install OpenBlox 0.6.2 before you can play OpenBlox 0.7
 
 (You'll need an Internet connection to run the Windows installer.
 Note that it may take around 2-5 minutes to for the installer to download the required libraries.)
@@ -157,11 +162,17 @@ You can move with the following keys:
  * Right arrow key: Rotate right
  * Space: Jump
 
-(Note that the character can fall down at times, so either restart OpenBlox, or
-set your avatar upright by carefully pressing Jump)
+More information
+----------------
+
+OpenBlox 0.7 comes with HTML documentation, that you can browse at
+build\docs\html\index.html.
 
 Creating your own games
 ------------------------
+
+Look at the built-in documentation (see the "More information" section)
+for a quick example on how to use BloxWorks - OpenBlox's game editor.
 
 The OpenBlox wiki has all the info you need to make your very own OpenBlox games.
 Go to:
