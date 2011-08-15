@@ -102,6 +102,7 @@ class LuaFactory(object):
 
         import obengine.math
         import obengine.async
+        import obengine.gui
 
         self.factory_items = {
         'Vector' : obengine.math.Vector,
@@ -112,7 +113,9 @@ class LuaFactory(object):
         'DelayedTask' : obengine.async.DelayedTask,
         'PeriodicTask' : obengine.async.PeriodicTask,
         'LoopingCall' : obengine.async.LoopingCall,
-        'AsyncCall' : obengine.async.AsyncCall
+        'AsyncCall' : obengine.async.AsyncCall,
+
+        'WidgetFactory' : obengine.gui.WidgetFactory
         }
 
     def make(self, item, *args):
