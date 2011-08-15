@@ -24,10 +24,10 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jul 1, 2011 10:36:46 AM$"
+__date__ = "$Jul 1, 2011 10:36:46 AM$"
 
 
-from panda3d.core import Vec3, Vec4, Quat, Filename
+from panda3d.core import Vec3, Vec4, Point3, Quat, Filename
 
 import obengine.event
 import obengine.gfx.math
@@ -68,6 +68,10 @@ class PandaConverter(object):
     @staticmethod
     def convert_vector(vector):
         return Vec3(vector.x, vector.y, vector.z)
+
+    @staticmethod
+    def convert_vector_to_point3(vector):
+        return Point3(vector.x, vector.y, vector.z)
 
     @staticmethod
     def convert_vector2d(vector):

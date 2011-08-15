@@ -565,12 +565,16 @@ class Camera(object):
         self.window = window
         self.camera = self.window.panda_window.camera
         self.panda_node = self.camera
+        self._parent = None
 
     def load(self):
         self.on_loaded()
 
     def look_at(self, model):
         self.camera.lookAt(model.panda_node)
+
+    def look_at_point(self, point):
+        self.camera.lookAt(PandaConverter.convert_vector_to_point3(point))
 
     def move(self, vector):
         self.camera.setPos(self.camera, vector.x, vector.y, vector.z)
@@ -599,5 +603,18 @@ class Camera(object):
 
             quat = PandaConverter.convert_angle(new_angle)
             self.camera.setQuat(quat)
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def parent():
+
+        def fget(self):
+            return self._parent
+
+        def fset(self, new_parent):
+
+            self._parent = new_parent
+            self.camera.reparentTo(self.parent.panda_node)
 
         return locals()

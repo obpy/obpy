@@ -248,4 +248,20 @@ class PlayerView(object):
             self._camera.position = cam_position
             self._camera.rotation = self._model.rotation
 
+        elif view_mode == 'shoulder':
+
+            self._camera.parent = self._model
+
+            X_OFFSET = 4
+            Y_OFFSET = -15
+            Z_OFFSET = 3
+
+            cam_position = self._camera.position
+            cam_position.x += X_OFFSET
+            cam_position.y += Y_OFFSET
+            cam_position.z += Z_OFFSET
+            self._camera.position = cam_position
+
+            return task.STOP
+
         return task.AGAIN

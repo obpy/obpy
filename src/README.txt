@@ -3,16 +3,16 @@ OpenBlox Game Engine Readme
 ===========================
 
 -----------------------------
-For OpenBlox version 0.7 beta
+For OpenBlox version 0.8 beta
 -----------------------------
+
+.. warning::
+
+	The installation sections of this document are just plain wrong.
+	Use caution!
 
 Installing on Windows
 ----------------------
-
-NOTE: If you're using a non-final (i.e, alpha, beta, or bleeding-edge) release,
-      you can safely skip ahead to the "Testing" section, if
-      you've already installed OpenBlox 0.6.2. Otherwise, you
-      need to install OpenBlox 0.6.2 before you can play OpenBlox 0.7
 
 (You'll need an Internet connection to run the Windows installer.
 Note that it may take around 2-5 minutes to for the installer to download the required libraries.)
