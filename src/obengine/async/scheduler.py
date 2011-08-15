@@ -21,7 +21,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$May 4, 2011 11:24:00 AM$"
+__date__ = "$May 4, 2011 11:24:00 AM$"
 
 
 import obengine.datatypes
@@ -30,10 +30,13 @@ obengine.depman.gendeps()
 
 
 class Scheduler(object):
-    """Asynchronous task scheduler
-    NOTE: If you're using a non-dummy graphics renderer, then everything that
-    has a lower priority than the rendering task will run
-    at the graphics renderer's frame rate.
+    """Asynchronous task scheduler.
+    
+    .. note:: 
+    
+        If you're using a non-dummy graphics renderer, then everything that
+        has a lower priority than the rendering task will run
+        at the graphics renderer's frame rate.
     """
 
     def __init__(self):
@@ -42,23 +45,25 @@ class Scheduler(object):
         self.task_buffer = set()
 
     def add(self, task):
-        """Adds a task to the task buffer
-        Arguments:
-         * task - the task to add
+        """Adds a task to the task buffer.
+        
+        :param task: The task to add
         """
 
         task.scheduler = self
         self.task_buffer.add(task)
 
     def empty(self):
-        """Checks to see if this scheduler is empty
-        Returns True if there are no more tasks to run, False otherwise.
+        """Checks to see if this scheduler is empty.
+        
+        :returns: `True` if there are no more tasks to run,
+                  `False` otherwise.
         """
         return not self.queue and not self.task_buffer
 
     def loop(self):
-        """Loops this scheduler
-        Runs forever, or at least until there are no more tasks to run :)
+        """Runs forever, or at least until
+        there are no more tasks to run :)
         """
 
         while True:
@@ -83,7 +88,7 @@ class Scheduler(object):
     def _copy_from_task_buffer(self):
 
         self.queue += self.task_buffer
-            
+
         self.task_buffer.clear()
 
     def _priority_sort(self, task1, task2):

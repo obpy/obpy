@@ -19,8 +19,8 @@
 #     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-__author__="openblocks"
-__date__ ="$May 4, 2011 11:27:45 AM$"
+__author__ = "openblocks"
+__date__ = "$May 4, 2011 11:27:45 AM$"
 
 
 import traceback
@@ -42,8 +42,10 @@ class LoopingCall(object):
     Helper class to easily wrap an existing method for use with obengine.async.Scheduler.
     It is similar to, and inspired by, Twisted's LoopingCall factory.
 
-    NOTE: If the given method throws an unhandled exception, the exception's traceback is logged,
-    and the method will not be called further.
+    .. note::
+    
+        If the given method throws an unhandled exception, the exception's
+        traceback is logged, and the method will not be called further.
     """
 
     def __init__(self, action, priority = 0, delay = 0.0):
@@ -57,7 +59,7 @@ class LoopingCall(object):
 
         else:
             self.task = obengine.async.Task(self.run_action, priority)
-            
+
         self.execute = self.task.execute
         self.__cmp__ = self.task.__cmp__
 
@@ -65,7 +67,7 @@ class LoopingCall(object):
 
         try:
             self.action()
-        
+
         except:
 
             traceback_message = StringIO.StringIO()
@@ -88,7 +90,7 @@ class LoopingCall(object):
         def fget(self):
             return self.task.scheduler
 
-   
+
         def fset(self, sched):
             self.task.scheduler = sched
 
@@ -105,7 +107,7 @@ class AsyncCall(object):
 
         self._method = method
         self._finished = False
-        
+
         self.priority = priority
 
         self.method_args = args

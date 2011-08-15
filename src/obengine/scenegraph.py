@@ -22,7 +22,7 @@
 #
 
 __author__ = "openblocks"
-__date__  = "$May 23, 2011 8:33:32 PM$"
+__date__ = "$May 23, 2011 8:33:32 PM$"
 
 import functools
 import sqlite3
@@ -93,6 +93,9 @@ class SceneGraph(object):
 
         self.owner = owner
 
+        # Create our scene graph, and create
+        # an empty database
+
         self.db = sqlite3.connect(':memory:')
         self.db.row_factory = sqlite3.Row
         self.db.execute(self._schema)
@@ -102,18 +105,21 @@ class SceneGraph(object):
 
     def add_node(self, node, error_on_exist = True):
         """
-        Adds node to the scene graph. All of node's children are added, as well.
-        If error_on_exist is True, then NodeIdExistsException is raised if
-        node's NID is already used.
+        Adds *node* to the scene graph. All of *node*'s children are added, as well.
+        If *error_on_exist* is `True`, then `NodeIdExistsException` is raised if
+        *node*'s NID is already used.
         """
 
+        # Does a node with the given node's NID already exist in our
+        # graph?
         if node.nid in self.nodes:
 
+            # Does our caller want an exception to be raised?
             if error_on_exist is True:
                 raise NodeIdExistsException(node.nid)
 
             else:
-                return None
+                return
 
         node_name = node.name
         node_id = node.nid
@@ -124,11 +130,14 @@ class SceneGraph(object):
 
         node_children = []
 
+        # Add all this node's children
         for child in node.children.itervalues():
 
             node_children.append(str(child.nid))
             self.add_node(child, False)
 
+        # If the node has children, record them in the scene graph's
+        # record of this node's children
         node_children = CHILDREN_ID_SEP.join(node_children)
         node_children = node_children or NO_CHILDREN_MARKER
 
@@ -136,9 +145,12 @@ class SceneGraph(object):
 
         cursor = self.db.cursor()
         cursor.execute(self._add_node_sql, args)
-        
+
+        # Save the node
         self.nodes[node_id] = node
 
+        # Bind some event handlers that update our SQLite's records
+        # of our node if our node gets modified
         name_updater = functools.partial(self._update_node_name, node)
         children_updater = functools.partial(self._update_node_children, node)
         parent_updater = functools.partial(self._update_node_parent, node)
@@ -156,18 +168,21 @@ class SceneGraph(object):
         Removes a node (with NID *nid*) from the scene graph.
         It also recursively removes all its children.
 
-        If the requested NID isn't found, NoSuchIdException is raised.
+        If the requested NID isn't found, `NoSuchIdException` is raised.
         """
 
         node = self.get_node_by_id(nid)
         children = node.children.keys()
         event_handlers = self.node_handlers[nid]
 
+        # Unbind the event handlers we bound to this node
+        # when we added it to our scene graph
         node.on_name_changed -= event_handlers[0]
         node.children.on_item_added -= event_handlers[1]
         node.children.on_item_removed -= event_handlers[1]
         node.on_parent_changed -= event_handlers[2]
 
+        # Remove all this node's children, as well
         for child_nid in children:
             self.remove_node_by_id(child_nid)
 
@@ -187,9 +202,9 @@ class SceneGraph(object):
         Removes a node (with name *name*) from the scene graph.
         It also recursively removes all its children.
 
-        If the requested name couldn't be found, NoSuchNameException is raised.
-        Also, if more than one scene graph node is named name, then AmbiguousNameException
-        is raised.
+        If the requested name couldn't be found, `NoSuchNameException` is raised.
+        Also, if more than one scene graph node is named
+        *name*, then `AmbiguousNameException` is raised.
         """
 
         node = self.get_node_by_name(name)
@@ -197,7 +212,7 @@ class SceneGraph(object):
 
     def find_node_by_name(self, name, starting_nid = NO_PARENT_ID, fail_on_ambiguous = False, exc_on_non_existent = True):
         """
-        Example:
+        Example::
         
             >>> sg = SceneGraph()
             >>> n1 = SceneNode('Node 1')
@@ -220,6 +235,8 @@ class SceneGraph(object):
         rows = cursor.fetchall()
         rowcount = len(rows)
 
+        # If rowcount > 0, this means more than one node on the scene graph
+        # has the given name
         if rowcount > 0:
 
             if fail_on_ambiguous is True:
@@ -232,11 +249,15 @@ class SceneGraph(object):
 
         else:
 
+            # This means no node with the given name is under the node
+            # with the NID contained in starting_nid, so recursively search said
+            # node's children
+
             get_children_sql = '''
             SELECT * FROM scene_nodes WHERE
             parent = ?
             '''
-            
+
             cursor = self.db.cursor()
             cursor.execute(get_children_sql, (starting_nid,))
 
@@ -247,7 +268,7 @@ class SceneGraph(object):
 
                 for row in rows:
 
-                    nid =  row['id']
+                    nid = row['id']
                     node = self.find_node_by_name(name, nid, fail_on_ambiguous, False)
 
                     if node:
@@ -261,8 +282,8 @@ class SceneGraph(object):
 
     def get_node_by_id(self, nid):
         """
-        Retrieves the node with NID nid from the scene graph.
-        If the requested NID couldn't be found, NoSuchIdException is raised.
+        Retrieves the node with NID *nid* from the scene graph.
+        If the requested NID couldn't be found, `NoSuchIdException` is raised.
         """
 
         cursor = self.db.cursor()
@@ -279,16 +300,20 @@ class SceneGraph(object):
 
     def get_node_by_name(self, name):
         """
-        Retrieves the node named name from the scene graph.
-        NoSuchNameException is raised if the requested name couldn't be found;
-        AmbiguousNameException is raised if more than one node with the given
-        name was found.
+        Retrieves the node named *name* from the scene graph.
+        
+        :raises: `NoSuchNameException` if the requested name couldn't be found.
+        :raises: `AmbiguousNameException` if more than one node with
+                the given name was found.
 
-        NOTE: AmbiguousNameException is raised if there are more than one nodes
-        with the given name on the entire scene graph; i.e, the entire scene graph
-        is queried at once. So, if you have a node named "Name", and a child node
-        also named "Name", then if you call SceneGraph.get_node_by_name('Name'),
-        then AmbiguousNameException is raised.
+        .. note::
+        
+            `AmbiguousNameException` is raised if there are more than one nodes
+            with the given name on the entire scene graph; i.e, the entire scene graph
+            is queried at once. So, if you have a node named "Name", and a child node
+            also named "Name", then if you call ``SceneGraph.get_node_by_name('Name')``,
+            then `AmbiguousNameException` is raised. If you don't want that
+            to happen, then use `SceneGraph.find_node_by_name`, instead.
         """
 
         cursor = self.db.cursor()
@@ -350,6 +375,8 @@ class SceneGraph(object):
         cursor.execute(update_sql, (parent_id, node.nid))
 
     def __getattr__(self, key):
+        # This method is for backwards compatibility with OpenBlox <= 0.6.2,
+        # which used attribute-style access for accessing nodes on the scene graph.
 
         if key in self.__dict__:
             return self.__dict__[key]
@@ -375,15 +402,14 @@ class SceneNode(object):
     """
     Generic scene node. You'll probably want to subclass this class,
     instead of using it directly.
+    
+    :param name: the name of this scene node
+    :param parent: the parent node of this SceneNode (optional)
     """
 
     _next_avail_id = 0
-    
+
     def __init__(self, name, parent = None):
-        """
-        Initializes this scene node. name is the name of this scene node,
-        parent is the parent node of this SceneNode (optional).
-        """
 
         self._name = name
         self._nid = SceneNode._next_avail_id
@@ -403,11 +429,11 @@ class SceneNode(object):
 
     def remove_child(self, nid):
         """
-        Removes child with NID nid from this node's list of children.
+        Removes child with NID *nid* from this node's list of children.
         It also recursively removes all that child's children, as well.
 
         If this node doesn't have a child with the given NID, then
-        NoSuchIdException is raised.
+        `NoSuchIdException` is raised.
         """
 
         try:
@@ -438,14 +464,14 @@ class SceneNode(object):
     def find_child_by_name(self, name, fail_on_ambiguous = True, exc_on_non_existent = True):
         """
         Recursively searches this node's children for the first node named name.
-        If multiple nodes named name are found at the same depth, if fail_on_ambiguous
-        is False, then the first match is returned (be *very* careful with this).
-        Otherwise (if fail_on_ambiguous is True, the default), AmbiguousNameException
-        is raised.
-        This method also raises NoSuchNameException if no node named name was found, and
-        exc_on_non_existent is True.
+        If multiple nodes named name are found at the same depth,
+        if *fail_on_ambiguous* is `False`, then the first match is
+        returned (be *very* careful with this). Otherwise, if
+        *fail_on_ambiguous* is `True` (the default), `AmbiguousNameException`
+        is raised. This method also raises `NoSuchNameException` if
+        no node named *name* was found, and *exc_on_non_existent* is `True`.
 
-        Example:
+        Example::
 
             >>> sg = SceneGraph()
             >>> n1 = SceneNode('Node 1')
@@ -489,16 +515,17 @@ class SceneNode(object):
 
     def get_child_by_name(self, name):
         """
-        Returns the child named name from this node's list of children,
-        If this node doesn't have a child named name, then
-        NoSuchNameException is raised.
-
+        Returns the child named *name* from this node's list of children.
+        If this node doesn't have a child named *name*, then
+        `NoSuchNameException` is raised.
         Otherwise, if this node has more than one child named name,
-        then AmbiguousNameException is raised.
+        then `AmbiguousNameException` is raised.
 
-        WARNING: This method can be slow if this node has a lot of children (> 10,000).
+        .. warning::
+        
+            This method can be slow if this node has a lot of children (> 10,000).
 
-        Example:
+        Example::
 
             >>> sg = SceneGraph()
             >>> n1 = SceneNode('Node 1')
@@ -543,7 +570,7 @@ class SceneNode(object):
     def name(self):
         """
         The name of this scene node.
-        Example:
+        Example::
 
             >>> sg = SceneGraph()
             >>> n1 = SceneNode('Node 1')

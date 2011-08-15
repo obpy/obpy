@@ -35,22 +35,23 @@ class Task(object):
     Base task class, for other task classes to inherit from.
     This is still a useful class, if you want your task to run at
     the maximum possible speed.
+    
+    :param action: the function to run. It is called like this;
+                   ``action(task, *args, **kwargs)``
+    :param priority: the priority of this task. Task with a higher priority,
+                     i.e, a higher value for this parameter, are run sooner
+                     than tasks with a lower priority (a lower given value).
+    :param name: the name of this task. If not given,
+                 ``action.__name__`` will be used instead.
+    :param args: an iterable containing arguments to pass
+                 to *action* whenever it's called.
+    :param kwargs: a dict or dict-like object that will be passed
+                   to *action* when it's called.
     """
 
     AGAIN, STOP = range(2)
 
     def __init__(self, action, priority = 0, name = None, args = [], kwargs = {}):
-        """
-        Arguments:
-         * action - the function to run. It is called like this:
-         action(task, *args **kwargs)
-           so it always is given at least 1 parameter, its controlling task.
-         * priority - the priority of this task. Task with a higher priority (i.e, a higher value for this parameter)
-           are run sooner than tasks with a lower priority (a lower given value).
-         * name - the name of this task.
-         * args - an iterable containing arguments to pass to action whenever it's called.
-         * kwargs - a dict or dict-like object that will be passed to action when it's called.
-        """
 
         self.action = action
         self.name = name or action.__name__
@@ -71,13 +72,17 @@ class Task(object):
 
     def _run_action(self):
 
+        # Record how much time our action takes
+
         t1 = time.time()
         ret = self.action(self, *self.args, **self.kwargs)
         t2 = time.time()
 
+        # Does our action want to be run again?
         if ret == self.AGAIN:
             self._reschedule()
 
+        # Does it want to stop?
         elif ret == self.STOP:
 
             if self in self.scheduler.task_buffer:
@@ -97,14 +102,15 @@ class Task(object):
 
 
 class PeriodicTask(Task):
+    """
+    See `Task` for documentation on the majority of these arguments.
+    
+    :param period: the time that should elapse between runs of this task.
+                   Other tasks will run while this task is waiting, even
+                   if their priority is lower.
+    """
 
     def __init__(self, action, period, priority = 0, name = None, args = [], kwargs = {}):
-        """
-        See Task for documentation on the majority of these arguments.
-        Arguments:
-         * period - the time that should elapse between runs of this task.
-                    Other tasks will run while this task is waiting, even if their priority is lower.
-        """
 
         Task.__init__(self, action, priority, name, args, kwargs)
 
@@ -113,12 +119,17 @@ class PeriodicTask(Task):
 
     def execute(self):
 
+        # Is this the first time we've run?
+
         if self.start_time == None:
 
             self.start_time = time.time()
             self._reschedule()
 
         else:
+
+            # We've run at least once before, so check to
+            # see if our period has expired
 
             now = time.time()
 
@@ -136,13 +147,14 @@ class PeriodicTask(Task):
 
 
 class DelayedTask(Task):
+    """
+    See `Task` for documentation on the majority of these arguments.
+    
+    :param delay: how long to wait before running this task.
+                  This doesn't block - other tasks still run.
+        """
 
     def __init__(self, action, delay, priority = 0, name = None, args = [], kwargs = {}):
-        """
-        See Task for documentation on the majority of these arguments.
-        Arguments:
-         * delay - how long to wait before running this task. This doesn't block - other tasks still run.
-        """
 
         Task.__init__(self, action, priority, name, args, kwargs)
 
@@ -153,10 +165,16 @@ class DelayedTask(Task):
 
         if self.start_time == None:
 
+            # This is the first time we've been executed, so
+            # put ourselves back into our scheduler
+
             self.start_time = time.time()
             self._reschedule()
 
         else:
+
+            # We've run at least one time before, so check
+            # to see if our delay is up
 
             now = time.time()
 

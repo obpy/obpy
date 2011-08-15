@@ -21,8 +21,9 @@
 #     along with The OpenBlox Game Engine.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-__author__="openblocks"
-__date__ ="$May 4, 2011 11:21:01 AM$"
+__author__ = "openblocks"
+__date__ = "$May 4, 2011 11:21:01 AM$"
+
 
 from scheduler import *
 from task import *

@@ -1,12 +1,11 @@
-=====================================================
-OpenBlox's asynchronous system (``obengine.async``)
-=====================================================
+==============================
+OpenBlox's asynchronous system
+==============================
 
 .. warning::
 
 	This document is a work in progress!
 
-.. module:: obengine.async
 .. versionadded:: 0.7
 
 OpenBlox utilizes an asynchronous, event-driven approach in almost everything
@@ -51,3 +50,19 @@ Enter the following into an interactive Python session:
 Reference
 =========
 
+
+.. inheritance-diagram:: obengine.async.task
+
+.. inheritance-diagram:: obengine.async.scheduler
+
+.. inheritance-diagram:: obengine.async.utils
+
+
+.. automodule:: obengine.async.task
+	:members:
+
+.. automodule:: obengine.async.scheduler
+	:members:
+
+.. automodule:: obengine.async.utils
+	:members:
