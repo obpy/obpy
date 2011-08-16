@@ -438,7 +438,7 @@ class XmlSkyboxExtension(XmlElementExtension):
 
 class LightElement(obengine.element.Element):
 
-    def __init__(self, name, window, light_type = None, color = None, cast_shadows = False, rotation = None):
+    def __init__(self, name, window, light_type = None, color = None, rotation = None, cast_shadows = False):
 
         obengine.element.Element.__init__(self, name)
         self.set_extension('xml', XmlLightExtension)
@@ -456,8 +456,8 @@ class LightElement(obengine.element.Element):
         name,
         window,
         color,
-        cast_shadows,
-        rotation)
+        rotation,
+        cast_shadows)
 
         self._light.load()
 

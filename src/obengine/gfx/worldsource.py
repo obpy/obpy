@@ -193,7 +193,7 @@ class WorldSource(list):
 
         # We can't load this game if it's for a non-compatible version of OpenBlox
         if obengine.compatible_with(game_version) is False:
-            raise InsufficientVersionError, rootnode.attrib.get('version', '0.6.2')
+            raise InsufficientVersionError, game_version
 
         # Run over all the children of the top-level "world" tag
         for child in rootnode:
@@ -214,7 +214,8 @@ class WorldSource(list):
 class FileWorldSource(WorldSource):
     """
     This class loads a world from a file.
-    Supply this class to an obengine.world.World's load_world method, after calling FileWorldSource.parse.
+    Supply this class to an obengine.world.World's load_world method,
+    after calling FileWorldSource.parse.
     """
 
     def __init__(self, path, factory):

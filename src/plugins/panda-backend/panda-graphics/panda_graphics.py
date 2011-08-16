@@ -318,12 +318,14 @@ class Light(PandaResource):
 
     DIRECTIONAL = 'directional'
     AMBIENT = 'ambient'
+    POINT = 'point'
 
-    def __init__(self, light_type, name, window, color = obengine.gfx.math.Color(255, 255, 255, 255), rotation = obengine.gfx.math.EulerAngle(0, 0, 0), cast_shadows = False):
+    def __init__(self, light_type, name, window, position = obengine.gfx.math.Vector(0, 0, 0), color = obengine.gfx.math.Color(255, 255, 255, 255), rotation = obengine.gfx.math.EulerAngle(0, 0, 0), cast_shadows = False):
         """Creates a new light
         Arguments:
-         * light_type - either Light.DIRECTIONAL for a directional light, or
-                        Light.AMBIENT for an ambient light
+         * light_type - either Light.DIRECTIONAL for a directional light,
+                        Light.AMBIENT for an ambient light, or Light.POINT for
+                        a point light
          * name - specifies the name of this light on the Panda scene graph.
                   If you're doing any low-level Panda work, remember this!
          * color - the color cast by this light
@@ -340,9 +342,10 @@ class Light(PandaResource):
         self._casting_shadows = cast_shadows
         self._light_type = light_type
         self._rotation = rotation
+        self._position = position
         self._window = window
 
-        if light_type not in [Light.DIRECTIONAL, Light.AMBIENT]:
+        if light_type not in (Light.DIRECTIONAL, Light.AMBIENT, Light.POINT):
             raise ValueError('Unknown light type "%s"' % light_type)
 
     def load(self):
@@ -357,8 +360,14 @@ class Light(PandaResource):
         elif self._light_type == Light.AMBIENT:
             self._init_ambient_light()
 
+        elif self._light_type == Light.POINT:
+            self._init_point_light()
+
         self.panda_node = self._window.panda_window.render.attachNewNode(self.panda_light)
         base.render.setLight(self.panda_node)
+
+        self.color = self.color
+        self.rotation = self.rotation
 
         self.on_loaded()
 
@@ -412,12 +421,34 @@ class Light(PandaResource):
         else:
             self._rotation = rot
 
-        self.panda_light.setHpr(self.convert_euler_angle(self._rotation))
+        self.panda_node.setHpr(*self.convert_euler_angle(self._rotation))
+
+    @obengine.datatypes.nested_property
+    def position():
+
+        def fget(self):
+
+            if self._light_type != Light.POINT:
+                obengine.log.warn('Tried to retrieve position of non-point light')
+
+            return PandaConverter.convert_vec3(self.panda_node.getPos())
+
+        def fset(self, new_pos):
+
+            if self._light_type != Light.POINT:
+                obengine.log.warn('Tried to set position of non-point light')
+
+            if isinstance(new_pos, tuple):
+                self._position = obengine.gfx.math.Vector(*new_pos)
+
+            else:
+                self._position = new_pos
+
+            self.panda_node.setPos(PandaConverter.convert_vector(self._position))
 
     def _init_directional_light(self):
 
         self.panda_light = DirectionalLight(self._name)
-        self.panda_light.setColor(self.convert_color(self._color))
 
         if self._casting_shadows is True:
            self.panda_light.setShadowCaster(True, 256, 256)
@@ -425,10 +456,12 @@ class Light(PandaResource):
     def _init_ambient_light(self):
 
         self.panda_light = AmbientLight(self._name)
-        self.panda_light.setColor(self.convert_color(self._color))
 
         if self._casting_shadows is True:
             obengine.utils.warn('Tried to turn on shadows for an ambient light')
+
+    def _init_point_light(self):
+        self.panda_light = PointLight(self._name)
 
 
 class Window(object):
@@ -471,6 +504,8 @@ class Window(object):
         self.resolution = map(int, self._config_src.get_str('resolution', 'core.gfx').split('x'))
         self.search_path = self._config_src.get_str('cfgdir') + '/data'
 
+        loadPrcFileData('', 'want-pstats 1')
+
         if self._config_src.get_bool('use-vsync', 'core.gfx', True) is False:
             loadPrcFileData('', 'sync-video #f')
 
@@ -512,10 +547,13 @@ class Window(object):
             CUTOFF = 0.3
             edge_detect_scene.setShaderInput('cutoff', Vec4(CUTOFF, CUTOFF, CUTOFF, CUTOFF))
 
-            self.panda_window.render.setAttrib(LightRampAttrib.makeSingleThreshold(0.4, 0.3))
+            self.panda_window.render.setAttrib(LightRampAttrib.makeDoubleThreshold(0.4, 0.3, 0.7, 0.5))
 
         elif self._config_src.get_str('shading', 'core.gfx', 'normal') == 'toon':
-            self.panda_window.render.setAttrib(LightRampAttrib.makeSingleThreshold(0.4, 0.3))
+            self.panda_window.render.setAttrib(LightRampAttrib.makeDoubleThreshold(0.4, 0.3, 0.5, 0.4))
+
+        else:
+            self.panda_window.render.setAttrib(LightRampAttrib.makeHdr0())
 
         picker_node = CollisionNode('mouse_ray')
         picker_nodepath = self.panda_window.camera.attachNewNode(picker_node)
