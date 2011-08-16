@@ -320,7 +320,7 @@ class Light(PandaResource):
     AMBIENT = 'ambient'
     POINT = 'point'
 
-    def __init__(self, light_type, name, window, position = obengine.gfx.math.Vector(0, 0, 0), color = obengine.gfx.math.Color(255, 255, 255, 255), rotation = obengine.gfx.math.EulerAngle(0, 0, 0), cast_shadows = False):
+    def __init__(self, light_type, name, window, color = obengine.gfx.math.Color(255, 255, 255, 255), position = obengine.gfx.math.Vector(0, 0, 0), rotation = obengine.gfx.math.EulerAngle(0, 0, 0), cast_shadows = False):
         """Creates a new light
         Arguments:
          * light_type - either Light.DIRECTIONAL for a directional light,
@@ -368,6 +368,9 @@ class Light(PandaResource):
 
         self.color = self.color
         self.rotation = self.rotation
+
+        if self._light_type == Light.POINT:
+            self.position = self.position
 
         self.on_loaded()
 
@@ -445,6 +448,8 @@ class Light(PandaResource):
                 self._position = new_pos
 
             self.panda_node.setPos(PandaConverter.convert_vector(self._position))
+
+        return locals()
 
     def _init_directional_light(self):
 

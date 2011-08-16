@@ -170,7 +170,13 @@ class WorldSource(list):
         light_color = map(lambda s: float(s), child.attrib['rgb'].strip().split(','))
         color = obengine.math.Color(*light_color)
 
-        element = factory.make('light', name, type, color, rotation)
+        position = None
+        if type == 'point':
+
+            light_position = map(lambda s: float(s), child.attrib['coords'].strip().split(','))
+            position = obengine.math.Vector(*light_position)
+
+        element = factory.make('light', name, type, color, position, rotation)
         self.append(element)
 
     def parse(self):

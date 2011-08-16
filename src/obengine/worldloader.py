@@ -4,7 +4,7 @@
 # for this module.
 #
 #
-# Copyright (C) 2010-2011 The OpenBlox Project
+# Copyright (C) 2011 The OpenBlox Project
 #
 # This file is part of The OpenBlox Game Engine.
 #
@@ -23,7 +23,7 @@
 #
 
 __author__ = "openblocks"
-__date__  = "$May 28, 2011 11:26:46 AM$"
+__date__ = "$May 28, 2011 11:26:46 AM$"
 
 
 import obengine.event
@@ -73,17 +73,17 @@ class WorldLoader(object):
 
             for element in elements:
                 element.on_world_loaded()
-                
+
             self.on_world_loaded()
 
     def _get_priority(self, element_index, num_elements):
-        
+
         orig_range = (0, num_elements)
 
         priority = obengine.utils.interp_range(
         orig_range,
         self._PRIORITY_RANGE,
-        element_index 
+        element_index
         )
 
         return priority
