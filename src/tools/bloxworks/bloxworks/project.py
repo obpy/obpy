@@ -187,18 +187,8 @@ def create_new_project(window, name, author):
     world.element.add_node(obengine.gfx.element3d.CameraElement(window))
     project = Project(world, author, obengine.version_string())
     world.add_element(obengine.gfx.element3d.SkyboxElement(window))
-    world.add_element(obengine.gfx.element3d.LightElement('Ambient light',
-                                                          window,
-                                                          'ambient',
-                                                          color = obengine.math.Color(200,
-                                                                                      200,
-                                                                                      200)))
-    world.add_element(obengine.gfx.element3d.LightElement('Sun light',
-                                                          window,
-                                                          'directional',
-                                                          color = obengine.math.Color(201,
-                                                                                      226,
-                                                                                      255)))
+    world.add_element(obengine.gfx.element3d.LightElement('ambient_light', window, 'ambient'))
+    world.add_element(obengine.gfx.element3d.LightElement('sun_light', window))
 
     obengine.vfs.open('/bloxworks-registry/project', 'w').write(project)
 

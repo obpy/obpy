@@ -132,11 +132,11 @@ class ElementFactory(object):
         element = SoundElement(name, soundfile, autoplay)
         return element
 
-    def make_light(self, name, type = None, color = None, position = None, rotation = None):
+    def make_light(self, name, type = None, color = None, position = None, rotation = None, cast_shadows = False):
 
         from obengine.gfx.element3d import LightElement
 
-        element = LightElement(name, self.window, type, color, position, rotation)
+        element = LightElement(name, self.window, type, color, position, rotation, cast_shadows)
         return element
 
 

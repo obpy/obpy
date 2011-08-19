@@ -107,6 +107,13 @@ class BlockBrickView(BrickView):
 
     type = 'brick'
 
+    def __init__(self, size, rotation, color, window):
+
+        if obengine.cfg.Config().get_str('shading', 'core.gfx', 'normal') == 'normal':
+            self.type = 'brick-flat'
+
+        BrickView.__init__(self, size, rotation, color, window)
+
     @obengine.datatypes.nested_property
     def position():
 
@@ -438,7 +445,7 @@ class XmlSkyboxExtension(XmlElementExtension):
 
 class LightElement(obengine.element.Element):
 
-    def __init__(self, name, window, light_type = None, color = None, rotation = None, cast_shadows = False):
+    def __init__(self, name, window, light_type = None, color = None, position = None, rotation = None, cast_shadows = False):
 
         obengine.element.Element.__init__(self, name)
         self.set_extension('xml', XmlLightExtension)
@@ -449,6 +456,7 @@ class LightElement(obengine.element.Element):
         light_type = light_type or obplugin.core.graphics.Light.DIRECTIONAL
         color = color or obengine.math.Color(255, 255, 255)
         rotation = rotation or obengine.math.EulerAngle()
+        position = position or obengine.math.Vector()
 
         self._window = window
         self._light = obplugin.core.graphics.Light(
@@ -456,6 +464,7 @@ class LightElement(obengine.element.Element):
         name,
         window,
         color,
+        position,
         rotation,
         cast_shadows)
 

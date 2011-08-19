@@ -25,10 +25,10 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jul 12, 2010 7:59:47 PM$"
+__date__ = "$Jul 12, 2010 7:59:47 PM$"
 
 
-ENGINE_VERSION = (0, 7, 0)
+ENGINE_VERSION = (0, 8, 0)
 
 
 def version_string():
@@ -45,7 +45,7 @@ def compatible_with(version_str):
         raise InvalidVersionError(version_str)
 
     other_version = map(int, version_str.split('.'))
-    
+
     major_version_compatible = other_version[0] == ENGINE_VERSION[0]
     minor_version_compatible = other_version[1] <= ENGINE_VERSION[1]
 

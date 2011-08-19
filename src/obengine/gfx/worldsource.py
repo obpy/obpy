@@ -152,7 +152,7 @@ class WorldSource(list):
         # Retrieve the scene graph name, filename, and autoplay (play on added)
         name = child.attrib['name']
         src = child.attrib['src']
-        autoplay = yes_no[child.attrib.get('autoplay', False)]
+        autoplay = yes_no[child.attrib.get('autoplay', 'no')]
 
         # Create the element
         element = factory.make('sound', name, src, autoplay)
@@ -176,7 +176,10 @@ class WorldSource(list):
             light_position = map(lambda s: float(s), child.attrib['coords'].strip().split(','))
             position = obengine.math.Vector(*light_position)
 
-        element = factory.make('light', name, type, color, position, rotation)
+        yes_no = { 'yes' : True, 'no' : False}
+        cast_shadows = yes_no[child.attrib.get('cast_shadows', 'no')]
+
+        element = factory.make('light', name, type, color, position, rotation, cast_shadows)
         self.append(element)
 
     def parse(self):
