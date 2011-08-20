@@ -1,5 +1,4 @@
 import os
-import subprocess
 
 
 def getsyspath(path):
@@ -98,7 +97,7 @@ for node in RecursiveGlob(getsyspath('doc/source/'), '*.rst'):
 
 
 if 'configure' in COMMAND_LINE_TARGETS:
-    
+
     configure()
     Exit(0)
 
