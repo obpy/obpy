@@ -26,6 +26,7 @@ __date__  = "$Jun 1, 2011 7:41:31 PM$"
 
 import warnings
 import obengine.event
+import obengine.datatypes
 
 
 class EulerAngle(object):
@@ -44,36 +45,39 @@ class EulerAngle(object):
         self._p = float(p)
         self._r = float(r)
 
-    @property
+    @obengine.datatypes.nested_property
     def h(self):
-        return self._h
+	def fget(self):
+	    return self._h
 
-    @h.setter
-    def h(self, value):
+	def fset(self, value):
+	    self._h = float(value)
+	    self.on_h_changed(self._h)
 
-        self._h = float(value)
-        self.on_h_changed(self._h)
+    return locals()
 
-    @property
+    @obengine.datatypes.nested_property
     def p(self):
-        return self._p
+	def fget(self):
+	    return self._p
 
-    @p.setter
-    def p(self, value):
+	def fset(self, value):
+	    self._p = float(value)
+	    self.on_p_changed(self._p)
 
-        self._p = float(value)
-        self.on_p_changed(self._p)
+    return locals()
 
-    @property
+    @obengine.datatypes.nested_property
     def r(self):
-        return self._r
+	def fget(self):
+	    return self._r
 
-    @r.setter
-    def r(self, value):
+	def fset(self, value):
+	    self._r = float(value)
+	    self.on_r_changed(self._p
 
-        self._r = float(value)
-        self.on_r_changed(self._r)
-
+    return locals()
+ 
     def __getitem__(self, index):
         """
         This is for backwards compatibility with OpenBlox < 0.6.2,

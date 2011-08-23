@@ -26,6 +26,7 @@ __date__  = "$Jun 1, 2011 7:42:22 PM$"
 
 import warnings
 import obengine.event
+import obengine.datatypes
 
 
 class Color(object):
@@ -45,45 +46,49 @@ class Color(object):
         self._b = float(b)
         self._a = float(a)
 
-    @property
+    @obengine.datatypes.nested_property
     def r(self):
-        return self._r
+        def fget(self):
+            return self._r
 
-    @r.setter
-    def r(self, value):
+	def fset(self):
+	    self._r = float(value)
+	    self.on_r_changed(self._r)
 
-        self._r = float(value)
-        self.on_r_changed(self._r)
+    return locals()
 
-    @property
+    @obengine.datatypes.nested_property
     def g(self):
-        return self._g
+	def fget(self):
+	    return self._g
 
-    @g.setter
-    def g(self, value):
+	def fset(self, value):
+	    self._g = float(value)
+	    self.on_g_changed(self._g)
 
-        self._g = float(value)
-        self.on_g_changed(self._g)
-
-    @property
+    return locals()
+	    
+    @obengine.datatypes.nested_property
     def b(self):
-        return self._b
+	def fget(self):
+	    return self._b
 
-    @b.setter
-    def b(self, value):
+	def fset(self, value):
+	    self._b = float(value)
+	    self.on_b_changed(self._b)
 
-        self._b = float(value)
-        self.on_b_changed(self._b)
+    return locals()
 
-    @property
+    @obengine.datatypes.nested_property
     def a(self):
-        return self._a
+	def fget(self):
+	    return self._a
 
-    @a.setter
-    def a(self, value):
+	def fset(self, value):
+	    self._a = float(value)
+	    self.on_a_changed(self._a)
 
-        self._a = float(value)
-        self.on_a_changed(self._a)
+    return locals()
 
     def __getitem__(self, index):
         """
