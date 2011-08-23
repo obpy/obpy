@@ -30,6 +30,7 @@ from panda3d.core import *
 from direct.showbase.ShowBase import ShowBase
 from direct.filter.CommonFilters import *
 
+import obengine.datatypes
 import obengine.cfg
 import obengine.log
 import obengine.event
@@ -117,6 +118,23 @@ class Model(PandaResource):
         else:
             raise ValueError('val must be either True or False (was %s)' % val)
 
+    @obengine.datatypes.nested_property
+    def position(self):	
+	def fget(self):
+	    return self._position
+
+	def fset(self, pos):
+	    if isinstance(pos, tuple):
+		self._position = obengine.fgx.math.Vector(*pos)
+		self.panda_node.setPos(self.convert_vector(self._position))
+
+	    else:
+		self._position.x = pos.x
+		self._position.y = pos.y
+		self._position.z = pos.z
+
+    return locals()
+
     @property
     def position(self):
         return self._position
@@ -138,20 +156,6 @@ class Model(PandaResource):
     @property
     def scale(self):
         return self._scale
-
-    @scale.setter
-    def scale(self, scale):
-
-        if isinstance(scale, tuple):
-
-            self._scale = obengine.gfx.math.Vector(*scale)
-            self.panda_node.setScale(self.convert_vector(self._scale))
-
-        else:
-
-            self._scale.x = scale.x
-            self._scale.y = scale.y
-            self._scale.z = scale.z
 
     @property
     def rotation(self):
