@@ -327,6 +327,8 @@ def nested_property(func):
     func_locals = func()
     func_locals['doc'] = func.__doc__
 
+    print 'Function locals:', func_locals
+
     return property(**func_locals)
 
 

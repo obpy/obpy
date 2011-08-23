@@ -21,7 +21,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 1, 2011 7:42:22 PM$"
+__date__ = "$Jun 1, 2011 7:42:22 PM$"
 
 
 import warnings
@@ -47,48 +47,56 @@ class Color(object):
         self._a = float(a)
 
     @obengine.datatypes.nested_property
-    def r(self):
+    def r():
+
         def fget(self):
             return self._r
 
-	def fset(self):
-	    self._r = float(value)
-	    self.on_r_changed(self._r)
+    	def fset(self, value):
 
-    return locals()
+    	    self._r = float(value)
+    	    self.on_r_changed(self._r)
 
-    @obengine.datatypes.nested_property
-    def g(self):
-	def fget(self):
-	    return self._g
-
-	def fset(self, value):
-	    self._g = float(value)
-	    self.on_g_changed(self._g)
-
-    return locals()
-	    
-    @obengine.datatypes.nested_property
-    def b(self):
-	def fget(self):
-	    return self._b
-
-	def fset(self, value):
-	    self._b = float(value)
-	    self.on_b_changed(self._b)
-
-    return locals()
+        return locals()
 
     @obengine.datatypes.nested_property
-    def a(self):
-	def fget(self):
-	    return self._a
+    def g():
 
-	def fset(self, value):
-	    self._a = float(value)
-	    self.on_a_changed(self._a)
+    	def fget(self):
+    	    return self._g
 
-    return locals()
+    	def fset(self, value):
+
+    	    self._g = float(value)
+    	    self.on_g_changed(self._g)
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def b():
+
+    	def fget(self):
+    	    return self._b
+
+    	def fset(self, value):
+
+    	    self._b = float(value)
+    	    self.on_b_changed(self._b)
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def a():
+
+    	def fget(self):
+    	    return self._a
+
+    	def fset(self, value):
+
+    	    self._a = float(value)
+    	    self.on_a_changed(self._a)
+
+        return locals()
 
     def __getitem__(self, index):
         """
@@ -96,7 +104,7 @@ class Color(object):
         which used lists instead of this class.
         """
 
-        warnings.warn('Usage of lists for RGBA colors will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
+        warnings.warn('Usage of lists for RGBA colors will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel = 2)
 
         keys = {0 : self.r, 1 : self.g, 2 : self.b, 3 : self.a}
 
@@ -112,7 +120,7 @@ class Color(object):
         which used lists instead of this class.
         """
 
-        warnings.warn('Usage of lists for RGBA colors will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
+        warnings.warn('Usage of lists for RGBA colors will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel = 2)
 
         if index == 0:
             self.r = float(value)

@@ -21,7 +21,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jun 1, 2011 7:41:31 PM$"
+__date__ = "$Jun 1, 2011 7:41:31 PM$"
 
 
 import warnings
@@ -46,45 +46,48 @@ class EulerAngle(object):
         self._r = float(r)
 
     @obengine.datatypes.nested_property
-    def h(self):
-	def fget(self):
-	    return self._h
+    def h():
 
-	def fset(self, value):
-	    self._h = float(value)
-	    self.on_h_changed(self._h)
+    	def fget(self):
+    	    return self._h
 
-    return locals()
+    	def fset(self, value):
+    	    self._h = float(value)
+    	    self.on_h_changed(self._h)
 
-    @obengine.datatypes.nested_property
-    def p(self):
-	def fget(self):
-	    return self._p
-
-	def fset(self, value):
-	    self._p = float(value)
-	    self.on_p_changed(self._p)
-
-    return locals()
+        return locals()
 
     @obengine.datatypes.nested_property
-    def r(self):
-	def fget(self):
-	    return self._r
+    def p():
 
-	def fset(self, value):
-	    self._r = float(value)
-	    self.on_r_changed(self._p
+        def fget(self):
+            return self._p
 
-    return locals()
- 
+        def fset(self, value):
+            self._p = float(value)
+            self.on_p_changed(self._p)
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def r():
+
+        def fget(self):
+            return self._r
+
+        def fset(self, value):
+            self._r = float(value)
+            self.on_r_changed(self._r)
+
+        return locals()
+
     def __getitem__(self, index):
         """
         This is for backwards compatibility with OpenBlox < 0.6.2,
         which used lists instead of this class.
         """
 
-        warnings.warn('Usage of lists for Euler angles will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
+        warnings.warn('Usage of lists for Euler angles will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel = 2)
 
         keys = {0 : self.h, 1 : self.p, 2 : self.r}
 
@@ -100,7 +103,7 @@ class EulerAngle(object):
         which used lists instead of this class.
         """
 
-        warnings.warn('Usage of lists for Euler angles will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel=2)
+        warnings.warn('Usage of lists for Euler angles will be removed in OpenBlox 0.8', DeprecationWarning, stacklevel = 2)
 
         if index == 0:
             self.h = float(value)

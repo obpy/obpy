@@ -119,43 +119,41 @@ class Model(PandaResource):
             raise ValueError('val must be either True or False (was %s)' % val)
 
     @obengine.datatypes.nested_property
-    def position(self):	
-	def fget(self):
-	    return self._position
+    def position():
 
-	def fset(self, pos):
-	    if isinstance(pos, tuple):
-		self._position = obengine.fgx.math.Vector(*pos)
-		self.panda_node.setPos(self.convert_vector(self._position))
+    	def fget(self):
+    	    return self._position
 
-	    else:
-		self._position.x = pos.x
-		self._position.y = pos.y
-		self._position.z = pos.z
+    	def fset(self, pos):
 
-    return locals()
+    	    if isinstance(pos, tuple):
+    		      self._position = obengine.gfx.math.Vector(*pos)
+    		      self.panda_node.setPos(self.convert_vector(self._position))
 
-    @property
-    def position(self):
-        return self._position
+    	    else:
+    		      self._position.x = pos.x
+    		      self._position.y = pos.y
+    		      self._position.z = pos.z
 
-    @position.setter
-    def position(self, pos):
-
-        if isinstance(pos, tuple):
-
-            self._position = obengine.gfx.math.Vector(*pos)
-            self.panda_node.setPos(self.convert_vector(self._position))
-
-        else:
-
-            self._position.x = pos.x
-            self._position.y = pos.y
-            self._position.z = pos.z
+        return locals()
 
     @property
     def scale(self):
         return self._scale
+
+    @scale.setter
+    def scale(self, new_scale):
+
+        if isinstance(new_scale, tuple):
+
+            self._scale = obengine.gfx.math.Vector(*new_scale)
+            self.panda_node.setScale(*self.convert_vector(self._scale))
+
+        else:
+
+            self._scale.x = new_scale.x
+            self._scale.y = new_scale.y
+            self._scale.z = new_scale.z
 
     @property
     def rotation(self):
