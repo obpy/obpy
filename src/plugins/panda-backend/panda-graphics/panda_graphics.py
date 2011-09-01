@@ -513,7 +513,7 @@ class Light(PandaResource):
 
             if current_model_pos != prev_model_pos:
 
-                print 'generating shadow for', self._shadowed_models[index].panda_node
+#                print 'generating shadow for', self._shadowed_models[index].panda_node
 
                 self._shadowed_model_positions[index] = current_model_pos
                 self._shadowed_model_rotations[index] = current_model_rotation
