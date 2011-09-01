@@ -30,6 +30,8 @@ from panda3d.core import *
 from direct.showbase.ShowBase import ShowBase
 from direct.filter.CommonFilters import *
 
+import shadow
+
 import obengine.datatypes
 import obengine.cfg
 import obengine.log
@@ -54,6 +56,8 @@ class Model(PandaResource):
     NOTE: Textures loaded at runtime are currently NOT supported!
     
     """
+
+    on_model_loaded = obengine.event.Event()
 
     def __init__(self, model_path, window, position = None, rotation = None, scale = None, color = None, clickable = True):
 
@@ -276,6 +280,7 @@ class Model(PandaResource):
         if self._clickable is True:
             self.panda_node.setCollideMask(CLICKABLE_BITMASK)
 
+        Model.on_model_loaded(self)
         self.on_loaded()
 
 
@@ -315,7 +320,7 @@ class Texture(PandaResource):
 class Light(PandaResource):
     """
     Represents a Panda3D light.
-    Currently, only directional and ambient lights are implemented.
+    Currently, only directional, point, and ambient lights are implemented.
     """
 
     DIRECTIONAL = 'directional'
@@ -373,6 +378,11 @@ class Light(PandaResource):
 
         if self._light_type == Light.POINT:
             self.position = self.position
+
+        if self._light_type != Light.AMBIENT:
+            if True or self._casting_shadows is True:
+                self._enable_shadows()
+
 
         self.on_loaded()
 
@@ -454,11 +464,7 @@ class Light(PandaResource):
         return locals()
 
     def _init_directional_light(self):
-
         self.panda_light = DirectionalLight(self._name)
-
-        if self._casting_shadows is True:
-           self.panda_light.setShadowCaster(True, 256, 256)
 
     def _init_ambient_light(self):
 
@@ -470,6 +476,49 @@ class Light(PandaResource):
     def _init_point_light(self):
         self.panda_light = PointLight(self._name)
 
+    def _enable_shadows(self):
+
+        self._shadows = []
+        self._shadowed_models = []
+        self._shadowed_model_positions = []
+        self._shadowed_model_rotations = []
+
+        Model.on_model_loaded += self._add_shadow
+        self._window.scheduler.add(obengine.async.LoopingCall(self._update_shadows))
+
+    def _add_shadow(self, model):
+
+        shadow_geom = shadow.Shadow(model.panda_node, self.panda_node)
+        self._shadows.append(shadow_geom)
+        self._shadowed_models.append(model)
+
+    def _update_shadows(self):
+
+        for index, shadow in enumerate(self._shadows):
+
+            current_model_pos = str(self._shadowed_models[index].position)
+            current_model_rotation = str(self._shadowed_models[index].rotation)
+
+            try:
+                prev_model_pos = self._shadowed_model_positions[index]
+                prev_model_rotation = self._shadowed_model_rotations[index]
+
+            except IndexError:
+
+                self._shadowed_model_positions.append(str(self._shadowed_models[index].position))
+                self._shadowed_model_rotations.append(str(self._shadowed_models[index].rotation))
+
+                prev_model_pos = ''
+                prev_model_rotation = ''
+
+            if current_model_pos != prev_model_pos:
+
+                print 'generating shadow for', self._shadowed_models[index].panda_node
+
+                self._shadowed_model_positions[index] = current_model_pos
+                self._shadowed_model_rotations[index] = current_model_rotation
+
+                shadow.generate()
 
 class Window(object):
 
@@ -561,6 +610,10 @@ class Window(object):
 
         else:
             self.panda_window.render.setAttrib(LightRampAttrib.makeHdr0())
+
+        use_shadows = self._config_src.get_bool('use-shadows', 'core.gfx', False)
+        if use_shadows is True:
+            shadow.ShadowSystem()
 
         picker_node = CollisionNode('mouse_ray')
         picker_nodepath = self.panda_window.camera.attachNewNode(picker_node)

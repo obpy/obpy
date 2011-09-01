@@ -19,7 +19,7 @@ Pre-release
 * Run unit test suite one last time
 * Remove all ``.pyc`` files using ``remove_pycs.py``
 * Proofread developer and end-user documentation
-* 0.7 *only*: Tag current Mercurial revision with tag "sem_ver", to signify
+* 0.7 *only*: Tag current Mercurial revision with tag "semver", to signify
   OpenBlox's version scheme officially switching to Semantic Versioning [1]_
 * Tag current Mercurial revision with current version's version number
 
@@ -60,6 +60,7 @@ Announcing
   (http://freshmeat.net/projects/openblox-2)
 * Write new release article for the OpenBlox SourceForge page
   (http://sourceforge.net/projects/openblox)
+* 
 
 Post-release
 ============
