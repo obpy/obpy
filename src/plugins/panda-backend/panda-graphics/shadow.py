@@ -23,8 +23,6 @@ loadPrcFileData("", """
 framebuffer-stencil #t
 stencil-bits 8
 """)
-loadPrcFileData("", "show-frame-rate-meter #t")
-loadPrcFileData("", "sync-video #f")
 
 from pandac.PandaModules import CardMaker, NodePath, Vec3, Vec4, Point3
 from pandac.PandaModules import GeomVertexReader, GeomVertexData, GeomVertexWriter, GeomTriangles, Geom, GeomNode, GeomVertexFormat
@@ -239,8 +237,8 @@ class Shadow:
         geomnode = GeomNode('gnode')
         geomnode.addGeom(geom)
         try:
-            self.front.detachNode()
-            self.back.detachNode()
+            self.front.removeNode()
+            self.back.removeNode()
         except AttributeError:
             pass
         # make the 1st pass       
@@ -248,7 +246,7 @@ class Shadow:
         self.front.attachNewNode(geomnode)
         self.front.setColor(0, 0, 0, .1)
         self.front.setAttrib(ColorWriteAttrib.make(ColorWriteAttrib.MOff))
-        self.front.setAttrib(CullFaceAttrib.make())
+        self.front.setAttrib(CullFaceAttrib.makeReverse())
         self.front.setAttrib(DepthWriteAttrib.make(DepthWriteAttrib.MOff))
         self.front.setAttrib(self.frontSide)
         self.front.reparentTo(self.object)
@@ -258,7 +256,7 @@ class Shadow:
         self.back.attachNewNode(geomnode)
         self.back.setColor(0, 0, 0, .1)
         self.back.setAttrib(ColorWriteAttrib.make(ColorWriteAttrib.MOff))
-        self.back.setAttrib(CullFaceAttrib.makeReverse())
+        self.back.setAttrib(CullFaceAttrib.make())
         self.back.setAttrib(DepthWriteAttrib.make(DepthWriteAttrib.MOff))
         self.back.setAttrib(self.backSide)
         self.back.reparentTo(self.object)

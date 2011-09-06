@@ -59,7 +59,7 @@ class Model(PandaResource):
 
     on_model_loaded = obengine.event.Event()
 
-    def __init__(self, model_path, window, position = None, rotation = None, scale = None, color = None, clickable = True):
+    def __init__(self, model_path, window, position = None, rotation = None, scale = None, color = None, clickable = True, cast_shadows = True):
 
         PandaResource.__init__(self)
 
@@ -70,6 +70,7 @@ class Model(PandaResource):
         self.window = window
         self._showing = False
         self.on_click = obengine.event.Event()
+        self.cast_shadows = cast_shadows
 
         self._texture = None
         self._parent = None
@@ -380,15 +381,18 @@ class Light(PandaResource):
             self.position = self.position
 
         if self._light_type != Light.AMBIENT:
-            if True or self._casting_shadows is True:
-                self._enable_shadows()
 
+            shadow_override = obengine.cfg.Config().get_bool('use-shadows', 'core.gfx', False)
+            if self._casting_shadows is True and shadow_override is True:
+
+                print 'enabling light shadows'
+                self._enable_shadows()
 
         self.on_loaded()
 
     def look_at(self, obj):
         """Points the light at obj
-        Currently, obj can only be a directional light
+        Currently, obj can only be a directional or point light,
         or a model.
         """
 
@@ -487,6 +491,9 @@ class Light(PandaResource):
         self._window.scheduler.add(obengine.async.LoopingCall(self._update_shadows))
 
     def _add_shadow(self, model):
+
+        if model.cast_shadows is False:
+            return
 
         shadow_geom = shadow.Shadow(model.panda_node, self.panda_node)
         self._shadows.append(shadow_geom)
@@ -611,8 +618,10 @@ class Window(object):
         else:
             self.panda_window.render.setAttrib(LightRampAttrib.makeHdr0())
 
-        use_shadows = self._config_src.get_bool('use-shadows', 'core.gfx', False)
+        use_shadows = self._config_src.get_bool('use-shadows', 'core.gfx')
         if use_shadows is True:
+
+            print 'enabling shadows'
             shadow.ShadowSystem()
 
         picker_node = CollisionNode('mouse_ray')

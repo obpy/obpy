@@ -152,7 +152,7 @@ class PlayerView(object):
         self.window = window
         self.window.panda_window.disableMouse()
         self._scheduler = self.window.scheduler
-        self._model = obplugin.core.graphics.Model('avatar', self.window)
+        self._model = obplugin.core.graphics.Model('avatar', self.window, cast_shadows = False)
         self._model.load()
 
         self.linear_velocity = obengine.math.Vector()
