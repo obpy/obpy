@@ -21,7 +21,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$May 24, 2011 3:27:05 PM$"
+__date__ = "$May 24, 2011 3:27:05 PM$"
 
 
 from panda3d.core import Filename, AudioSound
@@ -43,8 +43,8 @@ class Sound(object):
 
         self.sound_file = filename
         self._window = window
-        self._looping = False
-        self._autoplay = False
+        self._looping = looping
+        self._autoplay = autoplay
         self._volume = volume
 
         self.on_loaded = obengine.event.Event()
@@ -88,12 +88,13 @@ class Sound(object):
 
     def _actual_load(self, _):
 
-        panda_filename = Filename.fromOsSpecific(obengine.vfs.getsyspath(filename))
-
+        panda_filename = str(Filename.fromOsSpecific(obengine.vfs.getsyspath(self.sound_file)))
         self._sound = self._window.panda_window.loader.loadSfx(panda_filename)
 
         self.looping = self._looping
         self.volume = self._volume
+
+        print 'Autoplay:', self._autoplay
 
         if self._autoplay is True:
             self.playing = True

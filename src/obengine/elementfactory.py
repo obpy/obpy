@@ -129,7 +129,7 @@ class ElementFactory(object):
 
         from obengine.audio.element import SoundElement
 
-        element = SoundElement(name, soundfile, autoplay)
+        element = SoundElement(name, soundfile, self.window, autoplay = autoplay)
         return element
 
     def make_light(self, name, type = None, color = None, position = None, rotation = None, cast_shadows = False):

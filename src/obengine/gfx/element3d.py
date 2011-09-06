@@ -527,7 +527,9 @@ class XmlLightExtension(XmlElementExtension):
                       'name' : self._light.name,
                       'rgb' : self._color_str(self._light.color),
                       'type' : self._light.light_type,
-                      'orientation' : self._euler_str(self._light.rotation)
+                      'orientation' : self._euler_str(self._light.rotation),
+                      'coords' : self._vector_str(self._light.position),
+                      'cast_shadows' : self._bool_str(self._light.casting_shadows)
                       }
 
         element = xmlparser.Element('light', attributes)

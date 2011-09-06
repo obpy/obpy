@@ -50,6 +50,7 @@ def load_world(game):
     # Extract and change directories
     game_file.extractall(tmpdir)
     os.chdir(tmpdir)
+    obengine.vfs.mount('/data', obengine.vfs.RealFS(os.path.abspath(os.curdir)))
 
     game_name = os.path.basename(game).strip('.zip')
 

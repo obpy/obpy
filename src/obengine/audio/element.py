@@ -21,7 +21,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Apr 2, 2011 7:51:54 AM$"
+__date__ = "$Apr 2, 2011 7:51:54 AM$"
 
 
 import xml.etree.ElementTree as xmlparser
@@ -32,15 +32,11 @@ import obengine.plugin
 obengine.depman.gendeps()
 
 
-def init():
-    obengine.plugin.require('core.audio')
-
-
 class SoundElement(obengine.element.Element):
     """
     Lets a sound be loaded and played inside an OpenBlox world.
     """
-    def __init__(self, name, soundfile, volume = 50.0, looping = False, autoplay = False):
+    def __init__(self, name, soundfile, window, volume = 50.0, looping = False, autoplay = True):
         """
          * name is just the name of this element
          * soundfile is the filename of the sound to load
@@ -48,22 +44,27 @@ class SoundElement(obengine.element.Element):
          * autoplay specifies whether the sound should start immediately after it is added to a world
         """
 
+        obengine.plugin.require('core.audio')
+
         import obplugin.core.audio
 
         obengine.element.Element.__init__(self, name)
 
         self.set_extension('xml', XmlSoundExtension)
 
-        self._sound = obplugin.core.audio.Sound(soundfile, volume, looping, autoplay)
+        self._sound = obplugin.core.audio.Sound(soundfile, window, volume, looping, autoplay)
         self._soundfile = soundfile
 
         self.on_loaded = self._sound.on_loaded
-        self.looping = self._sound.__dict__['looping']
-        self.playing = self._sound.__dict__['playing']
-        self.volume = self._sound.__dict__['volume']
-        
+
+        if autoplay is True:
+            self.on_world_loaded += self._sound.load
+
     def load(self):
         self._sound.load()
+
+    def play(self):
+        self._sound.playing = True
 
     @property
     def sound(self):
