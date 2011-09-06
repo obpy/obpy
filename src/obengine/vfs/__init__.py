@@ -23,19 +23,21 @@
 
 
 __author__ = "openblocks"
-__date__  = "$May 2, 2011 3:50:22 PM$"
+__date__ = "$May 2, 2011 3:50:22 PM$"
 
 
 from basefs import *
 from memoryfs import *
 from realfs import *
 from registryfs import *
+from zipfs import *
+
 import obengine.depman
 obengine.depman.gendeps()
 
 
 def init():
-    
+
     global filesystem
 
     global mount
