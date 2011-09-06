@@ -25,7 +25,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$May 4, 2011 7:09:12 PM$"
+__date__ = "$May 4, 2011 7:09:12 PM$"
 
 
 import sys
@@ -36,7 +36,6 @@ import logging
 import obengine.cfg
 import obengine.datatypes
 import obengine.depman
-import obengine.deprecated
 
 obengine.depman.gendeps()
 
@@ -56,7 +55,7 @@ class Logger(obengine.datatypes.Borg):
     'critical' : logging.CRITICAL,
     'dontcare' : logging.NOTSET
     }
-    
+
     format_str = '%(levelname)s:%(name)s:%(asctime)s: %(message)s'
 
     def __init__(self):
@@ -123,27 +122,22 @@ class Logger(obengine.datatypes.Borg):
         return logger
 
 
-@obengine.deprecated.deprecated
 def debug(string):
     Logger().debug(string)
 
 
-@obengine.deprecated.deprecated
 def info(string):
     Logger().info(string)
 
 
-@obengine.deprecated.deprecated
 def warn(string):
     Logger().warn(string)
 
 
-@obengine.deprecated.deprecated
 def error(string):
     Logger().error(string)
 
 
-@obengine.deprecated.deprecated
 def critical(string):
     Logger().critical(string)
 
