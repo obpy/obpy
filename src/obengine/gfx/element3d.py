@@ -395,7 +395,7 @@ class SkyboxElement(obengine.element.Element):
 
         import obplugin.core.graphics
 
-        self.view = obplugin.core.graphics.Model('sky', self._window, clickable = False)
+        self.view = obplugin.core.graphics.Model('sky', self._window, clickable = False, cast_shadows = False)
 
         self.on_add += self.sky_on_add
         self.on_remove += self.sky_on_remove
@@ -411,6 +411,7 @@ class SkyboxElement(obengine.element.Element):
 
         # TODO: Replace the below code with something not Panda-specific!
 
+        self.view.panda_node.reparentTo(base.camera)
         self.view.panda_node.setShaderOff()
         self.view.panda_node.setLightOff()
         self.view.panda_node.setBin('background', 0)

@@ -184,17 +184,26 @@ class Shadow:
                 0xFFFFFFFF,
                 0xFFFFFFFF)
 
-    def __init__(self, object, light, light_type = 'directional'):
+    def __init__(self, object, light, infinite = False):
         """ connect the object with the light """
         self.object = object
         self.light = light
-        self.light_type = light_type
         self.con = Connectivity(object)
         self.faces = self.con.faces
+        self.infinite = infinite
+
+    def getLightVector(self):
+
+        if self.infinite is False:
+            l = self.light.getPos(self.object)
+        else:
+            l = Vec3(self.light.getHpr())
+
+        return l
 
     def lightFaces(self):
         """ runs through all the faces and see if they are lit """
-        l = self.light.getPos(self.object)
+        l = self.getLightVector()
         for face in self.faces:
             side = (face.plane.a * l[0] +
                 face.plane.b * l[1] +
@@ -209,7 +218,7 @@ class Shadow:
     def generate(self):
         """ generate a shadow volume based on the light and the object """
         self.lightFaces()
-        l = self.light.getPos(self.object)
+        l = self.getLightVector()
         vdata = GeomVertexData('shadow', GeomVertexFormat.getV3() , Geom.UHStatic)
         vertex = GeomVertexWriter(vdata, 'vertex')
         number = 0

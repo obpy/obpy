@@ -384,8 +384,6 @@ class Light(PandaResource):
 
             shadow_override = obengine.cfg.Config().get_bool('use-shadows', 'core.gfx', False)
             if self._casting_shadows is True and shadow_override is True:
-
-                print 'enabling light shadows'
                 self._enable_shadows()
 
         self.on_loaded()
@@ -495,9 +493,12 @@ class Light(PandaResource):
         if model.cast_shadows is False:
             return
 
-        shadow_geom = shadow.Shadow(model.panda_node, self.panda_node)
+        infinite_dist = self.light_type == Light.DIRECTIONAL
+        shadow_geom = shadow.Shadow(model.panda_node, self.panda_node, infinite_dist)
         self._shadows.append(shadow_geom)
         self._shadowed_models.append(model)
+
+        shadow_geom.generate()
 
     def _update_shadows(self):
 
@@ -520,7 +521,7 @@ class Light(PandaResource):
 
             if current_model_pos != prev_model_pos:
 
-#                print 'generating shadow for', self._shadowed_models[index].panda_node
+                print 'generating shadow for', self._shadowed_models[index].panda_node
 
                 self._shadowed_model_positions[index] = current_model_pos
                 self._shadowed_model_rotations[index] = current_model_rotation
@@ -572,9 +573,11 @@ class Window(object):
         if self._config_src.get_bool('use-vsync', 'core.gfx', True) is False:
             loadPrcFileData('', 'sync-video #f')
 
-        self.clock = ClockObject.getGlobalClock()
-        self.clock.setMode(ClockObject.MLimited)
-        self.clock.setFrameRate(self.frame_rate)
+        if self.frame_rate != 0:
+
+            self.clock = ClockObject.getGlobalClock()
+            self.clock.setMode(ClockObject.MLimited)
+            self.clock.setFrameRate(self.frame_rate)
 
         self.window_properties = WindowProperties()
         self.window_properties.setSize(*self.resolution)
@@ -620,8 +623,6 @@ class Window(object):
 
         use_shadows = self._config_src.get_bool('use-shadows', 'core.gfx')
         if use_shadows is True:
-
-            print 'enabling shadows'
             shadow.ShadowSystem()
 
         picker_node = CollisionNode('mouse_ray')
