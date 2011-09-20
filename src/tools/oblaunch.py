@@ -29,7 +29,6 @@ import atexit
 sys.path.append(os.path.abspath(os.curdir))
 sys.path.append(os.path.abspath(os.pardir))
 
-import obengine.plugin
 import obengine.environ
 import obengine.world
 import obengine.elementfactory
@@ -94,5 +93,12 @@ def load_world(game):
 
 if __name__ == '__main__':
 
-    obengine.init()
-    load_world(sys.argv[1])
+    if len(sys.argv) > 1:
+
+        obengine.init()
+        load_world(sys.argv[1])
+
+    else:
+
+        print 'usage:', sys.argv[0], '[game to load]'
+        sys.exit(1)

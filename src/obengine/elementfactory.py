@@ -26,18 +26,21 @@
 __author__ = "openblocks"
 __date__ = "$Jan 23, 2011 7:57:35 AM$"
 
-import obengine.async
+
+import copy
+
 import obengine.gfx.element3d
-import obengine.element
 import obengine.gfx.math
 import obengine.depman
 
 obengine.depman.gendeps()
 
+
 def init():
 
     obengine.plugin.require('core.physics')
     obengine.plugin.require('core.graphics')
+
 
 class ElementFactory(object):
 
@@ -100,7 +103,10 @@ class ElementFactory(object):
         while view.loaded is False:
             scheduler.step()
 
-        phys_rep = obplugin.core.physics.Box(view.model, self.sandbox, None, scheduler, anchored)
+        phys_size = copy.deepcopy(size)
+        phys_size.z *= 2
+
+        phys_rep = obplugin.core.physics.Box(view.model, self.sandbox, None, scheduler, anchored, size = phys_size)
         phys_rep.load()
 
         while phys_rep.loaded is False:

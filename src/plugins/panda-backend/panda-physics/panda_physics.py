@@ -77,7 +77,7 @@ class World(object):
 
 class Box(object):
 
-    def __init__(self, model, world, owner, scheduler, anchored = False, weight = None):
+    def __init__(self, model, world, owner, scheduler, anchored = False, weight = None, size = None):
 
         self.model = model
         self.on_loaded = obengine.event.Event()
@@ -86,6 +86,7 @@ class Box(object):
 
         self.world = world
         self._anchored = anchored
+        self._size = size
         self.weight = weight or (
                                  (self.model.scale.x * 5 or 1.0) * \
                                  (self.model.scale.y * 5 or 1.0) * \
@@ -199,7 +200,11 @@ class Box(object):
 
     def _init_dynamic_object(self):
 
-        self.object.setBoxGeomFromNodePath(self.model.panda_node, remove = False)
+        if self._size is not None:
+            self.object.setBoxGeom(PandaConverter.convert_vector(self._size))
+        else:
+            self.object.setBoxGeomFromNodePath(self.model.panda_node, remove = False)
+
         self.object.setNodePath(self.model.panda_node)
         self.object.setBoxBody(self.weight, self.object.boxSize)
         self.object.setPos(PandaConverter.convert_vector(self.model.position))
@@ -209,7 +214,11 @@ class Box(object):
 
         self.object.setNodePath(self.model.panda_node)
 
-        self.object.setBoxGeomFromNodePath(self.model.panda_node)
+        if self._size is not None:
+            self.object.setBoxGeom(PandaConverter.convert_vector(self._size))
+        else:
+            self.object.setBoxGeomFromNodePath(self.model.panda_node, remove = False)
+
         self.object.setPos(PandaConverter.convert_vector(self.model.position))
         self.object.setQuat(PandaConverter.convert_angle(self.model.rotation))
 

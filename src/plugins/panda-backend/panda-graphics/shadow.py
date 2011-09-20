@@ -17,6 +17,7 @@
     shnode.reparentTo(render)
 """
 
+import math
 
 from pandac.PandaModules import loadPrcFileData
 loadPrcFileData("", """
@@ -186,6 +187,7 @@ class Shadow:
 
     def __init__(self, object, light, infinite = False):
         """ connect the object with the light """
+
         self.object = object
         self.light = light
         self.con = Connectivity(object)
@@ -197,7 +199,17 @@ class Shadow:
         if self.infinite is False:
             l = self.light.getPos(self.object)
         else:
-            l = Vec3(self.light.getHpr())
+
+            hpr = self.light.getHpr()
+            hpr.setX(hpr.getX() * math.pi / 180)
+            hpr.setY(hpr.getY() * math.pi / 180)
+            hpr.setZ(hpr.getZ() * math.pi / 180)
+
+            l = Vec3(math.cos(hpr.getX()) * math.cos(hpr.getY()),
+                     math.sin(hpr.getX()) * math.cos(hpr.getY()),
+                     math.sin(hpr.getY()))
+            VECTOR_SCALE = 4.5
+            l *= VECTOR_SCALE
 
         return l
 
@@ -250,7 +262,7 @@ class Shadow:
             self.back.removeNode()
         except AttributeError:
             pass
-        # make the 1st pass       
+        # make the 1st pass   
         self.front = NodePath("front")
         self.front.attachNewNode(geomnode)
         self.front.setColor(0, 0, 0, .1)
