@@ -510,20 +510,20 @@ class Light(PandaResource):
         self._shadow_camera.reparentTo(render)
         self._shadow_camera.node().setScene(render)
         shadow_cam_lens = OrthographicLens()
-#        shadow_cam_lens.setFov(70)
+        shadow_cam_lens.setFov(70)
         shadow_cam_lens.setNearFar(0, 500)
-        shadow_cam_lens.setFilmSize(100, 100)
+        shadow_cam_lens.setFilmSize(300, 300)
         self._shadow_camera.node().setLens(shadow_cam_lens)
         self._shadow_camera.setPos(self._get_position())
         self._shadow_camera.lookAt(0, 0, 0)
 
         render.setShaderInput('light', self._shadow_camera)
         render.setShaderInput('Ldepthmap', shadow_map)
-        AMBIENT = 0.0
+        AMBIENT = 0.40
         render.setShaderInput('ambient',
                                            AMBIENT,
                                            1.0, 1.0, 0.0)
-        #render.setShaderInput('texDisable', 0, 0, 0, 1)
+        render.setShaderInput("texDisable", 1, 1, 1, 1)
         render.setShaderInput('scale', 1, 1, 1, 1)
         SHADOW_PUSH_BIAS = 0.70
         render.setShaderInput('push',
@@ -752,7 +752,6 @@ class Window(object):
          shadow_renderer_shader = self.panda_window.loader.loadShader('shadow-renderer.sha')
          sci.setShader(shadow_renderer_shader)
          base.cam.node().setInitialState(sci.getState())
-         base.bufferViewer.toggleEnable()
 
 
 class Camera(object):
