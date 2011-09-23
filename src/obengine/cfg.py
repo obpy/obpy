@@ -40,7 +40,7 @@ CFG_FILE = 'obconf.cfg'
 
 def init():
 
-    if Config.options == {} and os.path.exists(CFG_FILE):
+    if hasattr(Config, 'parser') is False and os.path.exists(CFG_FILE):
         Config().load(CFG_FILE)
 
 
@@ -49,8 +49,6 @@ class Config(obengine.datatypes.Borg):
     This is a Monostate/Borg class - sections and option values are
     maintained across class instances.
     """
-
-    options = {}
 
     def load(self, filename):
         """Loads a configuration from filename
@@ -96,31 +94,26 @@ class Config(obengine.datatypes.Borg):
         """
 
         try:
-            return self.options[section][name]
+            val = self.parser.get(section, name)
 
-        except KeyError:
+        except ConfigParser.NoOptionError:
 
-            try:
-                val = self.parser.get(section, name)
+            if default is None:
+                raise NoSuchOptionError(name)
 
-            except ConfigParser.NoOptionError:
+            return default
 
-                if default is None:
-                    raise NoSuchOptionError(name)
+        except ConfigParser.NoSectionError:
 
-                return default
+            if default is None:
+                raise NoSuchSectionError(section)
 
-            except ConfigParser.NoSectionError:
+            return default
 
-                if default is None:
-                    raise NoSuchSectionError(section)
+        else:
 
-                return default
-
-            else:
-
-                self.add_var(name, val, section)
-                return val
+            self.add_var(name, val, section)
+            return val
 
     def get_str(self, name, section = 'core', default = None):
         """Returns configuration variable `name`, stringified

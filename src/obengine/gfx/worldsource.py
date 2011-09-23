@@ -27,6 +27,7 @@ __author__ = "openblocks"
 __date__ = "$Aug 9, 2010 10:43:40 PM$"
 
 
+import xml
 import xml.etree.ElementTree as xmlparser
 
 import obengine.math
@@ -82,11 +83,16 @@ class WorldSource(list):
 
         # Remove all empty space first, to make string to number conversion easy
 
-        coordstr = child.attrib['coords'].replace(' ', '')
-        rgbstr = child.attrib['rgb'].replace(' ', '')
-        orient_str = child.attrib['orientation'].replace(' ', '')
-        size_str = child.attrib['size'].replace(' ', '')
-        name = child.attrib['name']
+        try:
+
+            coordstr = child.attrib['coords'].replace(' ', '')
+            rgbstr = child.attrib['rgb'].replace(' ', '')
+            orient_str = child.attrib['orientation'].replace(' ', '')
+            size_str = child.attrib['size'].replace(' ', '')
+            name = child.attrib['name']
+
+        except KeyError, message:
+            raise BadWorldError(message)
 
         # Is the brick anchored?
 
@@ -97,28 +103,31 @@ class WorldSource(list):
 
         # Fill the coordinate, size, RGB, and HPR arrays
 
+        try:
 
-        coords.x = float(coordstr.split(',')[0])
-        coords.y = float(coordstr.split(',')[1])
-        coords.z = float(coordstr.split(',')[2])
+            coords.x = float(coordstr.split(',')[0])
+            coords.y = float(coordstr.split(',')[1])
+            coords.z = float(coordstr.split(',')[2])
 
-        rgb.r = float(rgbstr.split(',')[0])
-        rgb.g = float(rgbstr.split(',')[1])
-        rgb.b = float(rgbstr.split(',')[2])
-        rgb.a = float(rgbstr.split(',')[3])
+            rgb.r = float(rgbstr.split(',')[0])
+            rgb.g = float(rgbstr.split(',')[1])
+            rgb.b = float(rgbstr.split(',')[2])
+            rgb.a = float(rgbstr.split(',')[3])
 
-        orientation.h = float(orient_str.split(',')[0])
-        orientation.p = float(orient_str.split(',')[1])
-        orientation.r = float(orient_str.split(',')[2])
+            orientation.h = float(orient_str.split(',')[0])
+            orientation.p = float(orient_str.split(',')[1])
+            orientation.r = float(orient_str.split(',')[2])
 
-        size.x = float(size_str.split(',')[0])
-        size.y = float(size_str.split(',')[1])
-        size.z = float(size_str.split(',')[2])
+            size.x = float(size_str.split(',')[0])
+            size.y = float(size_str.split(',')[1])
+            size.z = float(size_str.split(',')[2])
+
+        except IndexError, message:
+            raise BadWorldError(message)
 
         # Finally, create the brick!
 
         element = factory.make('brick', name, coords, rgb, size, orientation, anchored)
-
         self.append(element)
 
     def handle_skybox(self, _, child, factory):
@@ -150,9 +159,14 @@ class WorldSource(list):
         yes_no = { 'yes' : True, 'no' : False}
 
         # Retrieve the scene graph name, filename, and autoplay (play on added)
-        name = child.attrib['name']
-        src = child.attrib['src']
-        autoplay = yes_no[child.attrib.get('autoplay', 'no')]
+        try:
+
+            name = child.attrib['name']
+            src = child.attrib['src']
+            autoplay = yes_no[child.attrib.get('autoplay', 'no')]
+
+        except KeyError, message:
+            raise BadWorldError(message)
 
         # Create the element
         element = factory.make('sound', name, src, autoplay)
@@ -161,23 +175,28 @@ class WorldSource(list):
 
     def handle_light(self, _, child, factory):
 
-        name = child.attrib['name']
-        type = child.attrib['type']
+        try:
 
-        light_rotation = map(lambda s: float(s), child.attrib['orientation'].strip().split(','))
-        rotation = obengine.math.EulerAngle(*light_rotation)
+            name = child.attrib['name']
+            type = child.attrib['type']
 
-        light_color = map(lambda s: float(s), child.attrib['rgb'].strip().split(','))
-        color = obengine.math.Color(*light_color)
+            light_rotation = map(lambda s: float(s), child.attrib['orientation'].strip().split(','))
+            rotation = obengine.math.EulerAngle(*light_rotation)
 
-        position = None
-        if type == 'point':
+            light_color = map(lambda s: float(s), child.attrib['rgb'].strip().split(','))
+            color = obengine.math.Color(*light_color)
 
-            light_position = map(lambda s: float(s), child.attrib['coords'].strip().split(','))
-            position = obengine.math.Vector(*light_position)
+            position = None
+            if type == 'point':
 
-        yes_no = { 'yes' : True, 'no' : False}
-        cast_shadows = yes_no[child.attrib.get('cast_shadows', 'no')]
+                light_position = map(lambda s: float(s), child.attrib['coords'].strip().split(','))
+                position = obengine.math.Vector(*light_position)
+
+            yes_no = { 'yes' : True, 'no' : False}
+            cast_shadows = yes_no[child.attrib.get('cast_shadows', 'no')]
+
+        except (KeyError, ValueError), message:
+            raise BadWorldError(message)
 
         element = factory.make('light', name, type, color, position, rotation, cast_shadows)
         self.append(element)
@@ -193,7 +212,11 @@ class WorldSource(list):
         # self.retrieve should return a file-like object
         file = self.retrieve()
 
-        tree = xmlparser.parse(file)
+        try:
+            tree = xmlparser.parse(file)
+        except xml.parsers.expat.ExpatError, message:
+            raise BadWorldError(message)
+
         rootnode = tree.getroot()
 
         # Check the version. We use 0.6.2 as the default, as that was the last version of OpenBlox
@@ -239,6 +262,17 @@ class FileWorldSource(WorldSource):
         return open(self.path, 'r')
 
 
-class WorldSourceException(Exception): pass
-class UnknownWorldTagError(WorldSourceException): pass
-class InsufficientVersionError(WorldSourceException): pass
+class WorldSourceException(Exception):
+    pass
+
+
+class UnknownWorldTagError(WorldSourceException):
+    pass
+
+
+class InsufficientVersionError(WorldSourceException):
+    pass
+
+
+class BadWorldError(WorldSourceException):
+    pass

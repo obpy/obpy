@@ -35,6 +35,7 @@ import obengine.elementfactory
 import obengine.gfx.worldsource as worldsource
 import obengine.worldloader
 import obengine.player
+import obengine.gui
 from obengine.gfx.player import PlayerView
 from obengine.gfx.player import KeyboardPlayerController
 from obengine.math import Vector
@@ -79,11 +80,23 @@ def load_world(game):
 
     atexit.register(clean_up)
 
+    def parse_world():
+
+        try:
+            source.parse()
+
+        except worldsource.BadWorldError, message:
+
+            factory = obengine.gui.WidgetFactory()
+            factory.make('label', 'ERROR: Malformed world file:\n%s' % message)
+
+        else:
+            worldloader.load()
+
     environ.window.on_loaded += lambda: environ.window.start_rendering()
     environ.window.on_loaded += lambda: environ.physics_sandbox.load()
 
-    environ.physics_sandbox.on_loaded += lambda: source.parse()
-    environ.physics_sandbox.on_loaded += lambda: worldloader.load()
+    environ.physics_sandbox.on_loaded += parse_world
     worldloader.on_world_loaded += lambda: environ.physics_sandbox.unpause()
     worldloader.on_world_loaded += lambda: create_player()
 
