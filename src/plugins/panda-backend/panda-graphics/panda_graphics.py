@@ -482,7 +482,8 @@ class Light(PandaResource):
 
     def _enable_shadows(self):
 
-        window_properties = WindowProperties.size(512, 512)
+        SHADOW_MAP_SIZE = 1024
+        window_properties = WindowProperties.size(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE)
         frame_buffer_properties = FrameBufferProperties()
         frame_buffer_properties.setRgbColor(1)
         frame_buffer_properties.setAlphaBits(1)
@@ -510,9 +511,8 @@ class Light(PandaResource):
         self._shadow_camera.reparentTo(render)
         self._shadow_camera.node().setScene(render)
         shadow_cam_lens = OrthographicLens()
-        shadow_cam_lens.setFov(70)
-        shadow_cam_lens.setNearFar(0, 500)
-        shadow_cam_lens.setFilmSize(300, 300)
+        shadow_cam_lens.setNearFar(-1000, 1000)
+        shadow_cam_lens.setFilmSize(1024, 1024)
         self._shadow_camera.node().setLens(shadow_cam_lens)
         self._shadow_camera.setPos(self._get_position())
         self._shadow_camera.lookAt(0, 0, 0)
@@ -525,7 +525,7 @@ class Light(PandaResource):
                                            1.0, 1.0, 0.0)
         render.setShaderInput("texDisable", 1, 1, 1, 1)
         render.setShaderInput('scale', 1, 1, 1, 1)
-        SHADOW_PUSH_BIAS = 0.70
+        SHADOW_PUSH_BIAS = 4
         render.setShaderInput('push',
                                SHADOW_PUSH_BIAS,
                                SHADOW_PUSH_BIAS,
@@ -596,10 +596,8 @@ class Light(PandaResource):
                  math.sin(hpr.getX()) * math.cos(hpr.getY()),
                  math.sin(hpr.getY()))
 
-        VECTOR_SCALE = 10
+        VECTOR_SCALE = 2
         l *= VECTOR_SCALE
-
-        print 'hpr:', l
 
         return l
 
@@ -647,7 +645,6 @@ class Window(object):
         loadPrcFileData('', 'want-pstats 1')
         loadPrcFileData("", "prefer-parasite-buffer #f")
 
-        print 'use vsync:', self._config_src.get_bool('use-vsync', 'core.gfx', True)
         if self._config_src.get_bool('use-vsync', 'core.gfx', True) is False:
             loadPrcFileData('', 'sync-video #f')
 
@@ -752,6 +749,7 @@ class Window(object):
          shadow_renderer_shader = self.panda_window.loader.loadShader('shadow-renderer.sha')
          sci.setShader(shadow_renderer_shader)
          base.cam.node().setInitialState(sci.getState())
+         base.bufferViewer.toggleEnable()
 
 
 class Camera(object):
