@@ -642,8 +642,8 @@ class Window(object):
         self.resolution = map(int, self._config_src.get_str('resolution', 'core.gfx').split('x'))
         self.search_path = self._config_src.get_str('cfgdir') + '/data'
 
-        loadPrcFileData('', 'want-pstats 1')
-        loadPrcFileData("", "prefer-parasite-buffer #f")
+        loadPrcFileData('', 'want-pstats #t')
+        loadPrcFileData('', 'prefer-parasite-buffer #f')
 
         if self._config_src.get_bool('use-vsync', 'core.gfx', True) is False:
             loadPrcFileData('', 'sync-video #f')
