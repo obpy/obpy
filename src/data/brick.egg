@@ -3,9 +3,9 @@
 <Comment> { "Egg laid by Chicken for Blender, version R91" }
 
 <Material> Material {
-  <Scalar> specr {0.25}
-  <Scalar> specg {0.25}
-  <Scalar> specb {0.25}
+  <Scalar> specr {0.0}
+  <Scalar> specg {0.0}
+  <Scalar> specb {0.0}
   <Scalar> shininess {12.5}
 }
 <Group> Cube {
