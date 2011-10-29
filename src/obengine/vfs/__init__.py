@@ -36,25 +36,47 @@ import obengine.depman
 obengine.depman.gendeps()
 
 
+filesystem = None
+
+
+def mount(loc, fs):
+    get_global_filesystem().mount(loc, fs)
+
+
+def open(path, mode = 'r'):
+    return get_global_filesystem().open(path, mode)
+
+
+def listdir(path):
+    return get_global_filesystem().listdir(path)
+
+
+def mkdir(path):
+    get_global_filesystem().mkdir(path)
+
+
+def rmdir(path):
+    get_global_filesystem().rmdir(path)
+
+
+def remove(path):
+    get_global_filesystem().remove(path)
+
+
+def getsyspath(path):
+    return get_global_filesystem().getsyspath(path)
+
+
 def init():
 
     global filesystem
-
-    global mount
-    global open
-    global listdir
-    global mkdir
-    global rmdir
-    global remove
-    global getsyspath
-
-
     filesystem = MountFS()
 
-    open = filesystem.open
-    mount = filesystem.mount
-    listdir = filesystem.listdir
-    mkdir = filesystem.mkdir
-    rmdir = filesystem.rmdir
-    remove = filesystem.remove
-    getsyspath = filesystem.getsyspath
+
+def get_global_filesystem():
+
+    global filesystem
+    if filesystem is None:
+        raise RuntimeError('VFS access was attempted before initialization took place')
+
+    return filesystem
