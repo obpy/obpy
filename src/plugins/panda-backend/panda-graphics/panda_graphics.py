@@ -283,6 +283,13 @@ class Model(PandaResource):
         if self._clickable is True:
             self.panda_node.setCollideMask(CLICKABLE_BITMASK)
 
+        self._ao_light = PointLight(self._uuid)
+        self._ao_light.setColor(VBase4(-0.3, -0.3, -0.3, 1))
+        self._ao_light.setAttenuation(Point3(0, 0.3, 0))
+        self._ao_light_node = self.window.panda_window.render.attachNewNode(self._ao_light)
+        self.window.panda_window.render.setLight(self._ao_light_node)
+        self._ao_light_node.reparentTo(self.panda_node)
+
         Model.on_model_loaded(self)
         self.on_loaded()
 
@@ -386,6 +393,7 @@ class Light(PandaResource):
 
             shadow_override = obengine.cfg.Config().get_bool('use-shadows', 'core.gfx', False)
             if self._casting_shadows is True and shadow_override is True:
+                print 'enabling per-light shadows'
                 self._enable_shadows()
 
         self.on_loaded()
@@ -511,8 +519,8 @@ class Light(PandaResource):
         self._shadow_camera.reparentTo(render)
         self._shadow_camera.node().setScene(render)
         shadow_cam_lens = OrthographicLens()
-        shadow_cam_lens.setNearFar(-1000, 1000)
-        shadow_cam_lens.setFilmSize(1024, 1024)
+        shadow_cam_lens.setNearFar(-200, 200)
+        shadow_cam_lens.setFilmSize(200, 200)
         self._shadow_camera.node().setLens(shadow_cam_lens)
         self._shadow_camera.setPos(self._get_position())
         self._shadow_camera.lookAt(0, 0, 0)
@@ -525,7 +533,7 @@ class Light(PandaResource):
                                            1.0, 1.0, 0.0)
         render.setShaderInput("texDisable", 1, 1, 1, 1)
         render.setShaderInput('scale', 1, 1, 1, 1)
-        SHADOW_PUSH_BIAS = 4
+        SHADOW_PUSH_BIAS = 1.5
         render.setShaderInput('push',
                                SHADOW_PUSH_BIAS,
                                SHADOW_PUSH_BIAS,
@@ -643,7 +651,6 @@ class Window(object):
         self.search_path = self._config_src.get_str('cfgdir') + '/data'
 
         loadPrcFileData('', 'want-pstats #t')
-        loadPrcFileData('', 'prefer-parasite-buffer #f')
 
         if self._config_src.get_bool('use-vsync', 'core.gfx', True) is False:
             loadPrcFileData('', 'sync-video #f')
@@ -662,17 +669,12 @@ class Window(object):
         self.panda_window.setFrameRateMeter(self.show_frame_rate)
         self.panda_window.setBackgroundColor(1, 1, 1, 1)
         self.panda_window.win.requestProperties(self.window_properties)
-        #self.panda_window.render.setShaderAuto()
         self.panda_window.disableMouse()
+        self.panda_window.bufferViewer.toggleEnable()
         getModelPath().appendPath(self.search_path)
 
-        if self._config_src.get_str('shading', 'core.gfx', 'normal') == 'toon-full':
-
-           self._enable_toon_outline()
-           self._enable_toon_shading()
-
-        elif self._config_src.get_str('shading', 'core.gfx', 'normal') == 'toon':
-            self._enable_toon_shading()
+        if self._config_src.get_str('shading', 'core.gfx', 'normal') == 'toon':
+            self._enable_toon_outline()
 
         else:
             pass
@@ -719,12 +721,9 @@ class Window(object):
 
             loaded_models[picked_node.getTag('clickable-flag')].on_click()
 
-    def _enable_toon_shading(self):
-        return self.panda_window.render.setAttrib(LightRampAttrib.makeDoubleThreshold(0.4, 0.3, 0.5, 0.4))
-
     def _enable_toon_outline(self):
 
-        normals_buffer = self.panda_window.win.makeTextureBuffer('Normals Buffer', 0, 0)
+        normals_buffer = self.panda_window.win.makeTextureBuffer('Normals Buffer', 256, 256)
         normals_buffer.setClearColor(Vec4(0.5, 0.5, 0.5, 1))
         normals_camera = self.panda_window.makeCamera(normals_buffer,
             lens = self.panda_window.cam.node().getLens())
@@ -738,7 +737,7 @@ class Window(object):
         edge_detect_scene.reparentTo(self.panda_window.render2d)
         ink_shader = self.panda_window.loader.loadShader('ink-shader.cg')
         edge_detect_scene.setShader(ink_shader)
-        SEPARATION = 0.001
+        SEPARATION = 0.002
         edge_detect_scene.setShaderInput('separation', Vec4(SEPARATION, 0, SEPARATION, 0))
         CUTOFF = 0.3
         edge_detect_scene.setShaderInput('cutoff', Vec4(CUTOFF, CUTOFF, CUTOFF, CUTOFF))
@@ -749,7 +748,6 @@ class Window(object):
          shadow_renderer_shader = self.panda_window.loader.loadShader('shadow-renderer.sha')
          sci.setShader(shadow_renderer_shader)
          base.cam.node().setInitialState(sci.getState())
-         base.bufferViewer.toggleEnable()
 
 
 class Camera(object):

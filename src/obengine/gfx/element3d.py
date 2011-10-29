@@ -105,13 +105,9 @@ class BrickView(object):
 
 class BlockBrickView(BrickView):
 
-    type = 'brick'
+    type = 'brick-flat'
 
     def __init__(self, size, rotation, color, window):
-
-        if obengine.cfg.Config().get_str('shading', 'core.gfx', 'normal') == 'normal':
-            self.type = 'brick-flat'
-
         BrickView.__init__(self, size, rotation, color, window)
 
     @obengine.datatypes.nested_property
@@ -418,7 +414,7 @@ class SkyboxElement(obengine.element.Element):
         self.view.panda_node.setDepthWrite(False)
         self.view.panda_node.setEffect(CompassEffect.make(self._window.panda_window.render))
 
-        # Did the user specifiy a texture?
+        # Did the user specify a texture?
 
         if self._texture:
             self.view.texture = self._texture
