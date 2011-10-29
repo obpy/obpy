@@ -7,20 +7,18 @@ it from a friend. Your link-hopping has led you to this document.
 
 "Just what *is* OpenBlox?", you ask yourself.
 
-In a nutshell, OpenBlox is:
+In a nutshell, OpenBlox lets you build games with Lego bricks, physics, and
+a scripting language called Lua [1]_ . Soon, you'll be able to play your games
+with your friends across the Internet.
 
- * A way for you to easily make your very own game,
-   without having to know a lot about programming, or even 3D modeling
- * A way to share (and soon play) your game with your friends
- * A way to accomplish the above things, without its users having to pay
-   *a single cent*
+*-the OpenBlox website*
 
-How can the above be accomplished?
+How can OpenBlox accomplish all that?
 
 * Games are primarily made with Lego-like bricks, that you drag-and-drop
   around to make your world
-* Interactivity (say, a bazooka firing when you press a key) is implemented
-  with Lua [1]_ - a simple programming language
+* Lua is easy to understand, even for someone who has no previous experience with
+  programming
 * OpenBlox is Free (as in freedom, and as in price) software [2]_, so
   naturally it doesn't cost anything
 

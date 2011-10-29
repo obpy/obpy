@@ -1,6 +1,8 @@
 import sys
 import os
 
+from direct.filter.CommonFilters import *
+
 sys.path.append(os.path.abspath(os.path.join(os.pardir, os.pardir)))
 
 import obengine
@@ -25,8 +27,8 @@ def main():
     light = obplugin.core.graphics.Light(obplugin.core.graphics.Light.AMBIENT, 'ambient light', window, obengine.gfx.math.Color(25, 25, 25, 255), False)
     light2 = obplugin.core.graphics.Light(obplugin.core.graphics.Light.DIRECTIONAL, 'directional light', window, obengine.gfx.math.Color(250, 250, 250, 255), False)
 
-    model = obplugin.core.graphics.Model('brick.egg', window)
-    model2 = obplugin.core.graphics.Model('brick.egg', window)
+    model = obplugin.core.graphics.Model('brick-flat.egg', window)
+    model2 = obplugin.core.graphics.Model('brick-flat.egg', window)
 
     window.on_loaded += light.load
     window.on_loaded += light2.load
@@ -35,6 +37,9 @@ def main():
     window.on_loaded += lambda: window.start_rendering()
 
     def show():
+
+        cm = CommonFilters(base.win, base.cam)
+        cm.setAmbientOcclusion(16, 0.05, 45, 1)
 
         model.position = 0, 10, -5
         model.color = 0, 100, 0, 0

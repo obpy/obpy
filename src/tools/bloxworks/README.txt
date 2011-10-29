@@ -10,12 +10,12 @@ Introduction
 ============
 
 BloxWorks is OpenBlox's scene editor - a program that allows you to edit
-a 3D scene (hence the name) at an intuitive, high-level manner.
+a 3D scene (hence the name) in an intuitive, high-level manner.
 
 Getting started
 ===============
 
-There are two seperate methods to starting BloxWorks:
+There are two separate methods to starting BloxWorks:
 
 Windows:
 
