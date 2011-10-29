@@ -72,7 +72,7 @@ class ScriptElement(Element):
         self.script_engine.expose(obengine.elementfactory.ElementFactory())
         self.script_engine.expose(LuaFactory())
         self.script_engine.execute(self.code)
-        self.script_engine.expose(obengine.vfs.filesystem, 'Filesystem')
+        self.script_engine.expose(obengine.vfs.get_global_filesystem(), 'Filesystem')
 
     def __tolua__(self):
         return 'Script'

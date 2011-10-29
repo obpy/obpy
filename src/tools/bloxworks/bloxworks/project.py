@@ -34,6 +34,7 @@ import zipfile
 import obengine.world
 import obengine.vfs
 import obengine.plugin
+import obengine.math
 import obengine.elementfactory
 import obengine.gfx.worldsource
 import obengine.gfx.element3d
@@ -188,7 +189,7 @@ def create_new_project(window, name, author):
     project = Project(world, author, obengine.version_string())
     world.add_element(obengine.gfx.element3d.SkyboxElement(window))
     world.add_element(obengine.gfx.element3d.LightElement('ambient_light', window, 'ambient'))
-    world.add_element(obengine.gfx.element3d.LightElement('sun_light', window))
+    world.add_element(obengine.gfx.element3d.LightElement('sun_light', window, rotation = obengine.math.EulerAngle(45, 45, 0)))
 
     obengine.vfs.open('/bloxworks-registry/project', 'w').write(project)
 
