@@ -91,8 +91,6 @@ class Radio(Widget):
 
     def set_state(self, new_state, propagate = True):
 
-        print 'Setting state to', bool(new_state)
-
         if new_state == self.state:
             return
 

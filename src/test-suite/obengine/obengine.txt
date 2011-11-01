@@ -9,7 +9,7 @@ A simple test for obengine. Make sure we can import and initialize it!
 Let's check the engine version:
 
 >>> print obengine.version_string()
-0.7.0
+0.8.0
 
 
 Let's check for compatiblity with OpenBlox 0.6.2:
