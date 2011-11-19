@@ -533,6 +533,78 @@ class XmlLightExtension(XmlElementExtension):
         return element
 
 
+class ParticleElement(obengine.element.Element):
+
+    def __init__(self, window, name):
+
+        obengine.element.Element.__init__(self, name)
+
+        obengine.plugin.require('core.graphics')
+        import obplugin.core.graphics
+
+        self._particle_generator = obplugin.core.graphics.ParticleEmitter(window)
+
+    @obengine.datatypes.nested_property
+    def particle_lifespan():
+
+        def fget(self):
+            return self._particle_generator.particle_lifespan
+
+        def fset(self, new_lifespan):
+            self._particle_generator.particle_lifespan = new_lifespan
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def particle_birthrate():
+
+        def fget(self):
+            return self._particle_generator.particle_birthrate
+
+        def fset(self, new_birthrate):
+            self._particle_generator.particle_birthrate = new_birthrate
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def particle_rise_velocity():
+
+        def fget(self):
+            return self._particle_generator.particle_rise_velocity
+
+        def fset(self, new_rise_velocity):
+            self._particle_generator.particle_rise_velocity = new_rise_velocity
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def particle_texture():
+
+        def fget(self):
+            return self._particle_generator.particle_texture.texture_path
+
+        def fset(self, new_texture):
+
+            import obplugin.core.graphics
+
+            texture = obplugin.core.graphics.Texture(new_texture)
+            texture.load()
+            self._particle_generator.particle_texture = texture
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def disable_alpha():
+
+        def fget(self):
+            return self._particle_generator.disable_alpha
+
+        def fset(self, disable_alpha):
+            self._particle_generator.disable_alpha = disable_alpha
+
+        return locals()
+
+
 class CameraElement(obengine.element.Element):
 
     def __init__(self, window):

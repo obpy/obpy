@@ -1,8 +1,6 @@
 import sys
 import os
 
-from direct.filter.CommonFilters import *
-
 sys.path.append(os.path.abspath(os.path.join(os.pardir, os.pardir)))
 
 import obengine
@@ -38,9 +36,6 @@ def main():
 
     def show():
 
-        cm = CommonFilters(base.win, base.cam)
-        cm.setAmbientOcclusion(16, 0.05, 45, 1)
-
         model.position = 0, 10, -5
         model.color = 0, 100, 0, 0
         model.scale = 4, 4, 1
@@ -48,6 +43,8 @@ def main():
         model.showing = True
 
         light2.look_at(model)
+
+        particles = obplugin.core.graphics.ParticleEmitter(window)
 
     def show2():
 
@@ -62,7 +59,7 @@ def main():
         if model.load_okay == False:
             return task.AGAIN
 
-        if model.color.g < 255:
+        if model.color.a < 255:
             model.color = model.color.r, model.color.g, model.color.b, model.color.a + 5
 
         else:

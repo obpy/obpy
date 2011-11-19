@@ -2,14 +2,13 @@
 OpenBlox Game Engine Readme
 ===========================
 
------------------------------
-For OpenBlox version 0.8 beta
------------------------------
+------------------------------
+For OpenBlox version 0.8 alpha
+------------------------------
 
 .. warning::
 
 	The installation sections of this document are just plain wrong.
-	Use caution!
 
 Installing on Windows
 ----------------------

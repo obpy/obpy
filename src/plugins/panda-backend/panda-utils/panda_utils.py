@@ -48,7 +48,7 @@ class PandaResource(object):
     def panda_path(self, path):
 
         if obengine.vfs.SEPERATOR in path:
-            return Filename.fromOsSpecific(obengine.vfs.getsyspath(path))
+            return Filename.fromOsSpecific(obengine.vfs.get_global_filesystem().getsyspath(path))
 
         else:
             return path

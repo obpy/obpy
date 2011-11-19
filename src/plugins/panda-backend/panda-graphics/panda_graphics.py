@@ -30,7 +30,9 @@ import math
 import panda3d.core
 from panda3d.core import *
 from direct.showbase.ShowBase import ShowBase
-from direct.filter.CommonFilters import *
+from direct.particles.Particles import *
+from direct.particles.ParticleEffect import ParticleEffect
+from direct.particles.ForceGroup import ForceGroup
 
 import shadow
 
@@ -198,6 +200,7 @@ class Model(PandaResource):
             self._color.a = color.a
 
         self.panda_node.setColor(self.convert_color(self._color))
+        self._set_alpha(self._color.a)
 
     @property
     def texture(self):
@@ -243,8 +246,9 @@ class Model(PandaResource):
     def _setup_color(self):
 
         self._color.on_r_changed += lambda r: self.panda_node.setColor(r / COLOR_SCALER, self._color.g, self._color.b)
-        self._color.on_g_changed += lambda g: self.panda_node.setColor(self._color.r, self._color.b, g / COLOR_SCALER)
-        self._color.on_b_changed += lambda b: self.panda_node.setColor(b / COLOR_SCALER, self._color.g, self._color.b)
+        self._color.on_g_changed += lambda g: self.panda_node.setColor(self._color.r, g / COLOR_SCALER, self._color.b)
+        self._color.on_b_changed += lambda b: self.panda_node.setColor(self._color.r, self._color.g, b / COLOR_SCALER)
+        self._color.on_a_changed += lambda a: self._set_alpha(a)
 
     def _check_mouse(self):
 
@@ -283,15 +287,68 @@ class Model(PandaResource):
         if self._clickable is True:
             self.panda_node.setCollideMask(CLICKABLE_BITMASK)
 
-        self._ao_light = PointLight(self._uuid)
-        self._ao_light.setColor(VBase4(-0.3, -0.3, -0.3, 1))
-        self._ao_light.setAttenuation(Point3(0, 0.3, 0))
-        self._ao_light_node = self.window.panda_window.render.attachNewNode(self._ao_light)
-        self.window.panda_window.render.setLight(self._ao_light_node)
-        self._ao_light_node.reparentTo(self.panda_node)
+#        self._ao_light = PointLight(self._uuid)
+#        self._ao_light.setColor(VBase4(-0.3, -0.3, -0.3, 1))
+#        self._ao_light.setAttenuation(Point3(0, 0.3, 0))
+#        self._ao_light_node = self.window.panda_window.render.attachNewNode(self._ao_light)
+#        self.window.panda_window.render.setLight(self._ao_light_node)
+#        self._ao_light_node.reparentTo(self.panda_node)
 
         Model.on_model_loaded(self)
         self.on_loaded()
+
+    def _set_alpha(self, alpha = None):
+
+        if alpha is None:
+            alpha = self.color.a
+
+        if alpha == 0:
+            self.panda_node.setTransparency(TransparencyAttrib.MNone, True)
+        else:
+            self.panda_node.setTransparency(TransparencyAttrib.MAlpha, True)
+
+        self.panda_node.setColor(self.color.r / COLOR_SCALER, self.color.g / COLOR_SCALER, self.color.b / COLOR_SCALER, self.color.a / COLOR_SCALER)
+
+
+class Empty(object):
+
+    def __init__(self):
+        self.panda_node = NodePath()
+
+    @obengine.datatypes.nested_property
+    def position():
+
+        def fget(self):
+            return PandaConverter.convert_vec3(self.panda_node.getPos())
+
+        def fset(self, new_pos):
+            self.panda_node.setPos(PandaConverter.convert_vector(new_pos))
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def rotation():
+
+        def fget(self):
+            return PandaConverter.convert_quat(self.panda_node.getPos())
+
+        def fset(self, new_angle):
+            self.panda_node.setHpr(PandaConverter.convert_angle(new_angle))
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def parent():
+
+        def fget(self):
+            return self._parent
+
+        def fset(self, parent):
+
+            self._parent = parent
+            self.panda_node.reparentTo(parent.panda_node)
+
+        return locals()
 
 
 class Texture(PandaResource):
@@ -307,10 +364,11 @@ class Texture(PandaResource):
 
     def __init__(self, texture_path):
 
-        self.texture_path
+        self.texture_path = texture_path
         self.panda_texture_path = self.panda_path(texture_path)
-
         self.texture = None
+
+        self.on_loaded = obengine.event.Event()
 
     def load(self):
         """
@@ -319,12 +377,154 @@ class Texture(PandaResource):
         on_loaded event. When that event is fired, the texture is ready to be used.
         """
 
-        loader.loadTexture(self.panda_texture_path, callback = self._set_load_okay)
+        panda_texture = loader.loadTexture(self.panda_texture_path)
+        self._set_load_okay(panda_texture)
 
     def _set_load_okay(self, tex):
 
         self.texture = tex
         self.on_loaded()
+
+
+class ParticleEmitter(PandaResource):
+
+
+    def __init__(self, window):
+
+        self._window = window
+
+        self._particle_effect = ParticleEffect()
+        self._reset()
+
+    @obengine.datatypes.nested_property
+    def particle_lifespan():
+
+        def fget(self):
+            return self._particle_lifespan
+
+        def fset(self, new_lifespan):
+
+            self._particle_lifespan = new_lifespan
+            self._particle_generator.factory.setLifespanBase(self._particle_lifespan)
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def particle_birthrate():
+
+        def fget(self):
+            return self._particle_birthrate
+
+        def fset(self, new_birthrate):
+
+            self._particle_birthrate = new_birthrate
+            self._particle_generator.setBirthRate(self._particle_birthrate)
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def particle_rise_velocity():
+
+        def fget(self):
+            return self._particle_velocity
+
+        def fset(self, new_velocity):
+
+            self._particle_velocity = new_velocity
+            self._particle_generator.emitter.setOffsetForce(Vec3(0.0, 0.0, self._particle_velocity))
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def particle_texture():
+
+        def fget(self):
+            return self._particle_texture
+
+        def fset(self, new_texture):
+
+            self._particle_texture = new_texture
+            self._particle_generator.renderer.setTexture(new_texture.texture)
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def disable_alpha():
+
+        def fget(self):
+            return self._disable_alpha
+
+        def fset(self, disable_alpha):
+
+            self._disable_alpha = disable_alpha
+            self._particle_generator.renderer.setAlphaDisable(self._disable_alpha)
+
+        return locals()
+
+    def _reset(self):
+
+        self._particle_effect.reset()
+        self._particle_generator = Particles()
+
+        self._particle_generator.setFactory("PointParticleFactory")
+        self._particle_generator.setRenderer("SpriteParticleRenderer")
+        self._particle_generator.setEmitter("DiscEmitter")
+        self._particle_generator.setPoolSize(10000)
+        self._particle_generator.setBirthRate(0.25)
+        self._particle_generator.setLitterSize(20)
+        self._particle_generator.setLitterSpread(0)
+        self._particle_generator.setSystemLifespan(0.0)
+        self._particle_generator.setLocalVelocityFlag(True)
+        self._particle_generator.setSystemGrowsOlderFlag(False)
+
+        self.particle_lifespan = 8.0
+        self._particle_generator.factory.setLifespanSpread(0.0)
+        self._particle_generator.factory.setMassBase(1.0)
+        self._particle_generator.factory.setMassSpread(0.0)
+        self._particle_generator.factory.setTerminalVelocityBase(400.0)
+        self._particle_generator.factory.setTerminalVelocitySpread(0.0)
+
+        self._particle_generator.renderer.setAlphaMode(BaseParticleRenderer.PRALPHAOUT)
+        self._particle_generator.renderer.setUserAlpha(0.1)
+
+        default_texture = Texture('smoke.png')
+        default_texture.on_loaded += lambda: self._set_texture(default_texture)
+        default_texture.load()
+
+        self._particle_generator.renderer.setColor(Vec4(1.0, 1.0, 1.0, 1.0))
+        self._particle_generator.renderer.setXScaleFlag(True)
+        self._particle_generator.renderer.setYScaleFlag(True)
+        self._particle_generator.renderer.setAnimAngleFlag(False)
+        self._particle_generator.renderer.setInitialXScale(0.0025)
+        self._particle_generator.renderer.setFinalXScale(0.04)
+        self._particle_generator.renderer.setInitialYScale(0.0025)
+        self._particle_generator.renderer.setFinalYScale(0.04)
+        self._particle_generator.renderer.setNonanimatedTheta(0.0)
+        self._particle_generator.renderer.setAlphaBlendMethod(BaseParticleRenderer.PPNOBLEND)
+        self._disable_alpha = False
+
+        self._particle_generator.emitter.setEmissionType(BaseParticleEmitter.ETEXPLICIT)
+        self._particle_generator.emitter.setAmplitude(1.0)
+        self._particle_generator.emitter.setAmplitudeSpread(0.75)
+        self.particle_rise_velocity = 1.0
+        self._particle_generator.emitter.setExplicitLaunchVector(Vec3(0.0, 0.0, 0.0))
+        self._particle_generator.emitter.setRadiateOrigin(Point3(0.0, 0.0, 0.0))
+
+        self._particle_effect.addParticles(self._particle_generator)
+
+        particle_force_group = ForceGroup()
+        rising_force = LinearNoiseForce(0.15, 0.0)
+        rising_force.setActive(True)
+        particle_force_group.addForce(rising_force)
+        self._particle_effect.addForceGroup(particle_force_group)
+
+        self._particle_generator.nodePath.setLightOff()
+        self._particle_generator.nodePath.setTransparency(TransparencyAttrib.MDual, 1)
+
+        self._particle_effect.start(self._window.panda_window.render)
+
+    def _set_texture(self, default_texture):
+        self.particle_texture = default_texture
 
 
 class Light(PandaResource):
@@ -393,7 +593,6 @@ class Light(PandaResource):
 
             shadow_override = obengine.cfg.Config().get_bool('use-shadows', 'core.gfx', False)
             if self._casting_shadows is True and shadow_override is True:
-                print 'enabling per-light shadows'
                 self._enable_shadows()
 
         self.on_loaded()
@@ -669,8 +868,9 @@ class Window(object):
         self.panda_window.setFrameRateMeter(self.show_frame_rate)
         self.panda_window.setBackgroundColor(1, 1, 1, 1)
         self.panda_window.win.requestProperties(self.window_properties)
-        self.panda_window.disableMouse()
+        #self.panda_window.disableMouse()
         self.panda_window.bufferViewer.toggleEnable()
+        self.panda_window.enableParticles()
         getModelPath().appendPath(self.search_path)
 
         if self._config_src.get_str('shading', 'core.gfx', 'normal') == 'toon':
