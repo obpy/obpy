@@ -1,0 +1,19 @@
+==============================================
+OpenBlox Game Engine Installation Instructions
+==============================================
+
+------------------------------
+For OpenBlox version 0.8 alpha
+------------------------------
+
+
+Installing on Windows
+----------------------
+
+Installing from source
+~~~~~~~~~~~~~~~~~~~~~~
+
+Prerequisites:
+
+ * Panda3D 1.7.2 or higher - download from http://panda3d.org
+ 
