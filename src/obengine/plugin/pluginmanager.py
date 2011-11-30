@@ -21,7 +21,7 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Apr 27, 2011 3:22:28 PM$"
+__date__ = "$Apr 27, 2011 3:22:28 PM$"
 
 
 import os
@@ -30,7 +30,6 @@ import ConfigParser
 
 import obengine.cfg
 import obengine.log
-import obengine.datatypes
 import obengine.event
 import obengine.depman
 from obengine.plugin.importhook import PluginImportHook
@@ -42,7 +41,16 @@ PLUGIN_CFG_NAME = 'plugin.ini'
 
 
 def init():
+
     sys.meta_path.append(PluginImportHook(PluginManager()))
+
+    preload_plugin_list = obengine.cfg.Config().get_str('preloaded_plugins', default = '')
+    preload_plugin_list = preload_plugin_list.split(',')
+
+    plugin_manager = PluginManager()
+
+    for plugin in preload_plugin_list:
+        plugin_manager.find_plugin(plugin)
 
 
 def require(plugin_name):
@@ -135,14 +143,14 @@ class PluginManager(object):
 
         for requirement in plugin.requires:
             require(requirement)
-            
+
         plugin.load()
 
         self.add_plugin(plugin)
         return plugin
 
     def initialize_plugin(self, plugin):
-        
+
         self._logger.debug('Initalizing plugin %s' % plugin.name)
 
         plugin.init()
@@ -203,7 +211,7 @@ class PluginManager(object):
 
         if default is None:
             default = []
-            
+
         val = self._get_optional_option(config_parser, section, option, default)
 
         if val != default:

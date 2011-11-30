@@ -58,6 +58,22 @@ class NullXmlExtension(object):
         return None
 
 
+class XmlElementParser(object):
+
+    tag = ''
+
+    def parse(tag):
+        raise NotImplementedError
+
+
+class ElementMaker(object):
+
+    element_name = ''
+
+    def make(name, parent = None):
+        raise NotImplementedError
+
+
 class BrickElement(Element):
 
     def __init__(self, name, coords, rgb, size, hpr, parent = None):

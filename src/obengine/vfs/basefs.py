@@ -33,7 +33,7 @@ class BaseFS(object):
     def __init__(self):
         raise NotImplementedError
 
-    def open(self, path, mode='r'):
+    def open(self, path, mode = 'r'):
         raise NotImplementedError
 
     def listdir(self, path):
@@ -51,15 +51,16 @@ class BaseFS(object):
     def getsyspath(self, path):
         raise NotImplementedError
 
+
 class MountFS(BaseFS):
 
     def __init__(self):
         self.mount_points = {}
-      
+
     def mount(self, loc, fs):
         self.mount_points[loc] = fs
 
-    def open(self, path, mode='r'):
+    def open(self, path, mode = 'r'):
 
         path, fs = self._get_best_mount_point(path)
         return fs.open(path, mode)

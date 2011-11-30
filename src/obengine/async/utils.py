@@ -129,3 +129,8 @@ class AsyncCall(object):
     @property
     def result(self):
         return self._result
+
+
+def wait_on(condition, scheduler):
+    while not condition:
+        scheduler.step()
