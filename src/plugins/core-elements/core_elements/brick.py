@@ -41,10 +41,10 @@ class BrickMaker(obengine.element.ElementMaker):
     element_name = 'brick'
 
     def set_window(self, window):
-        self.window = window
+        self._window = window
 
     def set_sandbox(self, sandbox):
-        self.sandbox = sandbox
+        self._sandbox = sandbox
 
     def make(name, coords = None, color = None,
              size = None, rotation = None, anchored = False):
@@ -56,10 +56,10 @@ class BrickMaker(obengine.element.ElementMaker):
         size = size or  obengine.gfx.math.Vector(2, 4, 1)
         rotation = rotation or obengine.gfx.math.EulerAngle(0, 0, 0)
 
-        view = obengine.gfx.element3d.BlockBrickView(size, rotation, color, self.window)
+        view = obengine.gfx.element3d.BlockBrickView(size, rotation, color, self._window)
         view.load()
 
-        scheduler = self.window.scheduler
+        scheduler = self._window.scheduler
 
         while view.loaded is False:
             scheduler.step()
@@ -67,7 +67,7 @@ class BrickMaker(obengine.element.ElementMaker):
         phys_size = copy.deepcopy(size)
         phys_size.z *= 2
 
-        phys_rep = obplugin.core.physics.Box(view.model, self.sandbox, None, scheduler, anchored, size = phys_size)
+        phys_rep = obplugin.core.physics.Box(view.model, self._sandbox, None, scheduler, anchored, size = phys_size)
         phys_rep.load()
 
         while phys_rep.loaded is False:
