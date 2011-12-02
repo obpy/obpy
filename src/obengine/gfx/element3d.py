@@ -410,6 +410,7 @@ class SkyboxElement(obengine.element.Element):
         self.view.panda_node.reparentTo(base.camera)
         self.view.panda_node.setShaderOff()
         self.view.panda_node.setLightOff()
+        self.view.panda_node.setFogOff()
         self.view.panda_node.setBin('background', 0)
         self.view.panda_node.setDepthWrite(False)
         self.view.panda_node.setEffect(CompassEffect.make(self._window.panda_window.render))
