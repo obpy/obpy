@@ -313,7 +313,7 @@ class Model(PandaResource):
 class Empty(object):
 
     def __init__(self):
-        self.panda_node = NodePath()
+        self.panda_node = NodePath('empty node')
 
     @obengine.datatypes.nested_property
     def position():
@@ -868,7 +868,7 @@ class Window(object):
         self.panda_window.setFrameRateMeter(self.show_frame_rate)
         self.panda_window.setBackgroundColor(1, 1, 1, 1)
         self.panda_window.win.requestProperties(self.window_properties)
-        #self.panda_window.disableMouse()
+        self.panda_window.disableMouse()
         self.panda_window.bufferViewer.toggleEnable()
         self.panda_window.enableParticles()
         getModelPath().appendPath(self.search_path)
@@ -883,6 +883,11 @@ class Window(object):
         use_shadows = self._config_src.get_bool('use-shadows', 'core.gfx')
         if use_shadows is True:
             self._enable_shadows()
+
+        scene_fog = Fog('scene-wide fog')
+        scene_fog.setColor(0.5, 0.8, 0.8)
+        scene_fog.setExpDensity(0.0009)
+        self.panda_window.render.setFog(scene_fog)
 
         picker_node = CollisionNode('mouse_ray')
         picker_nodepath = self.panda_window.camera.attachNewNode(picker_node)
