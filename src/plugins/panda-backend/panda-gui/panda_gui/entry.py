@@ -50,7 +50,7 @@ class EntryView(widget.WidgetView):
         text_align = panda3d.core.TextNode.ACenter,
         entryFont = font,
         width = length / 2 + (1, 0.5)[length % 2 == 0],
-        command = self.on_submitted,
+        command = self._submit,
         initialText = text
         )
 
@@ -66,3 +66,6 @@ class EntryView(widget.WidgetView):
             self._widget.enterText(new_text)
 
         return locals()
+
+    def _submit(self, _):
+        self.on_submitted()
