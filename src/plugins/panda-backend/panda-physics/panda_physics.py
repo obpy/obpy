@@ -35,9 +35,14 @@ import obengine.log
 from obplugin.panda_utils import PandaConverter
 
 
+EARTH_GRAVITY = -9.81
+DEFAULT_GRAVITY = EARTH_GRAVITY * 6
+DEFAULT_TIMESTEP = 60.0
+
+
 class World(object):
 
-    def __init__(self, gravity = -9.81):
+    def __init__(self, gravity = DEFAULT_GRAVITY):
 
         self.on_loaded = obengine.event.Event()
         self.on_body_added = obengine.event.Event()
@@ -54,7 +59,7 @@ class World(object):
         # a Panda3D window must be created before this method can be called
 
         self.world_manager = odeWorldManager(self._gravity)
-        self.world_manager.stepSize = 1 / 60.0
+        self.world_manager.stepSize = 1 / DEFAULT_TIMESTEP
 
         self.loaded = True
         self.on_loaded()
