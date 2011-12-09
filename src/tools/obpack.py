@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # A script that automatically packs a directory into an OpenBlox-compatible
-# .zip archive (i.e, an OpenBlox game).
+# .zip archive (i.e, an OpenBlox game). Somewhat made obsolete by BloxWorks.
 # See <TODO: no Sphinx docs yet - add some> for the main source of documentation
 # for this script.
 
@@ -21,8 +21,8 @@
 #
 
 
-__author__="openblocks"
-__date__ ="$Mar 29, 2011 2:39:03 PM$"
+__author__ = "openblocks"
+__date__ = "$Mar 29, 2011 2:39:03 PM$"
 
 
 import os
@@ -52,7 +52,7 @@ class GamePacker(object):
         self.pack_game()
 
     def setup_dialog(self):
-        
+
         initial_dir = os.getcwd()
         self.dir_dialog = wx.DirDialog(None, 'Select game directory', initial_dir)
 
@@ -83,7 +83,7 @@ class GamePacker(object):
              else:
 
                  if directory == name:
-                    archive.write(os.path.join(directory, p), arcname=p)
+                    archive.write(os.path.join(directory, p), arcname = p)
 
 
                  else:
