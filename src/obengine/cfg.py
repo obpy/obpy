@@ -25,6 +25,7 @@
 __author__ = "openblocks"
 __date__ = "$Aug 3, 2010 2:36:03 PM$"
 
+import sys
 import os
 import ConfigParser
 
@@ -40,8 +41,30 @@ CFG_FILE = 'obconf.cfg'
 
 def init():
 
-    if hasattr(Config, 'parser') is False and os.path.exists(CFG_FILE):
-        Config().load(CFG_FILE)
+    if hasattr(Config, 'parser') is False:
+
+        cfg_path = os.path.join(os.getcwd(), CFG_FILE)
+
+        if os.path.exists(cfg_path) is True:
+            Config().load(cfg_path)
+
+        else:
+            while True:
+
+                current_dir = os.path.dirname(cfg_path)
+                parent_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
+
+                if current_dir == parent_dir:
+
+                    print >> sys.stderr, 'ERROR: No configuration file was found.'
+                    sys.exit(1)
+
+                cfg_path = os.path.join(parent_dir, CFG_FILE)
+
+                if os.path.exists(cfg_path):
+
+                    Config().load(cfg_path)
+                    break
 
 
 class Config(obengine.datatypes.Borg):
