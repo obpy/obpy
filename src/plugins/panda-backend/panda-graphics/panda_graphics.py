@@ -63,7 +63,7 @@ class Model(PandaResource):
 
     on_model_loaded = obengine.event.Event()
 
-    def __init__(self, model_path, window, position = None, rotation = None, scale = None, color = None, clickable = True, cast_shadows = True):
+    def __init__(self, model_path, window, position = None, rotation = None, scale = None, color = None, clickable = True, cast_shadows = True, compress = True):
 
         PandaResource.__init__(self)
 
@@ -75,6 +75,7 @@ class Model(PandaResource):
         self._showing = False
         self.on_click = obengine.event.Event()
         self.cast_shadows = cast_shadows
+        self.compress = compress
 
         self._texture = None
         self._parent = None
@@ -86,6 +87,10 @@ class Model(PandaResource):
         self._setup_rotation()
         self._scale = scale or obengine.gfx.math.Vector()
         self._setup_scale()
+
+        self.on_parent_changed = obengine.event.Event()
+        self.on_shown = obengine.event.Event()
+        self.on_hidden = obengine.event.Event()
 
         self._clickable = clickable
 
@@ -119,10 +124,14 @@ class Model(PandaResource):
     def showing(self, val):
 
         if val is True:
-            self.panda_node.reparentTo(self.window.panda_window.render)
+
+            self.panda_node.show()
+            self.on_shown()
 
         elif val is False:
-            self.panda_node.detachNode()
+
+            self.panda_node.hide()
+            self.on_hidden()
 
         else:
             raise ValueError('val must be either True or False (was %s)' % val)
@@ -220,8 +229,14 @@ class Model(PandaResource):
 
         def fset(self, parent):
 
+#            print 'reparenting %s to %s' % (self.panda_node, parent.panda_node)
+
             self._parent = parent
             self.panda_node.reparentTo(parent.panda_node)
+
+            self.on_parent_changed(self.parent)
+
+#            print 'parent of %s now: %s' % (self.panda_node, self.parent.panda_node)
 
         return locals()
 
@@ -280,8 +295,8 @@ class Model(PandaResource):
         loaded_models[self._uuid] = self
 
         self.panda_node = model
-        self.panda_node.setTransparency(TransparencyAttrib.MAlpha)
         self.panda_node.setTag('clickable-flag', self._uuid)
+        self.panda_node.reparentTo(self.window.panda_window.render)
         self.showing = True
 
         if self._clickable is True:
@@ -302,10 +317,10 @@ class Model(PandaResource):
         if alpha is None:
             alpha = self.color.a
 
-        if alpha == 0:
-            self.panda_node.setTransparency(TransparencyAttrib.MNone, True)
-        else:
-            self.panda_node.setTransparency(TransparencyAttrib.MAlpha, True)
+#        if alpha == 0:
+#            self.panda_node.setTransparency(TransparencyAttrib.MNone, True)
+#        else:
+#            self.panda_node.setTransparency(TransparencyAttrib.MAlpha, True)
 
         self.panda_node.setColor(self.color.r / COLOR_SCALER, self.color.g / COLOR_SCALER, self.color.b / COLOR_SCALER, self.color.a / COLOR_SCALER)
 
@@ -349,6 +364,87 @@ class Empty(object):
             self.panda_node.reparentTo(parent.panda_node)
 
         return locals()
+
+
+class ModelCollector(obengine.datatypes.Borg):
+
+    class RbcWrapper(object):
+
+        def __init__(self, name):
+
+            self._name = name
+            self._combiner = RigidBodyCombiner(self._name)
+            self.panda_node = NodePath(self._combiner)
+            self.panda_node.setAttrib(RescaleNormalAttrib.make(RescaleNormalAttrib.MNormalize))
+
+        def collect(self):
+
+            self._combiner.collect()
+            self._combiner.getInternalScene().analyze()
+
+    _model_combiners = []
+    _model_batch = []
+    _model_count = 0
+    _MODELS_PER_COMBINER = 400
+    _MODEL_BATCH_COUNT = 50
+
+    assert _MODELS_PER_COMBINER % _MODEL_BATCH_COUNT == 0
+
+    def __init__(self):
+
+        if self._collect_model not in Model.on_model_loaded.handlers:
+            Model.on_model_loaded += self._collect_model
+
+    def _collect_model(self, model):
+
+        if model.compress is False:
+            return
+
+        if len(self._model_combiners) == 0:
+            self._create_new_combiner()
+
+        if len(self._model_batch) >= self._MODEL_BATCH_COUNT:
+
+            while len(self._model_batch) > 0:
+                self._add_model(self._model_batch.pop())
+
+            latest_combiner = self._model_combiners[-1]
+            latest_combiner.collect()
+
+            self._model_count += self._MODEL_BATCH_COUNT
+
+        else:
+            self._model_batch.append(model)
+
+        if self._model_count >= self._MODELS_PER_COMBINER:
+
+            self._create_new_combiner()
+            self._model_count = 0
+
+    def _create_new_combiner(self):
+
+        combiner_name = 'rbc-%d' % (len(self._model_combiners))
+        combiner = ModelCollector.RbcWrapper(combiner_name)
+
+        self._model_combiners.append(combiner)
+        combiner.panda_node.reparentTo(render)
+
+    def _add_model(self, model):
+
+        latest_combiner = self._model_combiners[-1]
+        model.parent = latest_combiner
+        model.on_parent_changed += lambda _: self._recollect_model(model, latest_combiner)
+        model.on_hidden += latest_combiner.collect
+        model.on_shown += latest_combiner.collect
+
+    def _recollect_model(self, model, combiner):
+
+        if model.parent == combiner:
+            return
+
+        model_parent = model.parent
+        model_parent.parent = combiner
+        combiner.collect()
 
 
 class Texture(PandaResource):
@@ -904,6 +1000,8 @@ class Window(object):
                                        mouse_button,
                                        mouse_event_type)
         self._click_event += self._pick_mouse
+
+        ModelCollector()
 
         self.on_loaded()
 

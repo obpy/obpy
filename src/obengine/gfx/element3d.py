@@ -391,7 +391,7 @@ class SkyboxElement(obengine.element.Element):
 
         import obplugin.core.graphics
 
-        self.view = obplugin.core.graphics.Model('sky', self._window, clickable = False, cast_shadows = False)
+        self.view = obplugin.core.graphics.Model('sky', self._window, clickable = False, cast_shadows = False, compress = False)
 
         self.on_add += self.sky_on_add
         self.on_remove += self.sky_on_remove
