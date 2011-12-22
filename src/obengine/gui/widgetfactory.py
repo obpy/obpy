@@ -52,6 +52,9 @@ class WidgetFactory(object):
     """A factory for making widgets.
     """
 
+    HORIZONTAL_LAYOUT_MANAGER = HorizontalLayoutManager
+    VERTICAL_LAYOUT_MANAGER = VerticalLayoutManager
+
     def __init__(self):
 
         self._widget_handlers = {}
@@ -110,12 +113,12 @@ class WidgetFactory(object):
 
         return presenter
 
-    def _make_container(self, layout_manager = VerticalLayoutManager, position = None, margin = None):
+    def _make_container(self, layout_manager = VERTICAL_LAYOUT_MANAGER, position = None, margin = None):
 
         container = Container(layout_manager, position, margin)
         return container
 
-    def _make_shutter(self, layout_manager = HorizontalLayoutManager, position = None, margin = None):
+    def _make_shutter(self, layout_manager = HORIZONTAL_LAYOUT_MANAGER, position = None, margin = None):
 
         import obplugin.core.gui
 

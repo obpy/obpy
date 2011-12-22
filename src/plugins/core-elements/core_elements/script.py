@@ -118,6 +118,7 @@ class LuaFactory(object):
 
         self.factory_items = {
         'Vector' : obengine.math.Vector,
+        'Vector2D' : obengine.math.Vector2D,
         'Color' : obengine.math.Color,
         'EulerAngle' : obengine.math.EulerAngle,
 
