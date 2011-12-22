@@ -302,12 +302,7 @@ class Model(PandaResource):
         if self._clickable is True:
             self.panda_node.setCollideMask(CLICKABLE_BITMASK)
 
-#        self._ao_light = PointLight(self._uuid)
-#        self._ao_light.setColor(VBase4(-0.3, -0.3, -0.3, 1))
-#        self._ao_light.setAttenuation(Point3(0, 0.3, 0))
-#        self._ao_light_node = self.window.panda_window.render.attachNewNode(self._ao_light)
-#        self.window.panda_window.render.setLight(self._ao_light_node)
-#        self._ao_light_node.reparentTo(self.panda_node)
+#        render.analyze()
 
         Model.on_model_loaded(self)
         self.on_loaded()
@@ -317,10 +312,10 @@ class Model(PandaResource):
         if alpha is None:
             alpha = self.color.a
 
-#        if alpha == 0:
-#            self.panda_node.setTransparency(TransparencyAttrib.MNone, True)
-#        else:
-#            self.panda_node.setTransparency(TransparencyAttrib.MAlpha, True)
+        if alpha == 0:
+            self.panda_node.setTransparency(TransparencyAttrib.MNone, True)
+        else:
+            self.panda_node.setTransparency(TransparencyAttrib.MAlpha, True)
 
         self.panda_node.setColor(self.color.r / COLOR_SCALER, self.color.g / COLOR_SCALER, self.color.b / COLOR_SCALER, self.color.a / COLOR_SCALER)
 
@@ -380,13 +375,14 @@ class ModelCollector(obengine.datatypes.Borg):
         def collect(self):
 
             self._combiner.collect()
-            self._combiner.getInternalScene().analyze()
+#            self._combiner.getInternalScene().analyze()
+            render.analyze()
 
     _model_combiners = []
     _model_batch = []
     _model_count = 0
     _MODELS_PER_COMBINER = 400
-    _MODEL_BATCH_COUNT = 50
+    _MODEL_BATCH_COUNT = 1
 
     assert _MODELS_PER_COMBINER % _MODEL_BATCH_COUNT == 0
 

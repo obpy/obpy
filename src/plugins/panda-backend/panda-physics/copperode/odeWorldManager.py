@@ -7,6 +7,8 @@ from direct.showbase.InputStateGlobal import inputState
 
 from debugVisODE import wireGeom
 
+SURFACE_FRICTION = 2000.0
+
 """
 This is a convenient way of handling the most tedious and powerful part
 of ODE -- the bitmasks that control what collides with what.
@@ -261,7 +263,7 @@ class staticObject(physicalObject):
 		so that it can be used by many objects, like bitMasks,
 		but I didn't want to delay the release because of this.
 		"""
-		self.surfaceFriction = 500.0
+		self.surfaceFriction = SURFACE_FRICTION
 		self.surfaceBounce = 0.3
 		self.surfaceBounceVel = 0.5
 		self.surfaceSoftCFM = 0.1
