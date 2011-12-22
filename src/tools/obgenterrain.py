@@ -91,26 +91,46 @@ def save_project():
 
 def terrain_task(task, image_width, image_pixels, colormap_pixels, last_pos, max_height):
 
-    current_pixel = image_pixels.pop()
-    pixel_color = colormap_pixels.pop()
+    pixel_buffer = []
+    pixel_buffer.append((image_pixels.pop(), colormap_pixels.pop()))
+
+    while True:
+
+        if len(image_pixels) == 0:
+
+            save_project()
+            return task.STOP
+
+        elif (image_pixels[-1], colormap_pixels[-1]) != pixel_buffer[-1]:
+            break
+
+        elif len(pixel_buffer) % image_width == 0:
+            break
+
+        elif last_pos.x - len(pixel_buffer) <= -image_width / 2:
+            break
+
+        else:
+            pixel_buffer.append((image_pixels.pop(), colormap_pixels.pop()))
+
+
+    pixel_height = pixel_buffer[0][0]
+    pixel_color = pixel_buffer[0][1]
     rgb_range = (0, 255)
     height_range = (1, max_height)
 
-    average_color = sum(current_pixel[:-1]) / 3
+    average_color = sum(pixel_height[:-1]) / 3
     brick_height = round(obengine.utils.interp_range(rgb_range,
                                                      height_range,
                                                      average_color))
 
-    brick_pos = obengine.math.Vector(last_pos.x,
+    brick_width = len(pixel_buffer) / 2.0
+
+    brick_pos = obengine.math.Vector(last_pos.x - brick_width,
                                      last_pos.y,
-                                     brick_height / 2)
+                                     brick_height / 2.0)
 
-    if brick_pos.x % image_width == 0:
-
-        brick_pos.y += 1
-        brick_pos.x = image_width
-
-    brick_size = obengine.math.Vector(1, 1, brick_height)
+    brick_size = obengine.math.Vector(brick_width * 2.0, 1, brick_height)
 
 
 #    print 'make brick with position(%s) and height(%s)' % (
@@ -134,16 +154,17 @@ def terrain_task(task, image_width, image_pixels, colormap_pixels, last_pos, max
         world = obengine.vfs.open('/bloxworks-registry/project').read().world
         world.add_element(brick)
 
-    brick_pos.x -= 1
+    brick_pos.x -= brick_width
+
+    if brick_pos.x <= -image_width / 2:
+
+        brick_pos.y += 1
+        brick_pos.x = image_width / 2
 
     last_pos.x = brick_pos.x
     last_pos.y = brick_pos.y
 
-    if len(image_pixels) != 0:
-        return task.AGAIN
-
-    else:
-        save_project()
+    return task.AGAIN
 
 
 def genterrain(image, colormap, window, max_brick_height = None, name = None, author = None):
@@ -160,9 +181,7 @@ def genterrain(image, colormap, window, max_brick_height = None, name = None, au
 
     colormap_pixels = list(colormap.getdata())
 
-    brick_pos = obengine.math.Vector(-image_width, image_height / 2)
-    rgb_range = (0, 255)
-    height_range = (1, MAX_HEIGHT)
+    brick_pos = obengine.math.Vector(image_width / 2, -image_height / 2)
 
     window.scheduler.add(obengine.async.Task(terrain_task, args = [image_width,
                                                                         image_pixels,

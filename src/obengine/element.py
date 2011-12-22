@@ -73,26 +73,3 @@ class ElementMaker(object):
     def make(name, parent = None):
         raise NotImplementedError
 
-
-class BrickElement(Element):
-
-    def __init__(self, name, coords, rgb, size, hpr, parent = None):
-
-        Element.__init__(self, name, parent)
-
-        self.coords = coords
-        self.size = size
-        self.hpr = hpr
-        self.rgb = rgb
-
-    def set_size(self, newsize):
-        self.size = newsize
-
-    def set_pos(self, newpos):
-        self.coords = newpos
-
-    def set_hpr(self, newhpr):
-        self.hpr = newhpr
-
-    def set_rgb(self, newrgb):
-        self.rgb = newrgb
