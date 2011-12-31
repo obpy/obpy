@@ -115,6 +115,7 @@ class XmlToolParser(obengine.element.XmlElementParser):
         mesh_path = tag.attrib.get('mesh', None)
         tool_mesh = None
         if mesh_path is not None:
+
             mesh_path = obengine.vfs.getsyspath('/data/%s/%s/%s' % (TOOL_DIR, name, mesh_path))
             tool_mesh = obplugin.core.graphics.Model(mesh_path, element_factory.window)
             tool_mesh.load()
