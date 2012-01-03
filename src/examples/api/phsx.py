@@ -40,7 +40,7 @@ def main():
     window.on_loaded += lambda: window.start_rendering()
     window.on_loaded += world.load
 
-    def on_collision(_, __):
+    def on_collision(_):
         print 'Collision!'
 
     def add_collision_cb_box():

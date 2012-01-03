@@ -230,12 +230,6 @@ class Box(object):
     def _translate_collision_cb(self, entry, object1, object2):
 
         try:
-            first_subject = object1.owner
-
-        except AttributeError:
-            first_subject = object1
-
-        try:
             second_subject = object2.owner
 
         except AttributeError:
