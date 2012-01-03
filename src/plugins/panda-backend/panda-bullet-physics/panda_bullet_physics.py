@@ -62,6 +62,7 @@ class World(object):
 
         self.world_manager = panda3d.bullet.BulletWorld()
         self.world_manager.setGravity(panda3d.core.Vec3(0, 0, self._gravity))
+        self.panda_node = render.attachNewNode('Bullet physics world')
 
         base.taskMgr.add(self._update_physics, 'Bullet simulation task')
 
@@ -182,7 +183,7 @@ class Box(object):
         if self.anchored is False:
             self.object.setMass(self.weight)
 
-        self.panda_node = render.attachNewNode(self.object)
+        self.panda_node = self.world.panda_node.attachNewNode(self.object)
         self.panda_node.setPos(PandaConverter.convert_vector(self.model.position))
         self.panda_node.setQuat(PandaConverter.convert_angle(self.model.rotation))
 
@@ -198,3 +199,60 @@ class Box(object):
             self.model.rotation = PandaConverter.convert_quat(self.panda_node.getQuat())
 
         return task.cont
+
+
+class CharacterCapsule(object):
+
+    def __init__(self, world, owner, scheduler):
+
+        self.on_loaded = obengine.event.Event()
+        self.on_collision = obengine.event.Event()
+
+        self.world = world
+        self.owner = owner
+        self.scheduler = scheduler
+
+        self._loaded = False
+
+    def jump(self):
+        self.object.doJump()
+
+    def load(self):
+        self.scheduler.add(obengine.async.AsyncCall(self._actual_load, 10))
+
+    @property
+    def loaded(self):
+        return self._loaded
+
+    @obengine.datatypes.nested_property
+    def rotation():
+
+        def fget(self):
+            return PandaConverter.convert_quat(self.panda_node.getQuat())
+
+        def fset(self, new_rotation):
+            self.panda_node.setQuat(PandaConverter.convert_angle(new_rotation))
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def position():
+
+        def fget(self):
+            return PandaConverter.convert_vec3(self.panda_node.getPos())
+
+        def fset(self, new_position):
+            self.panda_node.setPos(PandaConverter.convert_vector(new_position))
+
+    def _actual_load(self):
+
+        height = 10
+        radius = 3
+        step_height = 3
+
+        self._uuid = str(uuid.uuid1())
+
+        self._shape = panda3d.bullet.BulletCapsuleShape(height = height, radius = radius, panda3d.bullet.ZUp)
+        self.object = panda3d.bullet.BulletCharacterControllerNode(self._shape, step_height, self._uuid)
+
+        self.panda_node = self.world.panda_node.attachNewNode(self.object)
