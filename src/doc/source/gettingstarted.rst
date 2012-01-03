@@ -17,7 +17,7 @@ Linux
 * OpenGL (GLX)
 * Python 2.6 (installable from your distribution's package manager, pre-installed
   on many distributions)
-* Panda3D 1.7.1 or higher (download from http://www.panda3d.org/download.php?sdk)
+* Panda3D 1.8 or higher (download from http://www.panda3d.org/download.php?sdk)
 * wxPython 2.8 (2.6 might work) - optional, required only for the graphical game
   launcher
 
@@ -26,7 +26,7 @@ Mac OSX
 
 * Python 2.6 (may be pre-installed; otherwise, download from
   http://www.python.org/ftp/python/2.6.6/python-2.6.6-macosx10.3.dmg)
-* Panda3D 1.7.1 or higher (download from http://www.panda3d.org/download.php?sdk)
+* Panda3D 1.8 or higher (download from http://www.panda3d.org/download.php?sdk)
 * Lupa 0.18 or higher (download from http://pypi.python.org/pypi/lupa, 0.20 recommended)
 * wxPython 2.8 (2.6 might work) - optional, required only for the graphical game
   launcher

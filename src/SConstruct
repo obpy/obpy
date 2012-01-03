@@ -6,7 +6,7 @@ def getsyspath(path):
 
 
 platform = ARGUMENTS.get('OS', Platform())
-panda_version = ARGUMENTS.get('PANDA_VERSION', '1.7.2')
+panda_version = ARGUMENTS.get('PANDA_VERSION', '1.8.0')
 sphinx = ARGUMENTS.get('SPHINX', 'sphinx-build')
 sphinx_flags = ARGUMENTS.get('SPHINX_FLAGS', '-Nq')
 sphinx_builder = ARGUMENTS.get('SPHINX_BUILDER', 'html')

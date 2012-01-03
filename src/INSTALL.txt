@@ -15,5 +15,6 @@ Installing from source
 
 Prerequisites:
 
- * Panda3D 1.7.2 or higher - download from http://panda3d.org
+ * Panda3D 1.8 or higher - download from http://panda3d.org
+ * Scons (1.2 or higher recommended) - download from http://scons.org
  
