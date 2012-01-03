@@ -43,7 +43,7 @@ import obengine.event
 import obengine.async
 import obengine.vfs
 import obengine.plugin
-import obengine.gfx.math
+import obengine.math
 from obplugin.panda_utils import PandaResource, PandaConverter, COLOR_SCALER
 from obplugin.panda_hardware import MouseEvent
 
@@ -79,13 +79,13 @@ class Model(PandaResource):
 
         self._texture = None
         self._parent = None
-        self._position = position or obengine.gfx.math.Vector()
+        self._position = position or obengine.math.Vector()
         self._setup_position()
-        self._color = color or obengine.gfx.math.Color()
+        self._color = color or obengine.math.Color()
         self._setup_color()
-        self._rotation = rotation or obengine.gfx.math.EulerAngle()
+        self._rotation = rotation or obengine.math.EulerAngle()
         self._setup_rotation()
-        self._scale = scale or obengine.gfx.math.Vector()
+        self._scale = scale or obengine.math.Vector()
         self._setup_scale()
 
         self.on_parent_changed = obengine.event.Event()
@@ -111,8 +111,8 @@ class Model(PandaResource):
         point1 = PandaConverter.convert_vec3(point1)
         point2 = PandaConverter.convert_vec3(point2)
 #
-#        point3 = obengine.gfx.math.Vector(point1.x, point2.y, point1.z)
-#        point4 = obengine.gfx.math.Vector(point2.x, point1.y, point2.z)
+#        point3 = obengine.math.Vector(point1.x, point2.y, point1.z)
+#        point4 = obengine.math.Vector(point2.x, point1.y, point2.z)
 
         return point1, point2
 
@@ -145,7 +145,7 @@ class Model(PandaResource):
     	def fset(self, pos):
 
     	    if isinstance(pos, tuple):
-    		      self._position = obengine.gfx.math.Vector(*pos)
+    		      self._position = obengine.math.Vector(*pos)
     		      self.panda_node.setPos(self.convert_vector(self._position))
 
     	    else:
@@ -164,7 +164,7 @@ class Model(PandaResource):
 
         if isinstance(new_scale, tuple):
 
-            self._scale = obengine.gfx.math.Vector(*new_scale)
+            self._scale = obengine.math.Vector(*new_scale)
             self.panda_node.setScale(*self.convert_vector(self._scale))
 
         else:
@@ -199,7 +199,7 @@ class Model(PandaResource):
     def color(self, color):
 
         if isinstance(color, tuple):
-            self._color = obengine.gfx.math.Color(*color)
+            self._color = obengine.math.Color(*color)
 
         else:
 
@@ -629,7 +629,7 @@ class Light(PandaResource):
     AMBIENT = 'ambient'
     POINT = 'point'
 
-    def __init__(self, light_type, name, window, color = obengine.gfx.math.Color(255, 255, 255, 255), position = obengine.gfx.math.Vector(0, 0, 0), rotation = obengine.gfx.math.EulerAngle(0, 0, 0), cast_shadows = False):
+    def __init__(self, light_type, name, window, color = obengine.math.Color(255, 255, 255, 255), position = obengine.math.Vector(0, 0, 0), rotation = obengine.math.EulerAngle(0, 0, 0), cast_shadows = False):
         """Creates a new light
         Arguments:
          * light_type - either Light.DIRECTIONAL for a directional light,
@@ -713,7 +713,7 @@ class Light(PandaResource):
     def color(self, color):
 
         if isinstance(color, tuple):
-            color = obengine.gfx.math.Color(*color)
+            color = obengine.math.Color(*color)
 
         self._color = color
         self.panda_light.setColor(self.convert_color(color))
@@ -734,7 +734,7 @@ class Light(PandaResource):
     def rotation(self, rot):
 
         if isinstance(rot, tuple):
-            self._rotation = obengine.gfx.math.EulerAngle(*rot)
+            self._rotation = obengine.math.EulerAngle(*rot)
 
         else:
             self._rotation = rot
@@ -757,7 +757,7 @@ class Light(PandaResource):
                 obengine.log.warn('Tried to set position of non-point light')
 
             if isinstance(new_pos, tuple):
-                self._position = obengine.gfx.math.Vector(*new_pos)
+                self._position = obengine.math.Vector(*new_pos)
 
             else:
                 self._position = new_pos
@@ -1076,13 +1076,13 @@ class Camera(object):
     def position(self):
 
         cam_vec = self.camera.getPos()
-        return obengine.gfx.math.Vector(cam_vec.getX(), cam_vec.getY(), cam_vec.getZ())
+        return obengine.math.Vector(cam_vec.getX(), cam_vec.getY(), cam_vec.getZ())
 
     @position.setter
     def position(self, pos):
 
         if isinstance(pos, tuple):
-            pos = obengine.gfx.math.Vector(*pos)
+            pos = obengine.math.Vector(*pos)
 
         self.camera.setPos(pos.x, pos.y, pos.z)
 

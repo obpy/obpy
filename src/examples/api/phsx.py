@@ -3,11 +3,9 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.pardir, os.pardir)))
 
-import obengine
 import obengine.async
 import obengine.plugin
-import obengine.gfx.math
-import obengine.depman
+import obengine.math
 
 def main():
 
@@ -25,8 +23,8 @@ def main():
 
     window = obplugin.core.graphics.Window('OpenBlox', scheduler)
 
-    light = obplugin.core.graphics.Light(obplugin.core.graphics.Light.AMBIENT, 'ambient light', window, obengine.gfx.math.Color(25, 25, 25, 255), False)
-    light2 = obplugin.core.graphics.Light(obplugin.core.graphics.Light.DIRECTIONAL, 'directional light', window, obengine.gfx.math.Color(250, 250, 250, 255), False)
+    light = obplugin.core.graphics.Light(obplugin.core.graphics.Light.AMBIENT, 'ambient light', window, obengine.math.Color(25, 25, 25, 255), False)
+    light2 = obplugin.core.graphics.Light(obplugin.core.graphics.Light.DIRECTIONAL, 'directional light', window, obengine.math.Color(250, 250, 250, 255), False)
 
     model = obplugin.core.graphics.Model('brick.egg', window)
     model2 = obplugin.core.graphics.Model('brick.egg', window)

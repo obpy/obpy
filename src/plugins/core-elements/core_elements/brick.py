@@ -51,10 +51,10 @@ class BrickMaker(obengine.element.ElementMaker):
 
         import obplugin.core.physics
 
-        coords = coords or obengine.gfx.math.Vector(0, 0, 0)
-        color = color or obengine.gfx.math.Color(0, 0, 0, 255)
-        size = size or  obengine.gfx.math.Vector(2, 4, 1)
-        rotation = rotation or obengine.gfx.math.EulerAngle(0, 0, 0)
+        coords = coords or obengine.math.Vector(0, 0, 0)
+        color = color or obengine.math.Color(0, 0, 0, 255)
+        size = size or  obengine.math.Vector(2, 4, 1)
+        rotation = rotation or obengine.math.EulerAngle(0, 0, 0)
 
         view = obengine.gfx.element3d.BlockBrickView(size, rotation, color, self._window)
         view.load()
@@ -151,7 +151,7 @@ class BlockBrickView(BrickView):
         def fget(self):
 
             size = self.model.scale
-            brick_size = obengine.gfx.math.Vector(
+            brick_size = obengine.math.Vector(
             size.x * DEFAULT_X_SIZE,
             size.y * DEFAULT_Y_SIZE,
             size.z * DEFAULT_Z_SIZE

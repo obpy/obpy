@@ -30,7 +30,7 @@ __date__ = "$Jan 23, 2011 7:57:35 AM$"
 import copy
 
 import obengine.gfx.element3d
-import obengine.gfx.math
+import obengine.math
 import obengine.depman
 
 obengine.depman.gendeps()
@@ -90,10 +90,10 @@ class ElementFactory(object):
 
         import obplugin.core.physics
 
-        coords = coords or obengine.gfx.math.Vector(0, 0, 0)
-        color = color or obengine.gfx.math.Color(0, 0, 0, 255)
-        size = size or  obengine.gfx.math.Vector(2, 4, 1)
-        rotation = rotation or obengine.gfx.math.EulerAngle(0, 0, 0)
+        coords = coords or obengine.math.Vector(0, 0, 0)
+        color = color or obengine.math.Color(0, 0, 0, 255)
+        size = size or  obengine.math.Vector(2, 4, 1)
+        rotation = rotation or obengine.math.EulerAngle(0, 0, 0)
 
         view = obengine.gfx.element3d.BlockBrickView(size, rotation, color, self.window)
         view.load()

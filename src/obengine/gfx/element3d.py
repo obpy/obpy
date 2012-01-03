@@ -127,7 +127,7 @@ class BlockBrickView(BrickView):
         def fget(self):
 
             size = self.model.scale
-            brick_size = obengine.gfx.math.Vector(
+            brick_size = obengine.math.Vector(
             size.x * DEFAULT_X_SIZE,
             size.y * DEFAULT_Y_SIZE,
             size.z * DEFAULT_Z_SIZE

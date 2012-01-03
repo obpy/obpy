@@ -30,7 +30,7 @@ import obengine.event
 import obengine.datatypes
 import obengine.async
 import obengine.plugin
-import obengine.gfx.math
+import obengine.math
 import obengine.log
 from obplugin.panda_utils import PandaConverter
 
