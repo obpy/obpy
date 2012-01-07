@@ -270,7 +270,7 @@ class BrickPresenter(obengine.element.Element):
         def fset(self, new_size):
 
             self.view.size = new_size
-            self.phys_rep.update_size()
+            self.phys_rep.size = new_size
 
         return locals()
 

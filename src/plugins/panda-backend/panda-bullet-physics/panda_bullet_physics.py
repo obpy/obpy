@@ -40,8 +40,9 @@ from obplugin.panda_utils import PandaConverter
 
 
 EARTH_GRAVITY = -9.81
-DEFAULT_GRAVITY = EARTH_GRAVITY
-STEP_SIZE = 1 / 30.0
+DEFAULT_GRAVITY = EARTH_GRAVITY * 7.0
+MAX_STEP_SIZE = 1 / 60.0
+MAX_SUBSTEPS = 10
 DEFAULT_FRICTION = 0.7
 
 class World(object):
@@ -75,7 +76,6 @@ class World(object):
         self.on_body_added(body)
 
     def remove(self, body):
-
         self.world_manager.removeRigidBody(body.object)
 
     def pause(self):
@@ -88,10 +88,16 @@ class World(object):
         self._paused = False
         self.on_unpaused
 
+    @property
+    def gravity(self):
+        return self._gravity
+
     def _update_physics(self, task):
 
         if self._paused is False:
-            self.world_manager.doPhysics(STEP_SIZE)
+
+            dt = globalClock.getDt()
+            self.world_manager.doPhysics(dt, MAX_SUBSTEPS, MAX_STEP_SIZE)
 
         return task.cont
 
@@ -104,6 +110,7 @@ class Box(object):
         self.on_loaded = obengine.event.Event()
         self.on_collision = obengine.event.Event()
         self.scheduler = scheduler
+        self.owner = owner
 
         self.world = world
         self._anchored = anchored
@@ -137,6 +144,10 @@ class Box(object):
     def loaded(self):
         return self._loaded
 
+    @property
+    def enabled(self):
+        return self._disabled is False
+
     @obengine.datatypes.nested_property
     def rotation():
 
@@ -156,6 +167,31 @@ class Box(object):
 
         def fset(self, new_position):
             self.panda_node.setPos(PandaConverter.convert_vector(new_position))
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def size():
+
+        def fget(self):
+            return self._size
+
+        def fset(self, new_size):
+
+            was_disabled = self.enabled is False
+
+            self.disable()
+            self.panda_node.detachNode()
+            del self.object
+
+            self._size = new_size
+
+            self._make_object()
+
+            if was_disabled is False:
+                self.enable()
+
+        return locals()
 
     @obengine.datatypes.nested_property
     def anchored():
@@ -177,19 +213,35 @@ class Box(object):
 
     def _actual_load(self):
 
-        self.object = panda3d.bullet.BulletBoxShape(PandaConverter.convert_vector(self._size))
-        self.object.setFriction(DEFAULT_FRICTION)
+        self._uuid = 'physics-update-%s' % str(uuid.uuid1())
+        self._make_object()
 
+        self._disabled = False
+        self._loaded = True
+        base.taskMgr.add(self._update_object, self._uuid)
+
+    def _make_object(self):
+
+        if self._size is None:
+            self._size = self.model.bounds
+
+        self._size.x /= 2
+        self._size.y /= 2
+
+        self._shape = panda3d.bullet.BulletBoxShape(PandaConverter.convert_vector(self._size))
+        self.object = panda3d.bullet.BulletRigidBodyNode(self._uuid)
         if self.anchored is False:
             self.object.setMass(self.weight)
+        self.object.addShape(self._shape)
+        self.object.setFriction(DEFAULT_FRICTION)
 
         self.panda_node = self.world.panda_node.attachNewNode(self.object)
+        self.panda_node.setPythonTag('owner', self)
         self.panda_node.setPos(PandaConverter.convert_vector(self.model.position))
         self.panda_node.setQuat(PandaConverter.convert_angle(self.model.rotation))
+        self.panda_node.setCollideMask(panda3d.core.BitMask32.allOn())
 
-        self._uuid = 'physics-update-%s' % str(uuid.uuid1())
-
-        base.taskMgr.add(self._update_object, self._uuid)
+        self.world.add(self)
 
     def _update_object(self, task):
 
@@ -197,6 +249,13 @@ class Box(object):
 
             self.model.position = PandaConverter.convert_vec3(self.panda_node.getPos())
             self.model.rotation = PandaConverter.convert_quat(self.panda_node.getQuat())
+
+            contacting_models = self.world.world_manager.contactTest(self.object)
+
+            for contact in contacting_models.getContacts():
+
+                contact_owner = contact.getNode0().getPythonTag('owner').owner
+                self.on_collision(contact_owner)
 
         return task.cont
 
@@ -244,15 +303,64 @@ class CharacterCapsule(object):
         def fset(self, new_position):
             self.panda_node.setPos(PandaConverter.convert_vector(new_position))
 
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def linear_velocity():
+
+        def fget(self):
+            return self._linear_velocity
+
+        def fset(self, new_linear_velocity):
+
+            self._linear_velocity = new_linear_velocity
+            self.object.setLinearVelocity(PandaConverter.convert_vector(new_linear_velocity), True)
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def rotational_velocity():
+
+        def fget(self):
+            return self._rotational_velocity
+
+        def fset(self, new_rotational_velocity):
+
+            self._rotational_velocity = new_rotational_velocity
+            self.object.setAngularVelocity(self._rotational_velocity.h)
+
+        return locals()
+
     def _actual_load(self):
 
-        height = 10
-        radius = 3
+        # TODO: Allow height, radius, jump velocity, and step height to be set from outside
+        # this function!
+
+        height = 4
+        radius = 1.0
         step_height = 3
+        jump_velocity = 25
 
         self._uuid = str(uuid.uuid1())
 
-        self._shape = panda3d.bullet.BulletCapsuleShape(height = height, radius = radius, panda3d.bullet.ZUp)
+        self._shape = panda3d.bullet.BulletCapsuleShape(height, radius, panda3d.bullet.ZUp)
         self.object = panda3d.bullet.BulletCharacterControllerNode(self._shape, step_height, self._uuid)
+        self.object.setGravity(-self.world.gravity)
+        self.object.setJumpSpeed(jump_velocity)
+
+        self.world.world_manager.attachCharacter(self.object)
 
         self.panda_node = self.world.panda_node.attachNewNode(self.object)
+        position_offset = obengine.math.Vector(self.owner.position.x,
+                                               self.owner.position.y,
+                                               self.owner.position.z)
+        position_offset.z *= height / 2.0
+        self.panda_node.setPos(PandaConverter.convert_vector(position_offset))
+        #self.panda_node.setQuat(PandaConverter.convert_angle(self.owner.rotation))
+        self.panda_node.setCollideMask(panda3d.core.BitMask32.allOn())
+
+        self._linear_velocity = obengine.math.Vector(0, 0, 0)
+        self._rotational_velocity = obengine.math.EulerAngle(0, 0, 0)
+
+        self._loaded = True
+        self.on_loaded()

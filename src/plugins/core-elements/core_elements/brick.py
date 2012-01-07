@@ -294,7 +294,7 @@ class BrickPresenter(obengine.element.Element):
         def fset(self, new_size):
 
             self.view.size = new_size
-            self.phys_rep.update_size()
+            self.phys_rep.size = new_size
 
         return locals()
 
@@ -343,6 +343,21 @@ class BrickPresenter(obengine.element.Element):
 
         def fset(self, anchored):
             self.phys_rep.anchored = anchored
+
+        return locals()
+
+    @obengine.datatypes.nested_property
+    def can_collide():
+
+        def fget(self):
+            return self.phys_rep.enabled
+
+        def fset(self, can_collide):
+
+            if can_collide is True:
+                self.phys_rep.enable()
+            else:
+                self.phys_rep.disable()
 
         return locals()
 

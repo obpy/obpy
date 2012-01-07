@@ -47,8 +47,8 @@ def init():
 
 class PlayerController(object):
 
-    LINEAR_SPEED = 20
-    ROT_SPEED = 2
+    LINEAR_SPEED = 10
+    ROT_SPEED = 160
 
     def __init__(self, model, view):
 
@@ -56,11 +56,6 @@ class PlayerController(object):
         self._view = view
 
         self._model.on_joined += lambda _: self._view.show()
-
-        view_mode = obengine.cfg.Config().get_str('view-mode', 'core.gfx', 'third-person')
-
-        if view_mode == 'isometric':
-            self.ROT_SPEED = 6
 
     def forward(self):
         self._view.linear_velocity.y = self.LINEAR_SPEED
@@ -165,6 +160,7 @@ class PlayerView(object):
         self._capsule.load()
         while self._capsule.loaded is False:
             self._scheduler.step()
+
         self._scheduler.add(obengine.async.Task(self._update_velocity, priority = 5))
 
         if position is not None:
@@ -196,7 +192,7 @@ class PlayerView(object):
         self._capsule.linear_velocity = self.linear_velocity
         self._model.position.x = self._capsule.position.x
         self._model.position.y = self._capsule.position.y
-        self._model.position.z = self._capsule.position.z + 6
+        self._model.position.z = self._capsule.position.z + 1.5
 
         self._capsule.rotational_velocity = self.rotational_velocity
         self._model.rotation = self._capsule.rotation

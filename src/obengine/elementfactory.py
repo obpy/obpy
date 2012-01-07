@@ -88,6 +88,7 @@ class ElementFactory(object):
 
     def make_brick(self, name, coords = None, color = None, size = None, rotation = None, anchored = False):
 
+
         import obplugin.core.physics
 
         coords = coords or obengine.math.Vector(0, 0, 0)
@@ -104,9 +105,8 @@ class ElementFactory(object):
             scheduler.step()
 
         phys_size = copy.deepcopy(size)
-        phys_size.z *= 2
 
-        phys_rep = obplugin.core.physics.Box(view.model, self.sandbox, None, scheduler, anchored, size = phys_size)
+        phys_rep = obplugin.core.physics.Box(view.model, self.sandbox, None, scheduler, anchored, None, phys_size)
         phys_rep.load()
 
         while phys_rep.loaded is False:

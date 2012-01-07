@@ -107,14 +107,18 @@ class Model(PandaResource):
     @property
     def bounds(self):
 
-        point1, point2 = self.panda_node.calcTightBounds()
+        point1 = Point3()
+        point2 = Point3()
+
+        self.panda_node.calcTightBounds(point1, point2)
         point1 = PandaConverter.convert_vec3(point1)
         point2 = PandaConverter.convert_vec3(point2)
-#
-#        point3 = obengine.math.Vector(point1.x, point2.y, point1.z)
-#        point4 = obengine.math.Vector(point2.x, point1.y, point2.z)
 
-        return point1, point2
+        x_bounds = point2.x - point1.x
+        y_bounds = point2.y - point1.y
+        z_bounds = point2.z - point1.z
+
+        return obengine.math.Vector(x_bounds, y_bounds, z_bounds)
 
     @property
     def showing(self):
@@ -376,7 +380,7 @@ class ModelCollector(obengine.datatypes.Borg):
 
             self._combiner.collect()
 #            self._combiner.getInternalScene().analyze()
-            render.analyze()
+#            render.analyze()
 
     _model_combiners = []
     _model_batch = []
