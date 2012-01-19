@@ -59,7 +59,6 @@ def load_world(game):
     element_factory.set_window(environ.window)
     element_factory.set_sandbox(environ.physics_sandbox)
 
-
     # Open and parse the world
     source = worldsource.FileWorldSource('world.xml', element_factory)
 

@@ -44,106 +44,49 @@ def init():
 
 class ElementFactory(object):
 
-    def __init__(self):
-
-        self.element_handlers = {
-        'brick' : self.make_brick,
-        'skybox' : self.make_skybox,
-        'script' : self.make_script,
-        'sound' : self.make_sound,
-        'light' : self.make_light
-        }
-
-    def add_element_handler(self, element_type, handler):
-        self.element_handlers[element_type] = handler
+    _element_factories = {}
+    window = None
+    sandbox = None
 
     def set_window(self, window):
+
         ElementFactory.window = window
 
+        for element_factory in ElementFactory._element_factories.itervalues():
+            if hasattr(element_factory, 'set_window'):
+                element_factory.set_window(ElementFactory.window)
+
     def set_sandbox(self, sandbox):
+
         ElementFactory.sandbox = sandbox
 
+        for element_factory in ElementFactory._element_factories.itervalues():
+            if hasattr(element_factory, 'set_sandbox'):
+                element_factory.set_sandbox(ElementFactory.sandbox)
+
+    @staticmethod
+    def register_element_factory(factory_cls):
+
+        assert ElementFactory._element_factories.get(factory_cls.element_name) is None
+
+        factory_instance = factory_cls()
+        ElementFactory._element_factories[factory_cls.element_name] = factory_instance
+
+        if hasattr(factory_instance, 'set_window') and ElementFactory.window is not None:
+            factory_instance.set_window(ElementFactory.window)
+
+        if hasattr(factory_instance, 'set_sandbox') and ElementFactory.sandbox is not None:
+            factory_instance.set_sandbox(ElementFactory.sandbox)
+
     def make(self, name, *args, **kwargs):
-        """
-        Creates a new element, and returns it.
-        Extra arguments are passed to that element's respective handler.
-        Creatable elements are:
-
-        * Brick
-        * Skybox
-        * Script
-        * **(NEW)** Sound
-        * **(NEW)** Light
-
-        UnknownElementType is raised if an unknown element type is given.
-        """
 
         try:
-            handler = self.element_handlers[name]
+            element_factory = self._element_factories[name]
 
         except KeyError:
             raise UnknownElementError(name)
 
-        return handler(*args, **kwargs)
-
-    def make_brick(self, name, coords = None, color = None, size = None, rotation = None, anchored = False):
-
-
-        import obplugin.core.physics
-
-        coords = coords or obengine.math.Vector(0, 0, 0)
-        color = color or obengine.math.Color(0, 0, 0, 255)
-        size = size or  obengine.math.Vector(2, 4, 1)
-        rotation = rotation or obengine.math.EulerAngle(0, 0, 0)
-
-        view = obengine.gfx.element3d.BlockBrickView(size, rotation, color, self.window)
-        view.load()
-
-        scheduler = self.window.scheduler
-
-        while view.loaded is False:
-            scheduler.step()
-
-        phys_size = copy.deepcopy(size)
-
-        phys_rep = obplugin.core.physics.Box(view.model, self.sandbox, None, scheduler, anchored, None, phys_size)
-        phys_rep.load()
-
-        while phys_rep.loaded is False:
-            scheduler.step()
-
-        controller = obengine.gfx.element3d.BrickPresenter(name, coords, color, size, rotation, view, phys_rep)
-        return controller
-
-    def make_skybox(self, texture = None):
-
-        import obplugin.core.graphics
-        from obengine.gfx.element3d import SkyboxElement
-
-        element = SkyboxElement(self.window, texture)
-
-        return element
-
-    def make_script(self, name, code, filename = None):
-
-        from obengine.scripting.element import ScriptElement
-
-        element = ScriptElement(name, self.window.scheduler, filename, code)
-        return element
-
-    def make_sound(self, name, soundfile, autoplay = False):
-
-        from obengine.audio.element import SoundElement
-
-        element = SoundElement(name, soundfile, self.window, autoplay = autoplay)
-        return element
-
-    def make_light(self, name, type = None, color = None, position = None, rotation = None, cast_shadows = False):
-
-        from obengine.gfx.element3d import LightElement
-
-        element = LightElement(name, self.window, type, color, position, rotation, cast_shadows)
-        return element
+        return element_factory.make(*args, **kwargs)
 
 
 class UnknownElementError(Exception):

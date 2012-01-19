@@ -70,6 +70,6 @@ class ElementMaker(object):
 
     element_name = ''
 
-    def make(name, parent = None):
+    def make(self, name, parent = None):
         raise NotImplementedError
 

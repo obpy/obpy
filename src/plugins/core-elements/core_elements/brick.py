@@ -26,9 +26,14 @@ __author__ = "openblocks"
 __date__ = "Nov 25, 2011 1:36:48 PM"
 
 
+import copy
 import functools
+import xml.etree.ElementTree as xmlparser
 
 import obengine.element
+import obengine.elementfactory
+
+from element_utils import XmlElementExtension
 
 
 DEFAULT_X_SIZE = 2.0
@@ -46,7 +51,7 @@ class BrickMaker(obengine.element.ElementMaker):
     def set_sandbox(self, sandbox):
         self._sandbox = sandbox
 
-    def make(name, coords = None, color = None,
+    def make(self, name, coords = None, color = None,
              size = None, rotation = None, anchored = False):
 
         import obplugin.core.physics
@@ -65,13 +70,18 @@ class BrickMaker(obengine.element.ElementMaker):
             scheduler.step()
 
         phys_size = copy.deepcopy(size)
-        phys_size.z *= 2
 
         phys_rep = obplugin.core.physics.Box(view.model, self._sandbox, None, scheduler, anchored, size = phys_size)
         phys_rep.load()
 
         while phys_rep.loaded is False:
             scheduler.step()
+
+        controller = BrickPresenter(name, coords, color, size, rotation, view, phys_rep)
+        return controller
+
+
+obengine.elementfactory.ElementFactory.register_element_factory(BrickMaker)
 
 
 class BrickView(object):
@@ -206,36 +216,6 @@ class BlockBrickView(BrickView):
     @obengine.deprecated.deprecated
     def set_color(self, rgb):
         self.color = rgb
-
-
-class XmlElementExtension(object):
-
-    def _vector_str(self, vector):
-
-        vector_str = str(vector)
-        vector_str = vector_str[len('Vector') + 1:len(vector_str) - 1]
-
-        return vector_str
-
-    def _color_str(self, color):
-
-        color_str = str(color)
-        color_str = color_str[len('Color') + 1:len(color_str) - 1]
-
-        return color_str
-
-    def _euler_str(self, angle):
-
-        euler_str = str(angle)
-        euler_str = euler_str[len('EulerAngle') + 1:len(euler_str) - 1]
-
-        # TODO: There has to be a better solution than this!
-        return euler_str or '0.0, 0.0, 0.0'
-
-    def _bool_str(self, bool):
-
-        conv_dict = {True : 'yes', False : 'no'}
-        return conv_dict[bool]
 
 
 class BrickPresenter(obengine.element.Element):

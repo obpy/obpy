@@ -44,16 +44,14 @@ def init():
 
     sys.meta_path.append(PluginImportHook(PluginManager()))
 
-    preload_plugin_list = obengine.cfg.Config().get_str('preloaded_plugins', default = '')
+    preload_plugin_list = obengine.cfg.Config().get_str('preloaded-plugins', default = '')
     preload_plugin_list = preload_plugin_list.split(',')
 
     if preload_plugin_list == ['']:
         return
 
-    plugin_manager = PluginManager()
-
     for plugin in preload_plugin_list:
-        plugin_manager.find_plugin(plugin)
+        require(plugin)
 
 
 def require(plugin_name):

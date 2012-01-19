@@ -27,6 +27,7 @@ __date__ = "Dec 1, 2011 2:44:58 PM"
 
 
 import obengine.element
+import obengine.elementfactory
 import obengine.depman
 
 obengine.depman.gendeps()
@@ -106,6 +107,9 @@ class ScriptMaker(obengine.element.ElementMaker):
 
         element = ScriptElement(name, self._window.scheduler, filename, code)
         return element
+
+
+obengine.elementfactory.ElementFactory.register_element_factory(ScriptMaker)
 
 
 class LuaFactory(object):
