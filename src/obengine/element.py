@@ -62,8 +62,15 @@ class XmlElementParser(object):
 
     tag = ''
 
-    def parse(tag):
+    def __init__(self, element_factory):
+        self._element_factory = element_factory
+
+    def parse(self, node):
         raise NotImplementedError
+
+
+class XmlParseError(Exception):
+    pass
 
 
 class ElementMaker(object):

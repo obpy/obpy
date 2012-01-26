@@ -32,6 +32,7 @@ import obengine.math
 import obengine.plugin
 import obengine.element
 import obengine.elementfactory
+import obengine.gfx.worldsource
 
 from element_utils import XmlElementExtension
 
@@ -143,3 +144,38 @@ class XmlLightExtension(XmlElementExtension):
 
         element = xmlparser.Element('light', attributes)
         return element
+
+
+class XmlLightParser(obengine.element.XmlElementParser):
+
+    tag = 'light'
+
+    def parse(self, node):
+
+        try:
+
+            name = node.attrib['name']
+            type = node.attrib['type']
+
+            light_rotation = map(lambda s: float(s), node.attrib['orientation'].strip().split(','))
+            rotation = obengine.math.EulerAngle(*light_rotation)
+
+            light_color = map(lambda s: float(s), node.attrib['rgb'].strip().split(','))
+            color = obengine.math.Color(*light_color)
+
+            position = None
+            if type == 'point':
+
+                light_position = map(lambda s: float(s), node.attrib['coords'].strip().split(','))
+                position = obengine.math.Vector(*light_position)
+
+            yes_no = { 'yes' : True, 'no' : False}
+            cast_shadows = yes_no[node.attrib.get('cast_shadows', 'no')]
+
+        except (KeyError, ValueError), message:
+            raise obengine.element.XmlParseError(message)
+
+        element = self._element_factory.make('light', name, type, color, position, rotation, cast_shadows)
+        return element
+
+obengine.gfx.worldsource.WorldSource.add_element_parser(XmlLightParser)

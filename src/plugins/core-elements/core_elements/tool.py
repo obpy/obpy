@@ -33,6 +33,7 @@ import obengine.vfs
 import obengine.plugin
 import obengine.element
 import obengine.gfx.player
+import obengine.gfx.worldsource
 
 
 TOOL_DIR = 'tools'
@@ -102,9 +103,9 @@ class XmlToolParser(obengine.element.XmlElementParser):
 
     tag = 'tool'
 
-    def parse(tag):
+    def parse(self, node):
 
-        name = tag.attrib['name']
+        name = node.attrib['name']
 
         script_path = obengine.vfs.getsyspath('/data/%s/%s/tool.lua' % (TOOL_DIR, name))
         element_factory = obengine.elementfactory.ElementFactory()
@@ -112,7 +113,7 @@ class XmlToolParser(obengine.element.XmlElementParser):
 
         import obplugin.core.graphics
 
-        mesh_path = tag.attrib.get('mesh', None)
+        mesh_path = node.attrib.get('mesh', None)
         tool_mesh = None
         if mesh_path is not None:
 
@@ -123,3 +124,6 @@ class XmlToolParser(obengine.element.XmlElementParser):
 
         tool_element = ToolElement(name, tool_script, tool_mesh)
         return tool_element
+
+
+obengine.gfx.worldsource.WorldSource.add_element_parser(XmlToolParser)

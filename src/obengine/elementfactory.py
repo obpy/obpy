@@ -27,10 +27,6 @@ __author__ = "openblocks"
 __date__ = "$Jan 23, 2011 7:57:35 AM$"
 
 
-import copy
-
-import obengine.gfx.element3d
-import obengine.math
 import obengine.depman
 
 obengine.depman.gendeps()

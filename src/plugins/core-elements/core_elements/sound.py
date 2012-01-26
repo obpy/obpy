@@ -28,8 +28,9 @@ import xml.etree.ElementTree as xmlparser
 
 import obengine.element
 import obengine.elementfactory
-import obengine.depman
 import obengine.plugin
+import obengine.gfx.worldsource
+import obengine.depman
 obengine.depman.gendeps()
 
 
@@ -87,6 +88,32 @@ class XmlSoundExtension(object):
 
         element = xmlparser.Element('sound', attributes)
         return element
+
+
+class XmlSoundParser(obengine.element.XmlElementParser):
+
+    tag = 'sound'
+
+    def parse(self, node):
+
+        yes_no = { 'yes' : True, 'no' : False}
+
+        try:
+
+            name = node.attrib['name']
+            src = node.attrib['src']
+            autoplay = yes_no[node.attrib.get('autoplay', 'no')]
+
+        except KeyError, message:
+            raise obengine.element.XmlParseError(message)
+
+        # Create the element
+        element = self._element_factory.make('sound', name, src, autoplay)
+
+        return element
+
+
+obengine.gfx.worldsource.WorldSource.add_element_parser(XmlSoundParser)
 
 
 class SoundMaker(obengine.element.ElementMaker):

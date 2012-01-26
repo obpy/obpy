@@ -28,6 +28,7 @@ __date__ = "Dec 1, 2011 2:44:58 PM"
 
 import obengine.element
 import obengine.elementfactory
+import obengine.gfx.worldsource
 import obengine.depman
 
 obengine.depman.gendeps()
@@ -78,6 +79,22 @@ class ScriptElement(obengine.element.Element):
         return 'Script'
 
 
+class ScriptMaker(obengine.element.ElementMaker):
+
+    element_name = 'script'
+
+    def set_window(self, window):
+        self._window = window
+
+    def make(self, name, code, filename = None):
+
+        element = ScriptElement(name, self._window.scheduler, filename, code)
+        return element
+
+
+obengine.elementfactory.ElementFactory.register_element_factory(ScriptMaker)
+
+
 class XmlScriptExtension(object):
 
     def __init__(self, script):
@@ -96,20 +113,22 @@ class XmlScriptExtension(object):
         return element
 
 
-class ScriptMaker(obengine.element.ElementMaker):
+class XmlScriptParser(obengine.element.XmlElementParser):
 
-    element_name = 'script'
+    tag = 'script'
 
-    def set_window(self, window):
-        self._window = window
+    def parse(self, node):
 
-    def make(self, name, code, filename = None):
+        if node.attrib.has_key('src'):
+            element = self._element_factory.make('script', node.attrib['name'], None, node.attrib['src'])
 
-        element = ScriptElement(name, self._window.scheduler, filename, code)
+        else:
+            element = self._element_factory.make('script', node.attrib['name'], node.text)
+
         return element
 
 
-obengine.elementfactory.ElementFactory.register_element_factory(ScriptMaker)
+obengine.gfx.worldsource.WorldSource.add_element_parser(XmlScriptParser)
 
 
 class LuaFactory(object):

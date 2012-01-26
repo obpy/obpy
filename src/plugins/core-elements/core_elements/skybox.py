@@ -33,6 +33,7 @@ from panda3d.core import CompassEffect
 import obengine.math
 import obengine.element
 import obengine.plugin
+import obengine.gfx.worldsource
 
 from element_utils import XmlElementExtension
 
@@ -117,3 +118,16 @@ class XmlSkyboxExtension(XmlElementExtension):
 
         element = xmlparser.Element('skybox', attributes)
         return element
+
+
+class XmlSkyboxParser(obengine.element.XmlElementParser):
+
+    tag = 'skybox'
+
+    def parse(self, node):
+
+        element = self._element_factory.make('skybox', node.attrib.get('src'))
+        return element
+
+
+obengine.gfx.worldsource.WorldSource.add_element_parser(XmlSkyboxParser)

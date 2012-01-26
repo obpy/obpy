@@ -32,6 +32,7 @@ import xml.etree.ElementTree as xmlparser
 
 import obengine.element
 import obengine.elementfactory
+import obengine.gfx.worldsource
 
 from element_utils import XmlElementExtension
 
@@ -61,7 +62,7 @@ class BrickMaker(obengine.element.ElementMaker):
         size = size or  obengine.math.Vector(2, 4, 1)
         rotation = rotation or obengine.math.EulerAngle(0, 0, 0)
 
-        view = obengine.gfx.element3d.BlockBrickView(size, rotation, color, self._window)
+        view = BlockBrickView(size, rotation, color, self._window)
         view.load()
 
         scheduler = self._window.scheduler
@@ -115,7 +116,6 @@ class BrickView(object):
 
         def fget(self):
             return self.model.showing
-
 
         def fset(self, show):
             self.model.showing = show
@@ -392,3 +392,62 @@ class XmlBrickExtension(XmlElementExtension):
         element = xmlparser.Element('brick', attributes)
 
         return element
+
+
+class XmlBrickParser(obengine.element.XmlElementParser):
+
+    tag = 'brick'
+
+    def parse(self, node):
+
+        rgb = obengine.math.Color()
+        coords = obengine.math.Vector()
+        orientation = obengine.math.EulerAngle()
+        size = obengine.math.Vector()
+        anchored = False
+
+        # Remove all empty space first, to make string to number conversion easy
+
+        try:
+
+            coordstr = node.attrib['coords'].replace(' ', '')
+            rgbstr = node.attrib['rgb'].replace(' ', '')
+            orient_str = node.attrib['orientation'].replace(' ', '')
+            size_str = node.attrib['size'].replace(' ', '')
+            name = node.attrib['name']
+
+        except KeyError, message:
+            raise BadWorldError(message)
+
+        if node.attrib.has_key('anchored'):
+
+            if node.attrib['anchored'] == 'yes':
+                anchored = True
+
+        try:
+
+            coords.x = float(coordstr.split(',')[0])
+            coords.y = float(coordstr.split(',')[1])
+            coords.z = float(coordstr.split(',')[2])
+
+            rgb.r = float(rgbstr.split(',')[0])
+            rgb.g = float(rgbstr.split(',')[1])
+            rgb.b = float(rgbstr.split(',')[2])
+            rgb.a = float(rgbstr.split(',')[3])
+
+            orientation.h = float(orient_str.split(',')[0])
+            orientation.p = float(orient_str.split(',')[1])
+            orientation.r = float(orient_str.split(',')[2])
+
+            size.x = float(size_str.split(',')[0])
+            size.y = float(size_str.split(',')[1])
+            size.z = float(size_str.split(',')[2])
+
+        except IndexError, message:
+            raise obengine.element.XmlParseError(message)
+
+        element = self._element_factory.make('brick', name, coords, rgb, size, orientation, anchored)
+        return element
+
+
+obengine.gfx.worldsource.WorldSource.add_element_parser(XmlBrickParser)

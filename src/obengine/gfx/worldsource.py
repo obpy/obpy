@@ -37,6 +37,7 @@ import obengine.gfx.element3d
 class WorldSource(list):
 
     _element_handlers = {}
+    _element_parsers = {}
 
     def __init__(self, factory):
         """
@@ -45,161 +46,23 @@ class WorldSource(list):
 
         self.factory = factory
 
-        self.add_element_handler('brick', self.handle_brick)
-        self.add_element_handler('script', self.handle_script)
-        self.add_element_handler('skybox', self.handle_skybox)
-        self.add_element_handler('sound', self.handle_sound)
-        self.add_element_handler('light', self.handle_light)
+    @staticmethod
+    def add_element_parser(parser_cls):
 
-    def add_element_handler(self, tag, handler, local = True):
+        assert WorldSource._element_parsers.get(parser_cls.tag) is None
 
-        handler_owner = self
-
-        if local is False:
-            handler_owner = WorldSource
-
-        handler_owner._element_handlers.setdefault(tag, []).append(handler)
+        WorldSource._element_parsers[parser_cls.tag] = parser_cls
 
     def supported_tag(self, tag):
         return tag in self.supported_tags()
 
     def supported_tags(self):
-        return self._element_handlers.keys()
+        return self._element_parsers.keys()
 
     def retrieve(self):
 
         # This method needs to be overridden in a derivative
         raise NotImplementedError
-
-    def handle_brick(self, _, child, factory):
-
-        # Create the different brick attributes, with defaults
-
-        rgb = obengine.math.Color()
-        coords = obengine.math.Vector()
-        orientation = obengine.math.EulerAngle()
-        size = obengine.math.Vector()
-        anchored = False
-
-        # Remove all empty space first, to make string to number conversion easy
-
-        try:
-
-            coordstr = child.attrib['coords'].replace(' ', '')
-            rgbstr = child.attrib['rgb'].replace(' ', '')
-            orient_str = child.attrib['orientation'].replace(' ', '')
-            size_str = child.attrib['size'].replace(' ', '')
-            name = child.attrib['name']
-
-        except KeyError, message:
-            raise BadWorldError(message)
-
-        # Is the brick anchored?
-
-        if child.attrib.has_key('anchored'):
-
-            if child.attrib['anchored'] == 'yes':
-                anchored = True
-
-        # Fill the coordinate, size, RGB, and HPR arrays
-
-        try:
-
-            coords.x = float(coordstr.split(',')[0])
-            coords.y = float(coordstr.split(',')[1])
-            coords.z = float(coordstr.split(',')[2])
-
-            rgb.r = float(rgbstr.split(',')[0])
-            rgb.g = float(rgbstr.split(',')[1])
-            rgb.b = float(rgbstr.split(',')[2])
-            rgb.a = float(rgbstr.split(',')[3])
-
-            orientation.h = float(orient_str.split(',')[0])
-            orientation.p = float(orient_str.split(',')[1])
-            orientation.r = float(orient_str.split(',')[2])
-
-            size.x = float(size_str.split(',')[0])
-            size.y = float(size_str.split(',')[1])
-            size.z = float(size_str.split(',')[2])
-
-        except IndexError, message:
-            raise BadWorldError(message)
-
-        # Finally, create the brick!
-
-        element = factory.make('brick', name, coords, rgb, size, orientation, anchored)
-        self.append(element)
-
-    def handle_skybox(self, _, child, factory):
-
-        # Create a skybox, optionally with a custom texture
-        element = factory.make('skybox', child.attrib.get('src'),)
-
-        # Add it
-        self.append(element)
-
-    def handle_script(self, _, child, factory):
-
-        # Does this script tag refer to a file, or is the code included in the tag?
-
-        if child.attrib.has_key('src'):
-            element = factory.make('script', child.attrib['name'], None, child.attrib['src'])
-
-        else:
-            element = factory.make('script', child.attrib['name'], child.text)
-
-        self.append(element)
-
-    def handle_sound(self, _, child, factory):
-        """
-        Creates a sound from a XML element.
-        """
-
-        # We need to convert "yes" and "no" to True/False, so we do it with a dict
-        yes_no = { 'yes' : True, 'no' : False}
-
-        # Retrieve the scene graph name, filename, and autoplay (play on added)
-        try:
-
-            name = child.attrib['name']
-            src = child.attrib['src']
-            autoplay = yes_no[child.attrib.get('autoplay', 'no')]
-
-        except KeyError, message:
-            raise BadWorldError(message)
-
-        # Create the element
-        element = factory.make('sound', name, src, autoplay)
-
-        self.append(element)
-
-    def handle_light(self, _, child, factory):
-
-        try:
-
-            name = child.attrib['name']
-            type = child.attrib['type']
-
-            light_rotation = map(lambda s: float(s), child.attrib['orientation'].strip().split(','))
-            rotation = obengine.math.EulerAngle(*light_rotation)
-
-            light_color = map(lambda s: float(s), child.attrib['rgb'].strip().split(','))
-            color = obengine.math.Color(*light_color)
-
-            position = None
-            if type == 'point':
-
-                light_position = map(lambda s: float(s), child.attrib['coords'].strip().split(','))
-                position = obengine.math.Vector(*light_position)
-
-            yes_no = { 'yes' : True, 'no' : False}
-            cast_shadows = yes_no[child.attrib.get('cast_shadows', 'no')]
-
-        except (KeyError, ValueError), message:
-            raise BadWorldError(message)
-
-        element = factory.make('light', name, type, color, position, rotation, cast_shadows)
-        self.append(element)
 
     def parse(self):
         """
@@ -231,13 +94,18 @@ class WorldSource(list):
         for child in rootnode:
             self._handle_node(child)
 
+        # TODO: Replace the below line with something more extensible
         self.append(obengine.gfx.element3d.CameraElement(self.factory.window))
 
     def _handle_node(self, node):
 
         if self.supported_tag(node.tag):
-            for handler in self._element_handlers[node.tag]:
-                handler(self, node, self.factory)
+
+            tag_parser_cls = self._element_parsers[node.tag]
+            parser_instance = tag_parser_cls(self.factory)
+            parsed_element = parser_instance.parse(node)
+
+            self.append(parsed_element)
 
         else:
             raise UnknownWorldTagError, node.tag
