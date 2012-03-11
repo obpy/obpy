@@ -27,6 +27,7 @@ __date__ = "Aug 1, 2011 9:22:46 PM"
 
 
 import os
+import sys
 
 import obengine.vfs
 import obengine.depman
@@ -36,10 +37,16 @@ obengine.depman.gendeps()
 
 def init():
 
-    data_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'data')
+    if hasattr(sys, 'frozen') and sys.frozen == 1:
+        base_path = sys.executable
+
+    else:
+        base_path = os.path.abspath(os.path.dirname(__file__))
+
+    data_dir = os.path.join(base_path, os.pardir, 'data')
     obengine.vfs.mount('/bloxworks-data', obengine.vfs.RealFS(data_dir))
 
-    game_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'projects')
+    game_dir = os.path.join(base_path, os.pardir, 'projects')
     obengine.vfs.mount('/bloxworks-games', obengine.vfs.RealFS(game_dir))
 
     obengine.vfs.mount('/bloxworks-registry', obengine.vfs.RegistryFS())
