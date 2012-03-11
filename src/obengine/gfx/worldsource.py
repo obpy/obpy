@@ -30,7 +30,6 @@ __date__ = "$Aug 9, 2010 10:43:40 PM$"
 import xml
 import xml.etree.ElementTree as xmlparser
 
-import obengine.math
 import obengine.gfx.element3d
 
 

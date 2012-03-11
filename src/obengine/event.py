@@ -23,8 +23,8 @@
 #
 
 
-__author__="openblocks"
-__date__ ="$Feb 22, 2011 5:11:32 PM$"
+__author__ = "openblocks"
+__date__ = "$Feb 22, 2011 5:11:32 PM$"
 
 import obengine.depman
 import obengine.datatypes
@@ -101,7 +101,7 @@ class Event(object):
         """
 
         try:
-            
+
             self.handlers.remove(handler)
             return self
 
@@ -128,7 +128,7 @@ class Event(object):
         return len(self.handlers)
 
     def clear(self):
-        self.handlers = set()
+        self.handlers = obengine.datatypes.orderedset()
 
     def enable(self):
         self.enabled = True
@@ -140,4 +140,3 @@ class Event(object):
     __isub__ = remove_handler
     __call__ = fire
     __len__ = handler_count
-    
