@@ -173,6 +173,9 @@ def create_new_project(window, name, author):
 
     path = obengine.vfs.getsyspath('/bloxworks-games/' + name)
 
+    if os.path.exists(path):
+        raise ProjectExistsException(name)
+
     os.mkdir(path)
     os.mkdir(os.path.join(path, PROJECT_DIR))
     open(os.path.join(path, WORLD_XML_FILE), 'w').write('')
@@ -187,9 +190,13 @@ def create_new_project(window, name, author):
     world = obengine.world.World(0, name)
     world.element.add_node(obengine.gfx.element3d.CameraElement(window))
     project = Project(world, author, obengine.version_string())
-    world.add_element(obengine.gfx.element3d.SkyboxElement(window))
-    world.add_element(obengine.gfx.element3d.LightElement('ambient_light', window, 'ambient'))
-    world.add_element(obengine.gfx.element3d.LightElement('sun_light', window, rotation = obengine.math.EulerAngle(45, -45, 0)))
+    element_factory = obengine.elementfactory.ElementFactory()
+    skybox = element_factory.make('skybox')
+    world.add_element(skybox)
+    ambient_light = element_factory.make('light', 'ambient', color = obengine.math.Color(250, 250, 250))
+    world.add_element(ambient_light)
+    sun_light = element_factory.make('light', 'directional', color = obengine.math.Color(192, 191, 173), rotation = obengine.math.EulerAngle(45, -45, 0))
+    world.add_element(sun_light)
 
     obengine.vfs.open('/bloxworks-registry/project', 'w').write(project)
 
@@ -198,3 +205,10 @@ def create_new_project(window, name, author):
     physics_sandbox = obplugin.core.physics.World(gravity = 0)
     physics_sandbox.load()
     obengine.vfs.open('/bloxworks-registry/sandbox', 'w').write(physics_sandbox)
+
+
+class ProjectException(Exception):
+    pass
+
+class ProjectExistsException(ProjectException):
+    pass
