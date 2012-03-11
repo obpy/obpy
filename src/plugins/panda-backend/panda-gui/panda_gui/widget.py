@@ -32,7 +32,7 @@ import obengine.math
 import obengine.datatypes
 import obengine.event
 import utils
-from obplugin.panda_utils import PANDA_TO_OPENBLOX_SCALE
+import obplugin.panda_utils
 
 
 WIDGET_SCALE = 0.05
@@ -82,12 +82,12 @@ class WidgetView(object):
 
             width = self._widget.getWidth()
             width *= WIDGET_SCALE
-            width *= PANDA_TO_OPENBLOX_SCALE
+            width *= obplugin.panda_utils.PANDA_TO_OPENBLOX_SCALE
             width -= WIDTH_ADJUSTMENT
 
             height = self._widget.getHeight()
             height *= WIDGET_SCALE
-            height *= PANDA_TO_OPENBLOX_SCALE
+            height *= obplugin.panda_utils.PANDA_TO_OPENBLOX_SCALE
 
             return obengine.math.Vector2D(width, height)
 

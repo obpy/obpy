@@ -44,8 +44,8 @@ import obengine.async
 import obengine.vfs
 import obengine.plugin
 import obengine.math
-from obplugin.panda_utils import PandaResource, PandaConverter, COLOR_SCALER
-from obplugin.panda_hardware import MouseEvent
+import obplugin.panda_utils
+import obplugin.panda_hardware
 
 
 CLICKABLE_BITMASK = BitMask32(0x101)
@@ -54,7 +54,7 @@ CLICKABLE_BITMASK = BitMask32(0x101)
 loaded_models = {}
 
 
-class Model(PandaResource):
+class Model(obplugin.panda_utils.PandaResource):
     """
     Represents a Panda3D model.
     NOTE: Textures loaded at runtime are currently NOT supported!
@@ -65,7 +65,7 @@ class Model(PandaResource):
 
     def __init__(self, model_path, window, position = None, rotation = None, scale = None, color = None, clickable = True, cast_shadows = True, compress = True):
 
-        PandaResource.__init__(self)
+        obplugin.panda_utils.PandaResource.__init__(self)
 
         self.model_path = model_path
         self.panda_model_path = self.panda_path(model_path)
@@ -111,8 +111,8 @@ class Model(PandaResource):
         point2 = Point3()
 
         self.panda_node.calcTightBounds(point1, point2)
-        point1 = PandaConverter.convert_vec3(point1)
-        point2 = PandaConverter.convert_vec3(point2)
+        point1 = obplugin.panda_utils.PandaConverter.convert_vec3(point1)
+        point2 = obplugin.panda_utils.PandaConverter.convert_vec3(point2)
 
         x_bounds = point2.x - point1.x
         y_bounds = point2.y - point1.y
@@ -264,9 +264,9 @@ class Model(PandaResource):
 
     def _setup_color(self):
 
-        self._color.on_r_changed += lambda r: self.panda_node.setColor(r / COLOR_SCALER, self._color.g, self._color.b)
-        self._color.on_g_changed += lambda g: self.panda_node.setColor(self._color.r, g / COLOR_SCALER, self._color.b)
-        self._color.on_b_changed += lambda b: self.panda_node.setColor(self._color.r, self._color.g, b / COLOR_SCALER)
+        self._color.on_r_changed += lambda r: self.panda_node.setColor(r / obplugin.panda_utils.COLOR_SCALER, self._color.g, self._color.b)
+        self._color.on_g_changed += lambda g: self.panda_node.setColor(self._color.r, g / obplugin.panda_utils.COLOR_SCALER, self._color.b)
+        self._color.on_b_changed += lambda b: self.panda_node.setColor(self._color.r, self._color.g, b / obplugin.panda_utils.COLOR_SCALER)
         self._color.on_a_changed += lambda a: self._set_alpha(a)
 
     def _check_mouse(self):
@@ -321,7 +321,7 @@ class Model(PandaResource):
         else:
             self.panda_node.setTransparency(TransparencyAttrib.MAlpha, True)
 
-        self.panda_node.setColor(self.color.r / COLOR_SCALER, self.color.g / COLOR_SCALER, self.color.b / COLOR_SCALER, self.color.a / COLOR_SCALER)
+        self.panda_node.setColor(self.color.r / obplugin.panda_utils.COLOR_SCALER, self.color.g / obplugin.panda_utils.COLOR_SCALER, self.color.b / obplugin.panda_utils.COLOR_SCALER, self.color.a / obplugin.panda_utils.COLOR_SCALER)
 
 
 class Empty(object):
@@ -333,10 +333,10 @@ class Empty(object):
     def position():
 
         def fget(self):
-            return PandaConverter.convert_vec3(self.panda_node.getPos())
+            return obplugin.panda_utils.PandaConverter.convert_vec3(self.panda_node.getPos())
 
         def fset(self, new_pos):
-            self.panda_node.setPos(PandaConverter.convert_vector(new_pos))
+            self.panda_node.setPos(obplugin.panda_utils.PandaConverter.convert_vector(new_pos))
 
         return locals()
 
@@ -344,10 +344,10 @@ class Empty(object):
     def rotation():
 
         def fget(self):
-            return PandaConverter.convert_quat(self.panda_node.getPos())
+            return obplugin.panda_utils.PandaConverter.convert_quat(self.panda_node.getPos())
 
         def fset(self, new_angle):
-            self.panda_node.setHpr(PandaConverter.convert_angle(new_angle))
+            self.panda_node.setHpr(obplugin.panda_utils.PandaConverter.convert_angle(new_angle))
 
         return locals()
 
@@ -386,7 +386,7 @@ class ModelCollector(obengine.datatypes.Borg):
     _model_batch = []
     _model_count = 0
     _MODELS_PER_COMBINER = 400
-    _MODEL_BATCH_COUNT = 1
+    _MODEL_BATCH_COUNT = 25
 
     assert _MODELS_PER_COMBINER % _MODEL_BATCH_COUNT == 0
 
@@ -447,7 +447,7 @@ class ModelCollector(obengine.datatypes.Borg):
         combiner.collect()
 
 
-class Texture(PandaResource):
+class Texture(obplugin.panda_utils.PandaResource):
     """
     Represents a Panda3D texture.
     Supported image formats:
@@ -482,7 +482,7 @@ class Texture(PandaResource):
         self.on_loaded()
 
 
-class ParticleEmitter(PandaResource):
+class ParticleEmitter(obplugin.panda_utils.PandaResource):
 
 
     def __init__(self, window):
@@ -623,7 +623,7 @@ class ParticleEmitter(PandaResource):
         self.particle_texture = default_texture
 
 
-class Light(PandaResource):
+class Light(obplugin.panda_utils.PandaResource):
     """
     Represents a Panda3D light.
     Currently, only directional, point, and ambient lights are implemented.
@@ -648,7 +648,7 @@ class Light(PandaResource):
                       directional lights
         """
 
-        PandaResource.__init__(self)
+        obplugin.panda_utils.PandaResource.__init__(self)
 
         self._name = name
         self._color = color
@@ -753,7 +753,7 @@ class Light(PandaResource):
             if self._light_type != Light.POINT:
                 obengine.log.warn('Tried to retrieve position of non-point light')
 
-            return PandaConverter.convert_vec3(self.panda_node.getPos())
+            return obplugin.panda_utils.PandaConverter.convert_vec3(self.panda_node.getPos())
 
         def fset(self, new_pos):
 
@@ -766,7 +766,7 @@ class Light(PandaResource):
             else:
                 self._position = new_pos
 
-            self.panda_node.setPos(PandaConverter.convert_vector(self._position))
+            self.panda_node.setPos(obplugin.panda_utils.PandaConverter.convert_vector(self._position))
 
         return locals()
 
@@ -993,9 +993,9 @@ class Window(object):
         self.mouse_traverser = CollisionTraverser()
         self.collision_queue = CollisionHandlerQueue()
         self.mouse_traverser.addCollider(picker_nodepath, self.collision_queue)
-        mouse_button = MouseEvent.LEFT_MOUSE
-        mouse_event_type = MouseEvent.TYPE_DOWN
-        self._click_event = MouseEvent(
+        mouse_button = obplugin.panda_hardware.MouseEvent.LEFT_MOUSE
+        mouse_event_type = obplugin.panda_hardware.MouseEvent.TYPE_DOWN
+        self._click_event = obplugin.panda_hardware.MouseEvent(
                                        self,
                                        mouse_button,
                                        mouse_event_type)
@@ -1071,7 +1071,7 @@ class Camera(object):
         self.camera.lookAt(model.panda_node)
 
     def look_at_point(self, point):
-        self.camera.lookAt(PandaConverter.convert_vector_to_point3(point))
+        self.camera.lookAt(obplugin.panda_utils.PandaConverter.convert_vector_to_point3(point))
 
     def move(self, vector):
         self.camera.setPos(self.camera, vector.x, vector.y, vector.z)
@@ -1094,11 +1094,11 @@ class Camera(object):
     def rotation():
 
         def fget(self):
-            return PandaConverter.convert_quat(self.camera.getQuat())
+            return obplugin.panda_utils.PandaConverter.convert_quat(self.camera.getQuat())
 
         def fset(self, new_angle):
 
-            quat = PandaConverter.convert_angle(new_angle)
+            quat = obplugin.panda_utils.PandaConverter.convert_angle(new_angle)
             self.camera.setQuat(quat)
 
         return locals()
