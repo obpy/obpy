@@ -173,7 +173,13 @@ def genterrain(image, colormap, window, max_brick_height = None, name = None, au
     author = author or 'Unknown'
     max_brick_height = max_brick_height or MAX_HEIGHT
 
-    bloxworks.project.create_new_project(window, name, author)
+    try:
+        bloxworks.project.create_new_project(window, name, author)
+
+    except bloxworks.project.ProjectExistsException:
+
+        print >> sys.stderr, 'ERROR: Project already exists'
+        sys.exit(1)
 
     image_pixels = list(image.getdata())
     image_width, image_height = image.size
