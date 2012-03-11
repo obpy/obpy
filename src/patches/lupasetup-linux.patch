@@ -1,0 +1,2 @@
+119a120
+>         libraries=['lua5.1'], include_dirs=['/usr/include/lua5.1'],

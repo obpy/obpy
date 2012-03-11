@@ -1,0 +1,12 @@
+260a261,262
+>
+> #undef LUA_USE_READLINE
+544,545c546,548
+< #if defined(LUA_NUMBER_DOUBLE) && !defined(LUA_ANSI) && !defined(__SSE2__)
+&& \
+<     (defined(__i386) || defined (_M_IX86) || defined(__i386__))
+---
+> /*#if defined(LUA_NUMBER_DOUBLE) && !defined(LUA_ANSI) &&
+!defined(__SSE2__) && \
+>     (defined(__i386) || defined (_M_IX86) || defined(__i386__)) */
+> #if 0
