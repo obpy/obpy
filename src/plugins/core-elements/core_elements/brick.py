@@ -201,22 +201,6 @@ class BlockBrickView(BrickView):
 
         return locals()
 
-    @obengine.deprecated.deprecated
-    def set_pos(self, vector):
-        self.position = vector
-
-    @obengine.deprecated.deprecated
-    def set_size(self, size):
-        self.size = size
-
-    @obengine.deprecated.deprecated
-    def set_hpr(self, hpr):
-        self.rotation = hpr
-
-    @obengine.deprecated.deprecated
-    def set_color(self, rgb):
-        self.color = rgb
-
 
 class BrickPresenter(obengine.element.Element):
 
@@ -344,22 +328,6 @@ class BrickPresenter(obengine.element.Element):
     @property
     def bounds(self):
         return self.view.bounds
-
-    @obengine.deprecated.deprecated
-    def set_size(self, size):
-        self.size = size
-
-    @obengine.deprecated.deprecated
-    def set_hpr(self, hpr):
-        self.rotation = hpr
-
-    @obengine.deprecated.deprecated
-    def set_pos(self, vector):
-        self.position = vector
-
-    @obengine.deprecated.deprecated
-    def set_rgb(self, color):
-        self.color = color
 
     def _on_add(self, world):
 
