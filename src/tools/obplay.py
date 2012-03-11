@@ -21,22 +21,97 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Feb 4, 2011 10:29:57 PM$"
+__date__ = "$Feb 4, 2011 10:29:57 PM$"
 
 
 import os
 import sys
 import shutil
 import multiprocessing
+import zipfile
+import tempfile
+import atexit
 
 import wx
+import direct.showbase.ShowBase
 
-sys.path.append(os.path.abspath(os.pardir))
 sys.path.append(os.path.abspath(os.curdir))
+sys.path.append(os.path.abspath(os.pardir))
 
 import obengine
-import obengine.cfg
-import obengine.utils
+import obengine.environ
+import obengine.world
+import obengine.elementfactory
+import obengine.gfx.worldsource as worldsource
+import obengine.worldloader
+import obengine.player
+import obengine.gui
+import obengine.interface
+from obengine.gfx.player import PlayerView
+from obengine.gfx.player import KeyboardPlayerController
+from obengine.math import Vector
+
+
+def load_world(game):
+
+    # Extract the file
+    game_file = zipfile.ZipFile(game)
+    tmpdir = tempfile.mkdtemp()
+
+    # Extract and change directories
+    game_file.extractall(tmpdir)
+    os.chdir(tmpdir)
+    obengine.vfs.mount('/data', obengine.vfs.RealFS(os.path.abspath(os.curdir)))
+
+    game_name = os.path.basename(game).strip('.zip')
+
+    environ = obengine.environ.Environment(game_name)
+    element_factory = obengine.elementfactory.ElementFactory()
+    element_factory.set_window(environ.window)
+    element_factory.set_sandbox(environ.physics_sandbox)
+
+    # Open and parse the world
+    source = worldsource.FileWorldSource('world.xml', element_factory)
+
+    world = obengine.world.World(game_name, 1)
+    worldloader = obengine.worldloader.WorldLoader(world, source, environ.scheduler)
+
+    def create_player():
+
+        player_model = obengine.player.Player('OBPlayer')
+        player_view = PlayerView(environ.window, environ.physics_sandbox, Vector(0, 0, 10))
+        player_controller = KeyboardPlayerController(player_model, player_view)
+        player_model.join_world(world)
+
+    def clean_up():
+
+        os.chdir(os.pardir)
+        shutil.rmtree(tmpdir)
+
+    atexit.register(clean_up)
+
+    def parse_world():
+
+        try:
+            source.parse()
+
+        except worldsource.BadWorldError, message:
+
+            factory = obengine.gui.WidgetFactory()
+            factory.make('label', 'ERROR: Malformed world file:\n%s' % message)
+
+        else:
+            worldloader.load()
+
+    environ.window.on_loaded += lambda: environ.window.start_rendering()
+    environ.window.on_loaded += lambda: environ.physics_sandbox.load()
+
+    environ.physics_sandbox.on_loaded += parse_world
+    worldloader.on_world_loaded += lambda: environ.physics_sandbox.unpause()
+    worldloader.on_world_loaded += lambda: create_player()
+
+    environ.window.load()
+    environ.scheduler.loop()
 
 
 class GameBrowser(wx.Frame):
@@ -46,11 +121,11 @@ class GameBrowser(wx.Frame):
 
     def __init__(self):
 
-        wx.Frame.__init__(self, None, wx.ID_ANY, 'OpenBlox Games Browser', size=(650, 450))
+        wx.Frame.__init__(self, None, wx.ID_ANY, 'OpenBlox Games Browser', size = (650, 450))
 
         self.game_panel = wx.Panel(self, wx.ID_ANY)
-        self.games = wx.ListCtrl(self.game_panel, -1, style=wx.LC_REPORT)
-        self.games.InsertColumn(0, 'Game', width=650)
+        self.games = wx.ListCtrl(self.game_panel, -1, style = wx.LC_REPORT)
+        self.games.InsertColumn(0, 'Game', width = 650)
 
         global_box = wx.BoxSizer(wx.VERTICAL)
         button_box = wx.BoxSizer(wx.HORIZONTAL)
@@ -70,8 +145,12 @@ class GameBrowser(wx.Frame):
 
         try:
             gamedir = os.listdir('games')
+
         except OSError:
-            gamedir = os.listdir(os.path.join(__file__[:len(__file__) - len('oblaunchgui.py')], 'games'))
+
+            os.mkdir('games')
+            gamedir = os.listdir('games')
+
         self.gamecount = 0
 
         for game in gamedir:
@@ -81,9 +160,9 @@ class GameBrowser(wx.Frame):
                 self.games.InsertStringItem(sys.maxint, game.strip('.zip'))
                 self.gamecount += 1
 
-        self.Bind(wx.EVT_BUTTON, self.install_game, id=wx.ID_NEW)
-        self.Bind(wx.EVT_BUTTON, self.remove_game, id=24)
-        self.Bind(wx.EVT_BUTTON, self.play_game, id=25)
+        self.Bind(wx.EVT_BUTTON, self.install_game, id = wx.ID_NEW)
+        self.Bind(wx.EVT_BUTTON, self.remove_game, id = 24)
+        self.Bind(wx.EVT_BUTTON, self.play_game, id = 25)
 
         self.Show(True)
         self.Centre()
@@ -121,20 +200,13 @@ class GameBrowser(wx.Frame):
         if self.games.GetFocusedItem() != -1:
 
             game = os.path.join('games', self.games.GetItemText(self.games.GetFocusedItem()) + '.zip')
-            target = os.system
-
-            if os.name == 'nt':
-                arg = 'ppython.exe tools\oblaunch.py \"%s\"' % game
-
-            else:
-                arg = 'python tools/oblaunch.py \"%s\"' % game
-
-            launcher = multiprocessing.Process(target = target, args = (arg, ), group = None)
+            launcher = multiprocessing.Process(target = load_world, args = (game,))
             launcher.daemon = True
             launcher.start()
 
 if __name__ == '__main__':
 
+    multiprocessing.freeze_support()
     obengine.init()
 
     app = wx.App(False)
