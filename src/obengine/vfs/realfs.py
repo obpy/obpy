@@ -32,7 +32,7 @@ import basefs
 class RealFS(basefs.BaseFS):
 
     def __init__(self, real_loc):
-        self.real_loc = real_loc
+        self.real_loc = os.path.normpath(real_loc)
 
     def open(self, path, mode = 'r'):
 
