@@ -67,7 +67,7 @@ class PluginImportHook(object):
 
                 # Check to see if there's a least 1 plugin that is a superset of
                 # the given name
-                
+
                 if plugin_name.startswith(fullname[len(PLUGIN_MODULE) + 1:]):
                     return self
 

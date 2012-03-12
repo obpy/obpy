@@ -36,7 +36,7 @@ import obplugin.core.physics
 
 class EntityElement(obengine.element.Element):
 
-    def __init__(self, name, max_health, parent = None):
+    def __init__(self, name, max_health, respawn = True, respawn_filter = None, parent = None):
 
         obengine.element.Element.__init__(self, name, parent)
 
@@ -48,6 +48,9 @@ class EntityElement(obengine.element.Element):
 
         self._velocity = obengine.math.Vector()
         self.on_falling = obengine.event.Event()
+
+        self._respawn = respawn
+        self._respawn_filter = respawn_filter
 
     def take_damage(self, damage):
 
@@ -86,3 +89,6 @@ class EntityElement(obengine.element.Element):
                 self.on_died()
 
         return locals()
+
+    def take_damage(self, damage):
+        self.health -= damage
