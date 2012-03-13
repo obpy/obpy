@@ -1,2 +1,2 @@
 #!/bin/sh
-python tools/oblaunchgui.py
+python tools/obplay.py
