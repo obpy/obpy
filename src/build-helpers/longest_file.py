@@ -26,6 +26,21 @@ import os
 import optparse
 
 
+IGNORED_DIRECTORIES = ['pyinstaller-1.5.1']
+
+
+def ignored_directory(dir):
+
+    if dir.startswith(os.pardir):
+        dir = dir[len(os.pardir) + len(os.sep):]
+
+    for ignored_dir in IGNORED_DIRECTORIES:
+        if dir.startswith(ignored_dir):
+            return True
+
+    return False
+
+
 def find_longest_modules(dirs = [], loud = False):
 
     if dirs == []:
@@ -44,6 +59,9 @@ def find_longest_modules(dirs = [], loud = False):
 
         for dirpath, dirnames, filenames in os.walk(directory):
             for filename in filenames:
+
+                if ignored_directory(dirpath):
+                    continue
 
                 if filename.endswith('.py'):
 
@@ -91,8 +109,16 @@ def main():
 
     print 'Top %d-longest Python modules:' % module_count
 
+    module_line_count = []
+
     for standing, (module_name, line_count) in enumerate(longest_modules[:module_count]):
+
         print '#%d: %s - %d line(s)' % (standing + 1, module_name, line_count)
+
+    for _, line_count in longest_modules:
+        module_line_count.append(line_count)
+
+    print 'Average module length: %d lines' % (sum(module_line_count) / len(module_line_count))
 
 
 if __name__ == '__main__':
