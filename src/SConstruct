@@ -30,6 +30,7 @@ vars.Add('PYINSTALLER_BUILD', '', 'Build.py')
 
 env = Environment()
 
+
 def RunPyInstaller(target, source, env):
 
     python_executable = sys.executable
@@ -38,9 +39,11 @@ def RunPyInstaller(target, source, env):
     pyinstaller_status = subprocess.call([python_executable,
                                           pyinstaller])
 
-env.Append(BUILDERS = {'Sphinx' : sphinx})
-vars.Update(env)
+    return context.Result(bool(pyinstaller_status))
 
+
+env.Append(BUILDERS = {'Sphinx' : sphinx, 'PyInstaller' : RunPyInstaller})
+vars.Update(env)
 
 
 def CheckPyModule(context, module):
@@ -142,6 +145,7 @@ def configure():
     vars.Save('build-setup.conf', env)
     Exit(0)
 
+
 def RecursiveGlob(startdir, pattern):
 
     files = Glob(startdir + pattern)
@@ -150,6 +154,7 @@ def RecursiveGlob(startdir, pattern):
         files += RecursiveGlob(startdir, '*/' + pattern)
 
     return files
+
 
 Help("""
 Type 'scons' to build OpenBlox.
@@ -179,10 +184,6 @@ if 'configure' in COMMAND_LINE_TARGETS:
     configure()
     env.Ignore('configure', None)
 
-else:
-    pass
-
-    # Weird workaround for possible SCons bug
 
 Tool('distzip')(env)
 
