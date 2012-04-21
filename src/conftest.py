@@ -3,6 +3,14 @@
 # Sphinx-embedded doctests (and doctests inside OpenBlox plugins)
 # from Py.Test
 
+
+import os
+import fnmatch
+
+
+collect_ignore = fnmatch.filter(os.listdir(os.curdir), 'pyinstaller-1.[56].[012]')
+
+
 def pytest_configure(config):
 
     import sys

@@ -8,6 +8,10 @@ def getsyspath(path):
     return path.replace('/', os.sep)
 
 
+def get_executable_suffix():
+    return os.path.splitext(sys.executable)[1]
+
+
 platform = ARGUMENTS.get('OS', Platform())
 panda_version = ARGUMENTS.get('PANDA_VERSION', '1.8.0')
 sphinx = ARGUMENTS.get('SPHINX', 'sphinx-build')
@@ -34,15 +38,19 @@ env = Environment()
 def RunPyInstaller(target, source, env):
 
     python_executable = sys.executable
-    pyinstaller = os.path.join(vars['PYINSTALLER_DIR'], vars['PYINSTALLER_BUILD'])
+    pyinstaller = os.path.join(env['PYINSTALLER_DIR'], env['PYINSTALLER_BUILD'])
+    spec_file = str(source[0])
+    print python_executable, pyinstaller, spec_file
 
     pyinstaller_status = subprocess.call([python_executable,
-                                          pyinstaller])
+                                          pyinstaller,
+                                          spec_file])
 
-    return context.Result(bool(pyinstaller_status))
+    return pyinstaller_status
 
 
-env.Append(BUILDERS = {'Sphinx' : sphinx, 'PyInstaller' : RunPyInstaller})
+env.Append(BUILDERS = {'Sphinx' : sphinx,
+                       'PyInstaller' : Builder(action = RunPyInstaller)})
 vars.Update(env)
 
 
@@ -95,13 +103,11 @@ def find_pyinstaller():
 conf = Configure(env, custom_tests = {'CheckPyModule' : CheckPyModule,
                                       'CheckPyInstaller' : CheckPyInstaller})
 
-
 def configure():
 
-    global env
-
     if platform == 'win32':
-        env['LIBPATH'] = ['C:\Panda3D-%s\lib' % panda_version, 'C:\Panda3D-%s\python\lib' % panda_version]
+        env['LIBPATH'] = ['C:\Panda3D-%s\lib' % panda_version,
+                          'C:\Panda3D-%s\python\lib' % panda_version]
 
     elif platform == 'darwin':
         env['LIBPATH'] = ['/Developer/Panda3D/lib']
@@ -111,14 +117,14 @@ def configure():
 
     EnsurePythonVersion(2, 6)
 
-    if not conf.CheckLib('p3pystub', language = 'C++'):
-
-        print 'Could not find Panda3D Python stubs!'
-        Exit(1)
-
     if not conf.CheckLib('pandaexpress', language = 'C++'):
 
         print 'Could not find Panda3D core!'
+        Exit(1)
+
+    if not conf.CheckLib('pandagl', language = 'C++'):
+
+        print 'Could not find Panda3D OpenGL renderer!'
         Exit(1)
 
     if not conf.CheckLib('pandabullet', language = 'C++'):
@@ -159,9 +165,12 @@ def RecursiveGlob(startdir, pattern):
 Help("""
 Type 'scons' to build OpenBlox.
 
-Arguments:
+Command-line arguments:
+
     * PANDA_VERSION - specifies the version of Panda3D installed on your system (used only on Windows)
     * OS - specifies the OS to build for (optional; normally found automatically)
+    
+Configuration variables:
 """ + vars.GenerateHelpText(env))
 
 sphinx_builder_conv = {
@@ -199,3 +208,6 @@ Depends('distdoc', 'docs')
 Clean(zip, getsyspath('build/dist/docs'))
 
 env.Alias('test', env.Command('py.test', 'pytest.ini', pytest_cmd))
+
+env.Alias('build', env.PyInstaller(getsyspath('build/bin/obplay/obplay') + get_executable_suffix(),
+                                   getsyspath('build-scripts/obplay.spec')))
