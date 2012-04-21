@@ -57,7 +57,6 @@ class AsyncUrlOpener(urllib2.HTTPHandler):
         return response
 
 
-
 class Downloader(object):
 
     CHUNK_SIZE = 8192

@@ -81,6 +81,8 @@ class EntityElement(obengine.element.Element):
             self._position = new_position
             self.on_position_changed(new_position)
 
+        return locals()
+
     @obengine.datatypes.nested_property
     def max_health():
 
