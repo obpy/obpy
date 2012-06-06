@@ -35,7 +35,7 @@ def ignored_directory(dir):
         dir = dir[len(os.pardir) + len(os.sep):]
 
     for ignored_dir in IGNORED_DIRECTORIES:
-        if dir.startswith(ignored_dir):
+        if dir.startswith(ignored_dir) or dir.startswith(os.path.join(os.curdir, ignored_dir)):
             return True
 
     return False

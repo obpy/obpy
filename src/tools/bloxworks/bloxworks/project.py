@@ -154,15 +154,26 @@ class ProjectPackagerVisitor(ProjectVisitor):
 
 def load_project(path, window):
 
+    print 'making element factory'
+
     element_factory = obengine.elementfactory.ElementFactory()
     element_factory.set_window(window)
+
+    print 'loading physics plugin'
+
     obengine.plugin.require('core.physics')
     import obplugin.core.physics
+
+    print 'creating sandbox'
+
     physics_sandbox = obplugin.core.physics.World(gravity = 0)
     physics_sandbox.load()
     element_factory.set_sandbox(physics_sandbox)
 
+    print 'creating project loader'
     project_loader = ProjectLoader(element_factory, path)
+
+    print 'loading project'
     project = project_loader.load()
 
     obengine.vfs.open('/bloxworks-registry/project', 'w').write(project)
