@@ -5,7 +5,7 @@ The OpenBlox coding standard
 This is the OpenBlox coding standard, which
 closely follows Python PEP 8 (http://www.python.org/dev/peps/pep-0008/).
 If you have any questions concerning this document, send
-a message to OpenBlox (http://openblox.sf.net/users/openblox).
+a message to DangerOnTheRanger (http://openblox.sf.net/users/dangerontheranger).
 
 .. note::
 
@@ -264,7 +264,7 @@ Modules
     Also, if your module hasn't been modified in every year it's been included
     with OpenBlox, use this copyright line::
 
-        # Copyright (C) <inital year released>, <modified years, seperated by a comma> The OpenBlox Project
+        # Copyright (C) <inital year released>, <modified years, separated by a comma> The OpenBlox Project
 
     For example, if your module was released in 2009, and was modified in 2010 *and* 2011,
     you should use::

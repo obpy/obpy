@@ -24,14 +24,8 @@ approach provides faster turn-around due to its WYSIWYG-like building methodolog
 Getting started
 ===============
 
-To start BloxWorks, you should do one of three things:
-
- * On Windows, go to :guilabel:`Start` > :guilabel:`All Programs` > :guilabel:`OpenBlox` > :guilabel:`BloxWorks`
- * On Linux (with GNOME), go to :guilabel:`Applications` > :guilabel:`OpenBlox` > :guilabel:`BloxWorks`
- * On Mac OSX, execute the file ``tools/bloxworks/main.py`` located inside
-   the directory you extracted OpenBlox in
-   
-Once you've started BloxWorks, you'll be greeted with a window not unlike the following:
+To start BloxWorks, you should start the executable `bloxworks` inside the `tools`
+directory where you extracted OpenBlox. Once you've started BloxWorks, you'll be greeted with a window not unlike the following:
 
 .. image:: images/bloxworks.png
 
@@ -45,7 +39,57 @@ In the dialog that appears, enter the name for your game (be careful not to
 press :guilabel:`Enter`!), and then enter your OpenBlox username for the author field.
 
 Now, go back to the Name field and press :guilabel:`Enter`. The dialog will disappear,
-and you'll be greeted with an empty game, containing only a skybox. Congratulations!
+and you'll be greeted with an empty game, containing only a skybox. You just created your first blank OpenBlox game!
+Now let's add a brick. Move your mouse to the left corner of the screen, and you'll see
+another panel. Click the button that looks like:
+
+.. image:: images/add-brick.png
+
+Now we have a gray 2x4x1 brick in the world, but it has a boring color. Let's change it
+to a nice orange. First, you'll need to click on the brick you just added.
+You'll see a panel appear on the right side of your screen (called the "property editor").
+Click the "Color" textbox, and enter the following RGBA color code::
+
+	255, 127, 36
+	
+Press Enter, and you'll see your brick change to a bright orange.
+Now let's resize our 2x4x1 brick to a 8x8x1 brick. There are two ways of doing this:
+
+* Using the property editor
+* Using the resize tool
+
+Since the resize tool is a bit more intuitive for first-time users, we'll cover that
+here (though you can see the property editor method under `Adding a brick`).
+Move your mouse to the bottom of the screen, and you'll see a toolbar appear. Click
+the button that looks like:
+
+.. image:: images/scale.png
+
+Now click on your orange brick, and then drag with the mouse button until the brick becomes a 8x8x1
+brick. You can check the size of the brick using the property editor.
+Now we've resized your brick, let's save your progress (better safe than sorry, after all).
+Move your mouse to the top of the screen, and another toolbar will appear. Click the button that looks like:
+
+.. image:: images/save.png
+
+Your new game was just automatically saved!
+
+.. note::
+
+	BloxWorks will currently not warn you if you're about to exit without saving. Be sure to save before
+	exiting BloxWorks.
+	
+Let's anchor your brick so it doesn't fall. Click on the brick to bring up the property editor. Next,
+check the :guilabel:`Anchored` checkbox. At this stage, it would be a good idea to save again, so go ahead and do that now.
+
+Now let's pack your game so you can share it with others, and play it yourself. Again, move your mouse to the top
+of the screen, and click the button that looks like:
+
+.. images/pack.png
+
+Now open up the OpenBlox games launcher and click :guilabel:`Install new game`. Navigate to the
+directory `tools/bloxworks/projects/<your game name here>`. There will be file called `<your game name here>.zip`.
+Select that file as the game to install. Once you done this, your game will be playable from the OpenBlox games launcher.
 
 Cheat sheet
 ===========
@@ -54,7 +98,7 @@ Adding a brick
 --------------
 
 Once you've opened BloxWorks and created a new project (or opened an pre-existing one),
-adding a brick is simple: Move your mouse to the left corner to reveal a panel.
+adding a brick is simple: Move your mouse to the left corner of the screen to reveal a panel.
 Click the first icon, the one that looks like:
 
 .. image:: images/add-brick.png
@@ -112,6 +156,9 @@ Here's an explanation of what to do next:
  
 To stop resizing the brick, click the left mouse button again. To disable the
 Resize tool, click on its icon.
+
+You can also re-size a brick using the property editor. Click on a brick, select the
+"Size" textbox, and enter the new size for the brick.
 
 Repainting a brick
 ------------------
