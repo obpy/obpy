@@ -30,6 +30,7 @@ import copy
 import functools
 import xml.etree.ElementTree as xmlparser
 
+import obengine.async
 import obengine.element
 import obengine.elementfactory
 import obengine.gfx.worldsource

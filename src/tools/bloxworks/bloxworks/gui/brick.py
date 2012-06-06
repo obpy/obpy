@@ -64,7 +64,6 @@ class MoveBrickTool(object):
 
     def __init__(self, window):
 
-        self._moving = False
         self._activated = False
         self._brick = None
 
@@ -90,7 +89,7 @@ class MoveBrickTool(object):
                                                                     wheel_down)
 
         mouse_button = obplugin.core.hardware.MouseEvent.LEFT_MOUSE
-        mouse_event_type = obplugin.core.hardware.MouseEvent.TYPE_DOWN
+        mouse_event_type = obplugin.core.hardware.MouseEvent.TYPE_UP
         self._stop_event = obplugin.core.hardware.MouseEvent(
                                                              window,
                                                              mouse_button,
@@ -115,13 +114,6 @@ class MoveBrickTool(object):
         if self._activated is False:
             return
 
-        if self._moving is True:
-
-            self.reset()
-            return
-
-        self._moving = True
-
         self._brick = brick
         self._mouse_motion_event += self._move_brick
         self._mouse_motion_event.z_value = self._brick.position.z
@@ -129,10 +121,11 @@ class MoveBrickTool(object):
         self._move_z_up_event += self._move_brick_up
         self._move_z_down_event += self._move_brick_down
 
+        self._stop_event += self.reset
+
     def reset(self):
 
         self._brick = None
-        self._moving = False
 
         if self._move_brick in self._mouse_motion_event.handlers:
 
@@ -184,7 +177,6 @@ class ResizeBrickTool(object):
 
     def __init__(self, window):
 
-        self._resizing = False
         self._activated = False
         self._brick = None
 
@@ -210,7 +202,7 @@ class ResizeBrickTool(object):
                                                                            coord_space)
 
         mouse_button = obplugin.core.hardware.MouseEvent.LEFT_MOUSE
-        mouse_event_type = obplugin.core.hardware.MouseEvent.TYPE_DOWN
+        mouse_event_type = obplugin.core.hardware.MouseEvent.TYPE_UP
         self._stop_event = obplugin.core.hardware.MouseEvent(
                                                              window,
                                                              mouse_button,
@@ -235,13 +227,6 @@ class ResizeBrickTool(object):
         if self._activated is False:
             return
 
-        if self._resizing is True:
-
-            self.reset()
-            return
-
-        self._resizing = True
-
         self._brick = brick
 
         self._mouse_motion_event.z_value = self._brick.position.z
@@ -250,16 +235,20 @@ class ResizeBrickTool(object):
         self._move_z_up_event += self._resize_brick_z_up
         self._move_z_down_event += self._resize_brick_z_down
 
+        self._stop_event += self.reset
+
     def reset(self):
 
         self._brick = None
-        self._resizing = False
 
         if self._resize_brick in self._mouse_motion_event.handlers:
 
             self._mouse_motion_event -= self._resize_brick
             self._move_z_up_event -= self._resize_brick_z_up
             self._move_z_down_event -= self._resize_brick_z_down
+
+        if self.reset in self._stop_event.handlers:
+            self._stop_event -= self.reset
 
     def _resize_brick(self, mouse_pos):
 
