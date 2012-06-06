@@ -34,8 +34,6 @@ from direct.particles.Particles import *
 from direct.particles.ParticleEffect import ParticleEffect
 from direct.particles.ForceGroup import ForceGroup
 
-import shadow
-
 import obengine.datatypes
 import obengine.cfg
 import obengine.log
@@ -652,8 +650,8 @@ class Light(obplugin.panda_utils.PandaResource):
 
         self._name = name
         self._color = color
-        self._casting_shadows = cast_shadows
         self._light_type = light_type
+        self._casting_shadows = cast_shadows
         self._rotation = rotation
         self._position = position
         self._window = window
@@ -685,7 +683,7 @@ class Light(obplugin.panda_utils.PandaResource):
         if self._light_type == Light.POINT:
             self.position = self.position
 
-        if self._light_type != Light.AMBIENT:
+        if self._light_type == Light.DIRECTIONAL:
 
             shadow_override = obengine.cfg.Config().get_bool('use-shadows', 'core.gfx', False)
             if self._casting_shadows is True and shadow_override is True:
@@ -784,125 +782,7 @@ class Light(obplugin.panda_utils.PandaResource):
         self.panda_light = PointLight(self._name)
 
     def _enable_shadows(self):
-
-        SHADOW_MAP_SIZE = 1024
-        window_properties = WindowProperties.size(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE)
-        frame_buffer_properties = FrameBufferProperties()
-        frame_buffer_properties.setRgbColor(1)
-        frame_buffer_properties.setAlphaBits(1)
-        frame_buffer_properties.setDepthBits(1)
-
-        shadow_buffer = self._window.panda_window.graphicsEngine.makeOutput(
-                                                                            base.pipe,
-                                                                            'offscreen buffer',
-                                                                            - 2,
-                                                                            frame_buffer_properties,
-                                                                            window_properties,
-                                                                            GraphicsPipe.BFRefuseWindow,
-                                                                            self._window.panda_window.win.getGsg(),
-                                                                            self._window.panda_window.win
-                                                                            )
-        if shadow_buffer is None:
-            return
-
-        shadow_map = panda3d.core.Texture()
-        shadow_buffer.addRenderTexture(shadow_map,
-                                       GraphicsOutput.RTMBindOrCopy,
-                                       GraphicsOutput.RTPColor)
-
-        self._shadow_camera = base.makeCamera(shadow_buffer)
-        self._shadow_camera.reparentTo(render)
-        self._shadow_camera.node().setScene(render)
-        shadow_cam_lens = OrthographicLens()
-        shadow_cam_lens.setNearFar(-200, 200)
-        shadow_cam_lens.setFilmSize(200, 200)
-        self._shadow_camera.node().setLens(shadow_cam_lens)
-        self._shadow_camera.setPos(self._get_position())
-        self._shadow_camera.lookAt(0, 0, 0)
-
-        render.setShaderInput('light', self._shadow_camera)
-        render.setShaderInput('Ldepthmap', shadow_map)
-        AMBIENT = 0.40
-        render.setShaderInput('ambient',
-                                           AMBIENT,
-                                           1.0, 1.0, 0.0)
-        render.setShaderInput("texDisable", 1, 1, 1, 1)
-        render.setShaderInput('scale', 1, 1, 1, 1)
-        SHADOW_PUSH_BIAS = 1.5
-        render.setShaderInput('push',
-                               SHADOW_PUSH_BIAS,
-                               SHADOW_PUSH_BIAS,
-                               SHADOW_PUSH_BIAS,
-                               0)
-
-        lci = NodePath(PandaNode("Light Camera Initializer"))
-        shadow_caster_shader = self._window.panda_window.loader.loadShader('shadow-caster.sha')
-        lci.setShader(shadow_caster_shader)
-        self._shadow_camera.node().setInitialState(lci.getState())
-
-#        self._shadows = []
-#        self._shadowed_models = []
-#        self._shadowed_model_positions = []
-#        self._shadowed_model_rotations = []
-#
-#        Model.on_model_loaded += self._add_shadow
-#        self._window.scheduler.add(obengine.async.LoopingCall(self._update_shadows))
-
-    def _add_shadow(self, model):
-
-        if model.cast_shadows is False:
-            return
-
-        infinite_dist = self.light_type == Light.DIRECTIONAL
-        shadow_geom = shadow.Shadow(model.panda_node, self.panda_node, infinite_dist)
-
-        self._shadows.append(shadow_geom)
-        self._shadowed_models.append(model)
-
-        shadow_geom.generate()
-
-    def _update_shadows(self):
-
-        for index, shadow in enumerate(self._shadows):
-
-            current_model_pos = str(self._shadowed_models[index].position)
-            current_model_rotation = str(self._shadowed_models[index].rotation)
-
-            try:
-                prev_model_pos = self._shadowed_model_positions[index]
-                prev_model_rotation = self._shadowed_model_rotations[index]
-
-            except IndexError:
-
-                self._shadowed_model_positions.append(str(self._shadowed_models[index].position))
-                self._shadowed_model_rotations.append(str(self._shadowed_models[index].rotation))
-
-                prev_model_pos = ''
-                prev_model_rotation = ''
-
-            if current_model_pos != prev_model_pos or current_model_rotation != prev_model_rotation:
-
-                self._shadowed_model_positions[index] = current_model_pos
-                self._shadowed_model_rotations[index] = current_model_rotation
-
-                shadow.generate()
-
-    def _get_position(self):
-
-        hpr = self.panda_node.getHpr()
-
-        hpr.setX(hpr.getX() * math.pi / 180)
-        hpr.setY(hpr.getY() * math.pi / 180)
-        hpr.setZ(hpr.getZ() * math.pi / 180)
-
-        l = Vec3(math.cos(hpr.getX()) * math.cos(hpr.getY()),
-                 math.sin(hpr.getX()) * math.cos(hpr.getY()),
-                 math.sin(hpr.getY()))
-
-        VECTOR_SCALE = 2
-        l *= VECTOR_SCALE
-
-        return l
+        print 'FIXME: add shadows'
 
 
 class Window(object):
@@ -946,6 +826,7 @@ class Window(object):
         self.search_path = self._config_src.get_str('cfgdir') + '/data'
 
         loadPrcFileData('', 'want-pstats #t')
+        loadPrcFileData("", "prefer-parasite-buffer #f")
 
         if self._config_src.get_bool('use-vsync', 'core.gfx', True) is False:
             loadPrcFileData('', 'sync-video #f')
@@ -968,17 +849,6 @@ class Window(object):
         self.panda_window.bufferViewer.toggleEnable()
         self.panda_window.enableParticles()
         getModelPath().appendPath(self.search_path)
-
-        if self._config_src.get_str('shading', 'core.gfx', 'normal') == 'toon':
-            self._enable_toon_outline()
-
-        else:
-            pass
-#            self.panda_window.render.setAttrib(LightRampAttrib.makeHdr0())
-
-        use_shadows = self._config_src.get_bool('use-shadows', 'core.gfx')
-        if use_shadows is True:
-            self._enable_shadows()
 
         scene_fog = Fog('scene-wide fog')
         scene_fog.setColor(0.5, 0.8, 0.8)
@@ -1023,34 +893,6 @@ class Window(object):
             picked_node = self.collision_queue.getEntry(0).getIntoNodePath().findNetTag('clickable-flag')
 
             loaded_models[picked_node.getTag('clickable-flag')].on_click()
-
-    def _enable_toon_outline(self):
-
-        normals_buffer = self.panda_window.win.makeTextureBuffer('Normals Buffer', 256, 256)
-        normals_buffer.setClearColor(Vec4(0.5, 0.5, 0.5, 1))
-        normals_camera = self.panda_window.makeCamera(normals_buffer,
-            lens = self.panda_window.cam.node().getLens())
-        normals_camera.node().setScene(self.panda_window.render)
-        normals_node = NodePath(PandaNode('temp. normals node'))
-        normals_node.setShader(self.panda_window.loader.loadShader('normal-shader.cg'))
-        normals_camera.node().setInitialState(normals_node.getState())
-        edge_detect_scene = normals_buffer.getTextureCard()
-        edge_detect_scene.setTransparency(1)
-        edge_detect_scene.setColor(1, 1, 1, 0)
-        edge_detect_scene.reparentTo(self.panda_window.render2d)
-        ink_shader = self.panda_window.loader.loadShader('ink-shader.cg')
-        edge_detect_scene.setShader(ink_shader)
-        SEPARATION = 0.002
-        edge_detect_scene.setShaderInput('separation', Vec4(SEPARATION, 0, SEPARATION, 0))
-        CUTOFF = 0.3
-        edge_detect_scene.setShaderInput('cutoff', Vec4(CUTOFF, CUTOFF, CUTOFF, CUTOFF))
-
-    def _enable_shadows(self):
-
-         sci = NodePath(PandaNode("Shadow Camera Initializer"))
-         shadow_renderer_shader = self.panda_window.loader.loadShader('shadow-renderer.sha')
-         sci.setShader(shadow_renderer_shader)
-         base.cam.node().setInitialState(sci.getState())
 
 
 class Camera(object):
