@@ -24,11 +24,10 @@
 
 
 __author__ = "openblocks"
-__date__  = "$Jul 11, 2011 12:26:46 PM$"
+__date__ = "$Jul 11, 2011 12:26:46 PM$"
 
 
 import obengine.datatypes
-import obengine.event
 import obengine.depman
 import obengine.math
 from obengine.gui import Widget
@@ -49,14 +48,14 @@ class Pulldown(Widget):
         Widget.__init__(self, position)
 
         self._container = container
-        container_pos = obengine.math.Vector2D(self._button.position.x,self._button.position.y)
+        container_pos = obengine.math.Vector2D(self._button.position.x, self._button.position.y)
         container_pos.y -= self._button.size.y + Pulldown.SPACING
         self._container.position = container_pos
-        
+
         self.on_text_changed = self._button.on_text_changed
         self.on_click = self._button.on_click
         self.on_click += self._toggle_status
-        
+
         self.on_hidden += self._container.hide
         self.on_shown += self._container.show
         self.pulldown_showing = False
@@ -66,18 +65,18 @@ class Pulldown(Widget):
         new_container_pos = obengine.math.Vector2D(self._container.position.x, self._container.position.y)
         new_container_pos.y -= widget.size.y
         self._container.position = new_container_pos
-        
+
         self._container.add(widget)
 
 
     def remove(self, widget):
-        
+
         new_container_pos = obengine.math.Vector2D(self._container.position.x, self._container.position.y)
         new_container_pos.y += widget.size.y
         self._container.position = new_container_pos
 
         self._container.remove(widget)
-        
+
     @obengine.datatypes.nested_property
     def position():
 

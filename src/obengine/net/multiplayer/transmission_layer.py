@@ -71,7 +71,7 @@ class TransmissionLayer(asyncore.dispatcher):
         self._lost_packets = set()
 
         self._is_writable = False
-        self._queued_packet = {}
+        self._queued_packets = {}
         self._expected_packet = {}
         self._connection_timeout_table = {}
         self._packet_timeout_table = {}
@@ -167,7 +167,7 @@ class TransmissionLayer(asyncore.dispatcher):
                 self._reset_connection_timeout(address)
 
     def writable(self):
-        return sum(map(len, self._queued_packet.iteritems())) >= 0
+        return sum(map(len, self._queued_packets.iteritems())) >= 0
 
     def _send_packet(self, address, packet_type_id, optional_data = ''):
 
@@ -179,7 +179,7 @@ class TransmissionLayer(asyncore.dispatcher):
         packed_packet_type_id = str(packet_type_id).zfill(TransmissionLayer.PACKET_TYPE_ID_LENGTH)
         packed_packet = (packet_header + packed_packet_type_id + optional_data, address)
 
-        self._queued_packet[address] = (packed_packet, self._local_sequence[address])
+        self._queued_packets[address] = (packed_packet, self._local_sequence[address])
         self._local_sequence[address] += 1
 
         return self._local_sequence[address] - 1

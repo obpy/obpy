@@ -75,13 +75,6 @@ click on its name, and press :guilabel:`Uninstall selected game`.
     so make sure you have a copy of the game handy, in case you
     want to reinstall it!
     
-.. rubric:: Footnotes
-
-.. [1] These names are different from the actual corresponding key names on
-       the keyboard, they're just named so the people can choose a keyboard layout
-       that works for them, and games will still work, even with changed
-       key mappings.
-       
 Configuring OpenBlox
 ====================
 
@@ -92,3 +85,11 @@ you can start by doing one of the following:
 
  * On Windows, double-click the file ``tools\startobconfig.bat``
  * On other systems (Linux, Mac OSX), double-click the file ``tools/startobconfig.sh``
+ 
+.. rubric:: Footnotes
+
+.. [1] These names are different from the actual corresponding key names on
+       the keyboard, they're just named so people can choose a keyboard layout
+       that works for them, and games will still work, even with changed
+       key mappings.
+       

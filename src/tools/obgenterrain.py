@@ -183,7 +183,6 @@ def genterrain(image, colormap, window, max_brick_height = None, name = None, au
 
     image_pixels = list(image.getdata())
     image_width, image_height = image.size
-    num_pixels = image_width * image_height
 
     colormap_pixels = list(colormap.getdata())
 

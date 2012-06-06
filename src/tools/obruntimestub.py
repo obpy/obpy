@@ -16,8 +16,8 @@
 #
 
 
-__author__="openblocks"
-__date__ ="$Jun 7, 2011 6:33:43 PM$"
+__author__ = "openblocks"
+__date__ = "$Jun 7, 2011 6:33:43 PM$"
 
 
 import sys
@@ -34,6 +34,7 @@ try:
 except ImportError:
     import StringIO
 
+
 runtime_sources = '''
 %s
 '''
@@ -43,6 +44,7 @@ game_sources = '''
 '''
 
 WORLD_FILE_LOC = 'world.xml'
+
 
 class RuntimeImporter(object):
 

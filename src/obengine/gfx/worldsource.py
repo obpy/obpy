@@ -76,6 +76,7 @@ class WorldSource(list):
 
         try:
             tree = xmlparser.parse(file)
+
         except xml.parsers.expat.ExpatError, message:
             raise BadWorldError(message)
 

@@ -27,7 +27,6 @@ __author__ = "openblocks"
 __date__ = "$Aug 9, 2010 11:04:13 PM$"
 
 
-import functools
 import xml.etree.ElementTree as xmlparser
 
 from panda3d.core import CompassEffect
@@ -144,7 +143,6 @@ class XmlElementExtension(object):
 
         conv_dict = {True : 'yes', False : 'no'}
         return conv_dict[bool]
-
 
 
 class XmlLightExtension(XmlElementExtension):
