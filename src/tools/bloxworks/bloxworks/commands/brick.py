@@ -98,7 +98,7 @@ class AddBrickCommand(bloxworks.commands.element.AddElementCommand):
             property_editor.populate(self.element)
 
         except obengine.vfs.ReadError:
-            pass
+            print 'warning: couldn\'t find property editor'
 
         camera = obengine.vfs.open('/bloxworks-registry/project').read().world.element.get_node_by_name('camera')
         cam_pos = obengine.math.Vector(
