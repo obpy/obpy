@@ -26,14 +26,14 @@ __author__ = "openblocks"
 __date__ = "Dec 27, 2011 9:34:19 PM"
 
 
+import random
+
 import obengine.log
 import obengine.event
 import obengine.datatypes
 import obengine.vfs
 import obengine.element
 import obengine.math
-
-import obplugin.core.physics
 
 
 class EntityElement(obengine.element.Element):
@@ -128,13 +128,22 @@ class EntityElement(obengine.element.Element):
             return
 
         else:
-            for spawn_point_file in spawn_points:
 
-                spawn_point = obengine.vfs.open('/spawn-points/%s' % spawn_point_file).read()
+            spawn_point_file = random.choice(spawn_points)
 
-                if self._respawn_filter is not None:
-                    if self._respawn_filter(spawn_point) is False:
-                        continue
+            spawn_point = obengine.vfs.open('/spawn-points/%s' % spawn_point_file).read()
 
-                self.health = self.max_health
-                self.position = spawn_point.position
+            if self._respawn_filter is not None:
+                if self._respawn_filter(spawn_point) is False:
+                    while True:
+
+                        spawn_points.pop(spawn_points.index(spawn_point_file))
+                        spawn_point_file = random.choice(spawn_points)
+
+                        spawn_point = obengine.vfs.open('/spawn-points/%s' % spawn_point_file).read()
+
+                        if self._respawn_filter(spawn_point) is True:
+                            break
+
+            self.health = self.max_health
+            self.position = spawn_point.position
