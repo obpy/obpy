@@ -284,7 +284,7 @@ class heap(collections.Sequence):
         self._heap = []
 
         if iterable is not None:
-            self += iterable
+            self +=iterable
 
     def append(self, item):
         heapq.heappush(self._heap, item)
@@ -362,7 +362,21 @@ def nested_property(func):
     func_locals = func()
     func_locals['doc'] = func.__doc__
 
-    return property(**func_locals)
+    property_args = {}
+
+    if 'get' in func_locals:
+        property_args['fget'] = func_locals['get']
+    elif 'fget' in func_locals:
+        property_args['fget'] = func_locals['fget']
+    else:
+        raise TypeError('getter function for nested property must be defined')
+
+    if 'set' in func_locals:
+        property_args['fset'] = func_locals['set']
+    elif 'fset' in func_locals:
+        property_args['fset'] = func_locals['fset']
+
+    return property(**property_args)
 
 
 def wrap_callable(func, before, after):
