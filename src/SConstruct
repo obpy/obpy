@@ -150,7 +150,7 @@ Command-line arguments:
 Build targets:
 
     * configure - configures the build system
-    * build - builds a standalone OpenBlox binary
+    * build - builds a set of standalone OpenBlox binaries
     * docs - builds OpenBlox's documentation in HTML or text form
     * test - runs OpenBlox's unit test suite
     

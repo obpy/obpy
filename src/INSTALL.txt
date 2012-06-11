@@ -101,10 +101,7 @@ command prompt on Windows), and type the following command::
 You should see something similar to the following::
 
 	scons: Reading SConscript files ...
-	Checking for C++ library p3pystub... yes
-	Checking for C++ library pandaexpress... yes
-	Checking for C++ library pandabullet... yes
-	Checking for C++ library p3direct... yes
+	Checking for Python module panda3d...(cached) yes
 	Checking for Python module lupa...(cached) yes
 	Checking for PyInstaller...(cached) yes
 	Configuration finished successfully!
@@ -112,7 +109,7 @@ You should see something similar to the following::
 This means OpenBlox/SCons detected all the prerequisites, and you're ready to build OpenBlox.
 To build OpenBlox itself (the actual OpenBlox executable), type the following command::
 
-	scons build-bin
+	scons build
 	
 This step will create a ``build`` folder, with a ``bin`` folder inside.
 Inside that sub-folder lie a few executables - ``obplay.exe`` and ``bloxworks.exe``

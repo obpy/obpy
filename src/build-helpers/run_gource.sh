@@ -20,7 +20,7 @@
 
 GOURCE_FLAGS="--hide filenames,dirnames,usernames \
 --logo src/doc/source/_static/oblogo.png \
---title OpenBlox --key -s 0.2 -a 2.0"
+--title OpenBlox --key -s 0.2 -a 2.0 -i 0"
 
 GOURCE="gource"
 

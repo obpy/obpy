@@ -1,4 +1,9 @@
- GNU GENERAL PUBLIC LICENSE
+OpenBlox's artwork is licensed under the Creative Commons By Share-Alike 3.0-Unported license,
+which you can read at: http://creativecommons.org/licenses/by-sa/3.0/.
+
+OpenBlox's code is licensed under the GNU General Public License version 3, reproduced below:
+
+GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
