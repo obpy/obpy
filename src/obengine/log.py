@@ -32,6 +32,7 @@ import sys
 import os
 from sys import _getframe as getframe
 import logging
+import datetime
 
 import obengine.cfg
 import obengine.datatypes
@@ -108,10 +109,21 @@ class Logger(obengine.datatypes.Borg):
         logger = self._create_logger()
         logger.error(message)
 
+        print >> sys.stderr, Logger.format_str % {'levelname' : 'ERROR',
+                                   'name' : _get_calling_package(2),
+                                   'asctime' : datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S,%f')[:-3],
+                                   'message' : message}
+
+
     def critical(self, message):
 
         logger = self._create_logger()
         logger.critical(message)
+
+        print >> sys.stderr, Logger.format_str % {'levelname' : 'CRITICAL',
+                                   'name' : _get_calling_package(2),
+                                   'asctime' : datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S,%f')[:-3],
+                                   'message' : message}
 
     def _create_logger(self):
 
@@ -142,5 +154,5 @@ def critical(string):
     Logger().critical(string)
 
 
-def _get_calling_package():
-    return getframe(3).f_globals.get('__name__', 'root')
+def _get_calling_package(stack_level = 3):
+    return getframe(stack_level).f_globals.get('__name__', 'root')
