@@ -29,13 +29,6 @@ import sys
 
 import lupa
 
-# Panda3D hack for errant Windows sys.path
-
-if sys.platform == 'win32':
-
-    sys.path.insert(0, 'C:\\Program Files\\OpenBlox')
-    sys.path.insert(1, 'C:\\Program Files\\OpenBlox\\obengine\\scripting')
-
 from obengine.utils import error
 import obengine.event
 
@@ -115,6 +108,7 @@ class ScriptEngine(object):
         """
 
         self.on_error = obengine.event.Event()
+        self.on_error += self._default_error_cb
 
         # Create the Lua runtime
         self.lua = lupa.LuaRuntime()
@@ -133,8 +127,8 @@ class ScriptEngine(object):
             return val
 
         # Houston, we have a problem...
-        except Exception, message:
-            self.on_error(message)
+        except Exception as exc:
+            self.on_error(self._format_error_message(str(exc)))
 
     def execute(self, string):
         """
@@ -144,8 +138,8 @@ class ScriptEngine(object):
         try:
             self.lua.execute(string)
 
-        except Exception, message:
-            self.on_error(message)
+        except Exception as exc:
+            self.on_error(self._format_error_message(str(exc)))
 
     def expose(self, obj, name = None):
         """Exposes obj to the Lua interpreter.
@@ -161,5 +155,16 @@ class ScriptEngine(object):
         else:
             self.lua.globals()[obj.__class__.__name__] = obj
 
+    def _format_error_message(self, message):
+
+        format_str = 'Script %s at line %d, error: %s'
+        error_marker = '"]'
+
+        message = message[message.index(error_marker) + len(error_marker) + 1:]
+        error = message[message.index(': ') + 2:]
+        line_num = int(message[:message.index(':')])
+
+        return format_str % (self.filename, line_num, error)
+
     def _default_error_cb(self, msg):
-        error('Script error: Script ' + self.filename + ', error: ' + msg)
+        error(msg)
