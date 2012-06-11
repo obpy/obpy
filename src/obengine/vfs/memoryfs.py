@@ -137,6 +137,16 @@ class MemoryFS(basefs.BaseFS):
         except KeyError, AttributeError:
             raise basefs.BadPathException(path)
 
+    def exists(self, path):
+
+        try:
+
+            self.open(path)
+            return True
+
+        except basefs.FilesystemException:
+            return False
+
     def _create_empty_file(self):
         return StringIO.StringIO('')
 

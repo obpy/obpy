@@ -22,6 +22,8 @@
 #
 
 __author__ = "openblocks"
+
+
 SEPERATOR = '/'
 
 
@@ -49,6 +51,9 @@ class BaseFS(object):
         raise NotImplementedError
 
     def getsyspath(self, path):
+        raise NotImplementedError
+
+    def exists(self, path):
         raise NotImplementedError
 
 
@@ -89,6 +94,16 @@ class MountFS(BaseFS):
 
         path, fs = self._get_best_mount_point(path)
         return fs.getsyspath(path)
+
+    def exists(self, path):
+
+        try:
+
+            path, fs = self._get_best_mount_point(path)
+            return fs.exists(path)
+
+        except FilesystemException:
+            return False
 
     def _get_best_mount_point(self, path):
 

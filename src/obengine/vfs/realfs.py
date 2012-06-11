@@ -92,13 +92,16 @@ class RealFS(basefs.BaseFS):
     def getsyspath(self, path):
         return self._actual_path(path)
 
+    def exists(self, path):
+        return os.path.exists(self.getsyspath(path))
+
     def _check_path(self, path):
 
         if path == '':
             return
 
-        if os.path.normpath(self._actual_path(path)).startswith(self.real_loc) is False:
+        if self._actual_path(path).startswith(self.real_loc) is False:
             raise basefs.BadPathException('%s is outside of root directory %s' % (path, self.real_loc))
 
     def _actual_path(self, path):
-        return os.sep.join([self.real_loc, path.replace(basefs.SEPERATOR, os.sep)])
+        return os.path.normpath(os.sep.join([self.real_loc, path.replace(basefs.SEPERATOR, os.sep)]))

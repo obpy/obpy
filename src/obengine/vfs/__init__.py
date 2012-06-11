@@ -67,6 +67,19 @@ def getsyspath(path):
     return get_global_filesystem().getsyspath(path)
 
 
+def exists(path):
+    return get_global_filesystem().exists(path)
+
+
+def join(*components):
+
+    path = SEPERATOR.join(components)
+
+    if path.startswith(SEPERATOR) is False:
+        path = SEPERATOR + path
+
+    return path
+
 def init():
 
     global filesystem
