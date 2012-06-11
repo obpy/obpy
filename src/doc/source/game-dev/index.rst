@@ -6,3 +6,4 @@ OpenBlox Game Developer's Documentation
 
    :maxdepth: 2
    bloxworks
+   theming
