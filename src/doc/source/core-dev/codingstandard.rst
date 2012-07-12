@@ -68,7 +68,6 @@ Docstrings
 
 * Every module, function, and public class method should have a docstring.
 * Docstrings should be written with normal text.
-
 * A docstring's basic format is this::
 
     """Quick one-liner summary (no ending period)
@@ -77,7 +76,6 @@ Docstrings
     and possibly raised exceptions (where applicable).
     As you can see, each sentence has an ending period.
     """
-
 * If the docstring belongs to a function, method, or class, then it should have 
   a small doctest suite (normally 2-4 complete tests [i.e, 2-4 tests of
   that docstring's owner] are fine), to provided regression testing,
@@ -185,12 +183,12 @@ Classes
 =======
 
 * Classes are titled ``LikeThis``.
-* If the class does not *need* to inherit from anything in partictular,
-  it needs to inherit from `object` (to ensure compatability with Python 2.6/2.5).
+* If the class does not *need* to inherit from anything in particular,
+  it needs to inherit from `object` (to ensure compatibility with Python 2.6/2.5).
 * The first method defined is *always* ``__init__``.
 * ``__init__`` must always be documented.
 * Every method that is not private is given documentation.
-* Private methods can have doocumentation, but it's not required.
+* Private methods can have documentation, but it's not required.
   Private methods, *at the very least*, have a comment at
   their beginning explaining how they are supposed to be used.
 * There is also a blank line between the last line of a method,
@@ -208,10 +206,10 @@ Example::
         """
 
         def __init__(self):
-            """Initalizes ClassA
+            """Initializes ClassA
             No arguments are given.
             """
-            print 'Initalized an instance of ClassA!'
+            print 'Initialized an instance of ClassA!'
 
         def foo(self, a):
             """Prints a

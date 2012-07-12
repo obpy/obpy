@@ -54,7 +54,7 @@ Let's go over each of those variables:
   plugins [1]_, make sure it's a valid Python name!
 * *provides* - This tells the OpenBlox plugin manager what virtual plugins [1]_
   your plugin provides. If your plugin provides more than one virtual plugin,
-  their names should be seperated by commas.
+  their names should be separated by commas.
 
 We have to actually write your plugin's code now. Type the following into a file
 called ``my_plugin.py``, located inside the ``my-plugin`` directory you made earlier:
@@ -98,7 +98,7 @@ they're just there to help you understand what you're doing):
     # Well, this is when that line comes into play.
     # OpenBlox's plugin manager will scan its list of known plugins,
     # looking for a plugin that implements "virtual.plugin".
-    # When it finds it, it loads and initalizes that plugin.
+    # When it finds it, it loads and initializes that plugin.
 
     obengine.plugin.require('virtual.plugin')
 
@@ -131,7 +131,7 @@ Reference
 
     Requests that a plugin that implements *plugin_name* be loaded.
     This is what you'll use for your plugin-related needs most of the time,
-    instead of directly accessing/instantianting `PluginManager`.
+    instead of directly accessing/instantiating `PluginManager`.
 
     :param plugin_name: The (possibly virtual) plugin you want to be loaded.
     :type plugin_name: `str`
