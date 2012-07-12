@@ -281,6 +281,31 @@ Modules
     apply to the `obengine` package, however.
 
 * Modules are named ``likethis``.
-* There are 2 blank lines between the terminating ``#`` of the header, and the first variable declaration.
+* Modules use the following order for imports, classes, variables, and top-level functions::
+
+	# Standard library imports
+	
+	# 3rd-party imports
+	
+	# Imports from obengine
+	
+	# Call to obengine.depman.gendeps() (if necessary)
+
+
+	# Global variables/constants
+	
+	
+	# init() function (if necessary)
+	
+	
+	# deinit() function (if necessary)
+	
+	
+	# Classes
+	
+	
+	# Top-level functions
+
+* There are 2 blank lines between the terminating ``#`` of the header, and the first standard library import.
 
 .. _reST: http://docutils.sf.net/rst.html
