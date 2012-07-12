@@ -28,6 +28,8 @@ __author__ = "openblocks"
 __date__ = "$Jul 13, 2010 6:13:05 PM$"
 
 
+import functools
+
 import obengine.datatypes
 import obengine.event
 import obengine.scenegraph
@@ -46,6 +48,16 @@ class Element(obengine.scenegraph.SceneNode, obengine.datatypes.ExtensibleObject
 
         self.set_extension('xml', NullXmlExtension)
         self.on_world_loaded = obengine.event.Event()
+
+    def get_properties(self):
+
+        properties = []
+
+        for attribute_name, attribute in self.__class__.__dict__.iteritems():
+            if attribute.__class__.__name__ == 'ElementProperty':
+                properties.append((attribute_name, attribute))
+
+        return properties
 
 
 class NullXmlExtension(object):
@@ -80,3 +92,29 @@ class ElementMaker(object):
     def make(self, name, parent = None):
         raise NotImplementedError
 
+
+def element_property(property_name = None, property_settable = True):
+
+    class ElementProperty(property):
+
+        def __init__(self, func, name, settable):
+
+            self.name = name
+
+            func_locals = func()
+
+            try:
+                fget = func_locals['get']
+            except KeyError:
+                raise TypeError('getter function for nested property must be defined')
+
+            fset = func_locals.get('set')
+            if fset is None:
+                settable = False
+                self.settable = settable
+
+            fdel = func_locals.get('del_')
+
+            property.__init__(self, fget, fset, fdel)
+
+    return functools.partial(ElementProperty, name = property_name, settable = property_settable)
