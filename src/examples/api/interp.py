@@ -3,7 +3,7 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.pardir, os.pardir)))
 
-from obengine.utils import *
+from obengine.utils import interp_range
 
 if __name__ == '__main__':
 
