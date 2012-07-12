@@ -52,6 +52,18 @@ def compatible_with(version_str):
     return major_version_compatible and minor_version_compatible
 
 
+def compare_versions(version_one, version_two):
+    """Compares two version strings
+    Returns 0 if the versions are equal, -1 if
+    version_two is newer than version_one, and 1 if
+    version_one is newer than version_two.
+    """
+
+    version_one_components = map(int, version_one.split('.'))
+    version_two_components = map(int, version_two.split('.'))
+
+    return cmp(version_one_components, version_two_components)
+
 def init():
     """Wrapper around obengine.depman.init()
     Call this function, after importing all the modules you need.
