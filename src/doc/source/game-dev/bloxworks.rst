@@ -85,10 +85,10 @@ check the :guilabel:`Anchored` checkbox. At this stage, it would be a good idea 
 Now let's pack your game so you can share it with others, and play it yourself. Again, move your mouse to the top
 of the screen, and click the button that looks like:
 
-.. images/pack.png
+.. image:: images/pack.png
 
 Now open up the OpenBlox games launcher and click :guilabel:`Install new game`. Navigate to the
-directory `tools/bloxworks/projects/<your game name here>`. There will be file called `<your game name here>.zip`.
+directory `tools/bloxworks/projects/(your game name here)`. There will be file called `(your game name here).zip`.
 Select that file as the game to install. Once you done this, your game will be playable from the OpenBlox games launcher.
 
 Cheat sheet
@@ -103,7 +103,7 @@ Click the first icon, the one that looks like:
 
 .. image:: images/add-brick.png
 
-Once you've done that, you'll see a gray 2x4x1 brick appear in the center your world.
+Once you've done that, you'll see a gray 2x4x1 brick appear in the center of your world.
 
 Removing a brick
 ----------------
