@@ -94,8 +94,6 @@ class Sound(object):
         self.looping = self._looping
         self.volume = self._volume
 
-        print 'Autoplay:', self._autoplay
-
         if self._autoplay is True:
             self.playing = True
 
