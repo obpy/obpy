@@ -26,8 +26,10 @@ __author__ = "openblocks"
 __date__ = "Apr 20, 2012 11:57:32 AM"
 
 
+import sys
 import urllib2
 import threading
+import Queue
 
 import obengine.event
 import obengine.async
@@ -57,18 +59,37 @@ class AsyncUrlOpener(urllib2.HTTPHandler):
         return response
 
 
+class ExceptionCatchingThread(threading.Thread):
+
+    def __init__(self, *args, **kwargs):
+
+        threading.Thread.__init__(self, *args, **kwargs)
+        self.exception_bucket = Queue.Queue()
+
+    def run(self):
+
+        try:
+            threading.Thread.run(self)
+
+        except Exception:
+            self.exception_bucket.put(sys.exc_info())
+
 class Downloader(object):
 
     CHUNK_SIZE = 8192
     CONTENT_LENGTH_UNAVAILABLE = -1
 
-    def __init__(self, url, scheduler):
+    def __init__(self, url, scheduler, raise_exception = False):
 
         self._url = url
         self._sched = scheduler
+        self._raise_exception = raise_exception
 
         self.on_chunk_recieved = obengine.event.Event()
         self.on_download_complete = obengine.event.Event()
+
+        if self._raise_exception is False:
+            self.on_download_failed = obengine.event.Event()
 
     def start(self):
 
@@ -76,14 +97,38 @@ class Downloader(object):
         self._sched.add(obengine.async.Task(self._queue_watcher_task))
         self._thread.start()
 
+    def _validate_thread(self):
+
+        try:
+
+            exc_info = self._thread.exception_bucket.get(block = False)
+
+            exception = exc_info[1]
+
+            if isinstance(exception, urllib2.HTTPError):
+
+                if self._raise_exception is True:
+                    raise HTTPException(str(exception))
+
+                else:
+                    self.on_download_failed(str(exception))
+
+            else:
+                raise exception
+
+        except Queue.Empty:
+            pass
+
     def _create_url_opener(self):
 
         self._url_hander = AsyncUrlOpener()
         url_opener = urllib2.build_opener(self._url_hander)
 
-        self._thread = threading.Thread(target = url_opener.open, args = (self._url,))
+        self._thread = ExceptionCatchingThread(target = url_opener.open, args = (self._url,))
 
     def _queue_watcher_task(self, task):
+
+        self._validate_thread()
 
         response = self._url_hander.get_response()
 
@@ -107,6 +152,8 @@ class Downloader(object):
 
     def _data_stream_task(self, task):
 
+        self._validate_thread()
+
         data_chunk = self._response.read(self.CHUNK_SIZE)
 
         if not data_chunk:
@@ -121,3 +168,7 @@ class Downloader(object):
         self.on_chunk_recieved(self._downloaded_bytes, self._content_length)
 
         return task.AGAIN
+
+
+class HTTPException(Exception):
+    pass
