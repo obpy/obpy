@@ -26,6 +26,7 @@ import zipfile
 sys.path.append(os.path.abspath(os.curdir))
 sys.path.append(os.path.abspath(os.pardir))
 
+import obengine.reporting
 import obengine.async
 import obengine.net.http
 
@@ -61,21 +62,15 @@ def get_latest_version(config_parser):
     return sorted(get_available_versions(config_parser), key = obengine.compare_versions)[0]
 
 
-def continue_on_enter():
-
-    print 'Press Enter to continue'
-    raw_input()
-
-
 def download_update(bytes_so_far, total_bytes):
 
     percentage_downloaded = float(bytes_so_far) / total_bytes * 100
-    sys.stdout.write(('%d%%' % percentage_downloaded) % ('\b' * (len(str(percentage_downloaded)) + 1)))
+    obengine.reporting.report_info(('%d%%' % percentage_downloaded) + ('\b' * (len(str(percentage_downloaded)) + 1)), False)
 
 
 def find_latest_version(update_data, scheduler):
 
-    print '\nDownload complete'
+    obengine.reporting.report_info('\nDownload complete')
 
     update_file = cStringIO.StringIO(update_data)
     config_parser = ConfigParser.ConfigParser()
@@ -84,18 +79,16 @@ def find_latest_version(update_data, scheduler):
     latest_version = get_latest_version(config_parser)
     if obengine.compare_versions(obengine.version_string(), latest_version) >= 0:
 
-        print 'No new updates'
-        continue_on_enter()
+        obengine.reporting.report_error_blocking('No new updates')
         sys.exit(0)
 
     download_archive = get_proper_download_archive(latest_version, config_parser)
     if download_archive is None:
 
-        print 'Your OS is not supported by this update server'
-        continue_on_enter()
+        obengine.reporting.report_error_blocking('Your OS is not supported by this update server')
         sys.exit(1)
 
-    print 'Downloading update package from', download_archive,
+    obengine.reporting.report_info('Downloading update package from %s ' % download_archive, False)
     download_update_archive(download_archive, scheduler)
 
 
@@ -104,6 +97,7 @@ def download_update_archive(download_archive, scheduler):
     update_downloader = obengine.net.http.Downloader(download_archive, scheduler)
     update_downloader.on_chunk_recieved += download_update
     update_downloader.on_download_complete += install_update_archive
+    update_downloader.on_download_failed += report_download_failed
 
     update_downloader.start()
 
@@ -117,14 +111,13 @@ def get_root_openblox_dir():
 
     else:
 
-        print 'Auto-update functionality is currently only supported for binary builds of OpenBlox'
-        continue_on_enter()
+        obengine.reporting.report_error_blocking('Auto-update functionality is currently only supported for binary builds of OpenBlox')
         sys.exit(1)
 
 
 def install_update_archive(update_string):
 
-    print 'Installing update archive'
+    obengine.reporting.report_info('Installing update archive')
 
     update_data = cStringIO.StringIO(update_string)
     update_archive = zipfile.ZipFile(update_data)
@@ -132,20 +125,28 @@ def install_update_archive(update_string):
 
     update_archive.extractall(extract_path)
 
-    print 'OpenBlox successfully updated!'
-    continue_on_enter()
+    obengine.reporting.report_info_blocking('OpenBlox successfully updated!')
+    sys.exit(0)
+
+
+def report_download_error(reason):
+
+    obengine.reporting.report_error_blocking('Error downloading file: %s' % reason)
+    sys.exit(1)
 
 
 def main():
 
+    obengine.init()
+
     scheduler = obengine.async.Scheduler()
 
-    print 'Downloading update info from', UPDATE_URL,
+    obengine.reporting.report_info('Downloading update info from %s ' % UPDATE_URL, False)
 
     downloader = start_info_file_download(scheduler)
     downloader.on_chunk_recieved += download_update
     downloader.on_download_complete += lambda u: find_latest_version(u, scheduler)
-
+    downloader.on_download_failed += report_download_error
     scheduler.loop()
 
 
