@@ -30,6 +30,7 @@ import sys
 
 
 error_reporter = None
+info_reporter = None
 
 
 class ErrorReporter(object):
@@ -41,15 +42,41 @@ class ErrorReporter(object):
         raise NotImplementedError
 
 
+class InfoReporter(object):
+
+    def report_info(self, message):
+        raise NotImplementedError
+
+    def report_info_blocking(self, message):
+        raise NotImplementedError
+
+
 class ConsoleErrorReporter(ErrorReporter):
 
     def report_error(self, message):
-        print >> sys.stderr, 'ERROR:', message
+        print >> sys.stderr, message
 
     def report_error_blocking(self, message):
 
         self.report_error(message)
         print >> sys.stderr, 'Press Enter to continue'
+        raw_input()
+
+
+class ConsoleInfoReporter(InfoReporter):
+
+    def report_info(self, message, newline = True):
+
+        if newline is True:
+            print message
+
+        else:
+            sys.stdout.write(message)
+
+    def report_info_blocking(self, message, newline = True):
+
+        self.report_info(message, newline)
+        print 'Press Enter to continue'
         raw_input()
 
 
@@ -67,4 +94,21 @@ def report_error_blocking(message):
     error_reporter.report_error_blocking(message)
 
 
-set_error_reporter(ConsoleErrorReporter)
+set_error_reporter(ConsoleErrorReporter())
+
+
+def set_info_reporter(reporter):
+
+    global info_reporter
+    info_reporter = reporter
+
+
+def report_info(message, newline = True):
+    info_reporter.report_info(message)
+
+
+def report_info_blocking(message, newline = True):
+    info_reporter.report_info_blocking(message)
+
+
+set_info_reporter(ConsoleInfoReporter())
