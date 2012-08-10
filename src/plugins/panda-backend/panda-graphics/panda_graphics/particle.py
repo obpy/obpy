@@ -33,9 +33,10 @@ from direct.particles.ForceGroup import ForceGroup
 import obengine.datatypes
 import obplugin.panda_utils
 
+import texture
+
 
 class ParticleEmitter(obplugin.panda_utils.PandaResource):
-
 
     def __init__(self, window):
 
@@ -135,7 +136,7 @@ class ParticleEmitter(obplugin.panda_utils.PandaResource):
         self._particle_generator.renderer.setAlphaMode(BaseParticleRenderer.PRALPHAOUT)
         self._particle_generator.renderer.setUserAlpha(0.1)
 
-        default_texture = Texture('smoke.png')
+        default_texture = texture.Texture('smoke.png')
         default_texture.on_loaded += lambda: self._set_texture(default_texture)
         default_texture.load()
 
