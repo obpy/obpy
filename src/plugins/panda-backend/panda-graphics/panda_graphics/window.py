@@ -52,7 +52,7 @@ class Window(object):
         self._on_mouse_clicked = obengine.event.Event()
 
     def start_rendering(self):
-        self.scheduler.add(obengine.async.LoopingCall(self.panda_window.taskMgr.step, priority = Window.RENDER_PRIORITY))
+        self.scheduler.add(obengine.async.Task(self._run_panda_task, priority = Window.RENDER_PRIORITY))
 
     def load(self):
         self.scheduler.add(obengine.async.Task(self._actual_load, priority = Window.LOAD_PRIORITY))
@@ -97,7 +97,7 @@ class Window(object):
         self.panda_window.setFrameRateMeter(self.show_frame_rate)
         self.panda_window.setBackgroundColor(1, 1, 1, 1)
         self.panda_window.win.requestProperties(self.window_properties)
-        self.panda_window.disableMouse()
+        #self.panda_window.disableMouse()
         self.panda_window.bufferViewer.toggleEnable()
         self.panda_window.enableParticles()
         getModelPath().appendPath(self.search_path)
@@ -145,3 +145,13 @@ class Window(object):
             picked_node = self.collision_queue.getEntry(0).getIntoNodePath().findNetTag('clickable-flag')
 
             loaded_models[picked_node.getTag('clickable-flag')].on_click()
+
+    def _run_panda_task(self, task):
+
+        try:
+            self.panda_window.taskMgr.step()
+
+        except SystemExit:
+            return task.STOP
+
+        return task.AGAIN
