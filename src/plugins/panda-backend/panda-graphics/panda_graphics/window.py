@@ -97,8 +97,7 @@ class Window(object):
         self.panda_window.setFrameRateMeter(self.show_frame_rate)
         self.panda_window.setBackgroundColor(1, 1, 1, 1)
         self.panda_window.win.requestProperties(self.window_properties)
-        #self.panda_window.disableMouse()
-        self.panda_window.bufferViewer.toggleEnable()
+        self.panda_window.disableMouse()
         self.panda_window.enableParticles()
         getModelPath().appendPath(self.search_path)
 
