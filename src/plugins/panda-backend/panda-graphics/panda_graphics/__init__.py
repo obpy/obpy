@@ -26,8 +26,9 @@ __author__ = "openblocks"
 
 
 from model import *
-from particle import *
+from proceduralmodel import *
 from texture import *
+from particle import *
 from window import *
 from camera import *
 from light import *
