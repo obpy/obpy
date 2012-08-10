@@ -27,7 +27,7 @@ __author__ = "openblocks"
 __date__ = "$Jul 1, 2011 10:36:46 AM$"
 
 
-from panda3d.core import Vec3, Vec4, Point3, Quat, Filename
+from panda3d.core import Vec3, Vec4, Point2, Point3, Quat, Filename
 
 import obengine.event
 import obengine.math
@@ -58,6 +58,9 @@ class PandaResource(object):
 
     def convert_vector(self, vector):
         return Vec3(vector.x, vector.y, vector.z)
+
+    def convert_vector2d(self, vector):
+        return Point2(vector.x, vector.y)
 
     def convert_euler_angle(self, angle):
         return [angle.h, angle.p, angle.r]
