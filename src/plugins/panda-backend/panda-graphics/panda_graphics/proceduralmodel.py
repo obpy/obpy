@@ -29,14 +29,17 @@ __date__ = "Jul 22, 2012 6:21:07 PM"
 import panda3d.core
 import panda3d.egg
 
+import obengine.math
+
+import modelbase
 import obplugin.panda_utils
 
 
-class ProceduralModel(obplugin.panda_utils.PandaResource):
+class ProceduralModel(modelbase.ModelBase):
 
     def __init__(self, vertices, faces, uv_coords = [], colors = [], use_smooth_shading = True):
 
-        obplugin.panda_utils.PandaResource.__init__(self)
+        modelbase.ModelBase.__init__(self, base)
 
         self._vertices = vertices
         self._faces = faces
@@ -54,9 +57,6 @@ class ProceduralModel(obplugin.panda_utils.PandaResource):
 
         self._generate_model()
         self.panda_node = render.attachNewNode(panda3d.egg.loadEggData(self._egg_data))
-
-        render.analyze()
-
         self.on_loaded()
 
     def _generate_model(self):
@@ -76,7 +76,7 @@ class ProceduralModel(obplugin.panda_utils.PandaResource):
             except IndexError:
                 pass
 
-            self._egg_vertex_pool.createUniqueVertex(vertex)
+            self._egg_vertex_pool.addVertex(vertex)
 
         for vertex_list in self._faces:
 
