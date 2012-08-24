@@ -128,7 +128,7 @@ class PluginManager(object):
     def load_plugin(self, root_dir):
         """
         Loads a plugin. The name is slightly misleading, as the plugin is not
-        actually initalized, just put in the initialization queue.
+        actually initialized, just put in the initialization queue.
 
         Arguments:
          * root_dir - the root directory of the plugin to load
