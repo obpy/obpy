@@ -31,6 +31,7 @@ from panda3d.core import Vec3, Vec4, Point2, Point3, Quat, Filename
 
 import obengine.event
 import obengine.math
+import obengine.vfs
 
 
 COLOR_SCALER = 255.0
